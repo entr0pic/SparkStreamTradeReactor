@@ -1,0 +1,65 @@
+title: "TradeGenerator"
+definitions:
+  Trade:
+    properties:
+      usi:
+        type: string
+        description: Unique Swap Identifier
+        mandatory: true
+      trade_date:
+        type: date
+        description: Trade Date
+        mandatory: true
+      trade_time:
+        type: timestamp
+        description: Trade Time
+        mandatory: true
+      party:
+        type: string
+        description: Bank Originating the Trade
+        mandatory: true
+      counterparty:
+        type: string
+        description: Bank on other side of the Trade
+        mandatory: true
+      ccp:
+        type: string
+        description: Central counterparty clearing house (An organization that exists in various European countries that helps facilitate trading done in European derivatives and equities markets)
+        mandatory: false
+      exchange:
+        type: string
+        description: The exchange where the financial product is traded
+        mandatory: true
+      symbol:
+        type: string
+        description: Symbol to uniquely identify a financial product within an exchange
+        mandatory: true
+      currency:
+        type: string
+        description: The currency used for payments in the trade
+        mandatory: true
+      isin:
+        type: string
+        description: International security identification number
+        mandatory: true
+      side:
+        type: string
+        description: Indicates whether the trading party is on the buy or sell side of the trade
+        mandatory: true
+        options: B|S
+      type:
+        type: string
+        description: The type of financial security being traded (stock, currency, commodity, etc)
+        mandatory: true
+      price:
+        type: numeric
+        description: The agreed price per unit for the trade
+        mandatory: true
+      volume:
+        type: numeric
+        description: The number of units to be traded
+        mandatory: true
+      unit:
+        type: string
+        description: The type of unit being trading (USD, barrels, tonnes, mWh, etc)
+        mandatory: false
