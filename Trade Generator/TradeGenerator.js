@@ -55,7 +55,7 @@ var logJsonNicely = function (jsonArray) {
 var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
-var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString());
+var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
 
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
@@ -125,5 +125,5 @@ var generateTradePairs = function(count, startDate) {
 }
 
 console.log("\n\nGENERATED TRADES\n")
-logJsonNicely(generateTradePairs(20));
+logJsonNicely(generateTradePairs(50));
 
