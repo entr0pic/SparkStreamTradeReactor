@@ -2,10 +2,6 @@ title: "TradeGenerator"
 definitions:
   Trade:
     properties:
-      usi:
-        type: string
-        description: Unique Swap Identifier
-        mandatory: true
       trade_date:
         type: date
         description: Trade Date
@@ -38,10 +34,6 @@ definitions:
         type: string
         description: The currency used for payments in the trade
         mandatory: true
-      isin:
-        type: string
-        description: International security identification number
-        mandatory: true
       side:
         type: string
         description: Indicates whether the trading party is on the buy or sell side of the trade
@@ -49,7 +41,11 @@ definitions:
         options: B|S
       type:
         type: string
-        description: The type of financial security being traded (stock, currency, commodity, etc)
+        description: The type of financial security being traded (equity, currency, commodity, etc)
+        mandatory: true
+      category:
+        type: string
+        description: Provides industry/other categorisation for the trade if available
         mandatory: true
       price:
         type: numeric

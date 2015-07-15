@@ -5,7 +5,7 @@ var readline = require('readline');
 var instream = fs.createReadStream("symbols.txt");
 var outstream = new stream;
 
-fs.writeFileSync('symbols.csv', "");
+//fs.writeFileSync('symbols.csv', "");
 
 var valid = /^[a-zA-Z&\s\-\.\(\)]+$/;
 
