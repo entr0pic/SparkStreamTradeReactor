@@ -1,0 +1,16 @@
+{
+  "name": "trade-generator",
+  "description": "Generates trades based on ref data inputs",
+  "version": "0.0.1",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/entr0pic/SparkStreamTradeReactor"
+  },
+  "dependencies": {
+    "kafka-node": ">= 0.2.27"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  }
+}

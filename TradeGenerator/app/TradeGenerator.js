@@ -1,7 +1,10 @@
 var fs = require('fs');
+var kafka = require('kafka-node');
 
 var tradesPerSecond = [0,20];
 var tadesQueue = [];
+
+var kafkaLocation = process.env.KAFKA || 'docker';
 
 var mapCSVtoJSON = function(csvString) {
   var trimQuotes = function(input) {
@@ -18,6 +21,10 @@ var mapCSVtoJSON = function(csvString) {
       return json;
     },{});
   })
+}
+
+function getRandomInt(range) {
+    return Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
 }
 
 var getRepeatingCharacter = function(char,length) {
@@ -124,6 +131,29 @@ var generateTradePairs = function(count, startDate) {
   return trades;
 }
 
-console.log("\n\nGENERATED TRADES\n")
-logJsonNicely(generateTradePairs(50));
+var newTrades = generateTradePairs(4);
 
+console.log("\n\nGENERATED TRADES\n")
+logJsonNicely(newTrades);
+
+
+
+Producer = kafka.Producer,
+client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
+producer = new Producer(client);
+//
+//payloads = [
+//        { topic: 'new-trade', messages: 'hi' },
+//        { topic: 'topic2', messages: ['hello', 'world'] }
+//    ];
+producer.createTopics(['trade-stream'], true, function (err, data) {});
+producer.on('ready', function () {
+    setInterval(function(){
+      payloads = [{topic:'trade-stream',messages: generateTradePairs(getRandomInt(tradesPerSecond)).map(JSON.stringify)}];
+      producer.send(payloads, function (err, data) {
+        console.log(err||data);
+      });
+    },1000)
+}).on('error',function(error){
+  console.log(error)
+});

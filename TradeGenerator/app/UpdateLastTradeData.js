@@ -58,7 +58,7 @@ var saveLine = function(rawJson, parentLine) {
     if(linesDone%100==0){
         console.log("| "+(linesDone + "      ").substr(0,6) + "| " + parentLine.map(function(d,i) {return (d + Array.apply(" ", {length:20}).map(function(){return " "}).join("")).substr(0, i==1?20:10)}).join('| ') + "|");
     }
-    
+
     fs.appendFileSync('newFile.csv', parentLine.join(',') + "\n");
   } catch(err) {
     //console.log(err);

@@ -1,0 +1,68 @@
+kafka:
+  image: spotify/kafka
+  hostname: kafka
+  environment:
+    ADVERTISED_HOST : 192.168.59.103 #run 'boot2docker ip' to get this address
+    ADVERTISED_PORT : 9092
+  expose:
+    - 2181
+    - 9092
+  ports:
+    - 2181:2181
+    - 9092:9092
+  volumes:
+    - $HOME/docker_files:/docker_share
+
+tradegen:
+  # build: TradeGenerator/.
+  image: tradegen
+  hostname: tradegen
+  links:
+    - kafka
+  environment:
+    KAFKA : kafka
+  command: node TradeGenerator.js
+
+master:
+  image: gettyimages/spark:1.4.0-hadoop-2.4
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master
+  hostname: master
+  expose:
+    - 7001
+    - 7002
+    - 7003
+    - 7004
+    - 7005
+    - 7006
+    - 7077
+    - 6066
+    - 4040
+    - 8080
+  ports:
+    - 4040:4040
+    - 6066:6066
+    - 7077:7077
+    - 8080:8080
+
+worker1:
+  image: gettyimages/spark:1.4.0-hadoop-2.4
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  hostname: worker1
+  environment:
+    SPARK_WORKER_CORES: 2
+    SPARK_WORKER_MEMORY: 1g
+    SPARK_WORKER_PORT: 8881
+    SPARK_WORKER_WEBUI_PORT: 8081
+  links:
+    - master
+  expose:
+    - 7012
+    - 7013
+    - 7014
+    - 7015
+    - 7016
+    - 8881
+  ports:
+    - 8081:8081
+  volumes:
+    - $HOME/docker_files:/zeppelin/data
