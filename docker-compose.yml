@@ -24,8 +24,10 @@ tradegen:
   command: node TradeGenerator.js
 
 master:
-  image: gettyimages/spark:1.4.0-hadoop-2.4
-  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master
+  image: arch/spark
+#  image: gettyimages/spark:1.4.0-hadoop-2.4
+#  image: gettyimages/spark:1.4.1-hadoop-2.6
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h $HOSTNAME
   hostname: master
   expose:
     - 7001
@@ -38,14 +40,18 @@ master:
     - 6066
     - 4040
     - 8080
+    - 50070
   ports:
     - 4040:4040
     - 6066:6066
     - 7077:7077
     - 8080:8080
+    - 50070:50070
 
 worker1:
-  image: gettyimages/spark:1.4.0-hadoop-2.4
+  image: arch/spark
+#  image: gettyimages/spark:1.4.0-hadoop-2.4
+#  image: gettyimages/spark:1.4.1-hadoop-2.6
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
