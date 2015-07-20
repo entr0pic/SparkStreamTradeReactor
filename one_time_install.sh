@@ -1,5 +1,5 @@
 echo Checking if homebrew is isntalled
-brew_location=`which brew'
+brew_location=`which brew`
 if [[ ! $brew_location == *"usr"* ]]
 then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
