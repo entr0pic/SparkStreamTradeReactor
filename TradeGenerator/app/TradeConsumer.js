@@ -1,6 +1,7 @@
+var kafkaLocation = process.env.KAFKA || 'vagrant';
 var kafka = require('kafka-node'),
     Consumer = kafka.Consumer,
-    client = new kafka.Client('docker:2181','trade-generator'),
+    client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
     consumer = new Consumer(
         client,
         [

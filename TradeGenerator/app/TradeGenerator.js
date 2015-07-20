@@ -4,7 +4,7 @@ var kafka = require('kafka-node');
 var tradesPerSecond = [0,20];
 var tadesQueue = [];
 
-var kafkaLocation = process.env.KAFKA || 'docker';
+var kafkaLocation = process.env.KAFKA || 'vagrant';
 
 var mapCSVtoJSON = function(csvString) {
   var trimQuotes = function(input) {
