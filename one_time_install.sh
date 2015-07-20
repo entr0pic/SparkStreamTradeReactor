@@ -5,6 +5,10 @@ then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
+echo Install dependencies
+brew install node
+brew install sbt
+
 echo Installing vagrant and docker...
 brew cask install vagrant docker docker-compose
 cd coreos-vagrant

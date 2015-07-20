@@ -2,12 +2,13 @@ Spark Trade Streaming
 ============
 
 
-##Pre-Requisites
+##Instructions
 
-- install docker [https://docs.docker.com/installation/](https://docs.docker.com/installation/)
-- install docker-compose [https://docs.docker.com/compose/install/](https://docs.docker.com/compose/install/)
-- install node ```brew install node``` or [https://nodejs.org/download/](https://nodejs.org/download/)
-- install sbt ```brew install sbt``` or [http://www.scala-sbt.org/download.html](http://www.scala-sbt.org/download.html)
+- Clone into a directory either under /Users/username or /Working (others are possible but you must edit the vagrantfile to add them as shared folders)
+- Run ```sh one_time_install.sh```
+- This script will provide instructions along the way. (Beware will be downloading a few hundred mb)
+- Recommended to edit your hosts file ```sudo vi /etc/hosts``` and add the vagrant IP addresss provided by the script using the name "vagrant"
+
 
 ##Usage
 
