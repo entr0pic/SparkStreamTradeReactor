@@ -14,11 +14,15 @@ Spark Trade Streaming
 
 Start a cluster (includes nodes for Kafka, Zookeeper, Spark and node.js):
 
-- ```docker-compose up -d ```
+```shell
+docker-compose up -d
+```
 
 Destroy a cluster:
 
-- ```docker-compose kill```
+```shell
+docker-compose kill
+```
 
 ##Kafka Stream
 
@@ -26,10 +30,13 @@ Not currently working properly.
 
 To build:
 
-- ```cd SparkStreamingFromKafka && sbt package && sbt assembly```
+```shell
+cd SparkStreamingFromKafka && sbt package && sbt assembly
+```
 
 To run:
 
 - Start main containers (```docker-compose up -d ```)
-- ```cd SparkStreamingFromKafka```
-- ```docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"```
+- ```shell
+cd SparkStreamingFromKafka
+docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"```
