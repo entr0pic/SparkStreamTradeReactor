@@ -13,7 +13,11 @@ object KafkaStream {
 
     val kafkaStream = KafkaUtils.createStream(ssc, brokers, "trade-generator", Map(topic -> 1))
     val trades = kafkaStream.map(_._2)
-    println(trades)
+
+    val words = trades.flatMap(_.split("\""))
+    val wordCounts = words.map(x => (x, 1L))
+      .reduceByKeyAndWindow(_ + _, _ - _, Minutes(1), Seconds(10), 2)
+    wordCounts.print()
 
     ssc.start()
     ssc.awaitTermination()
