@@ -5,7 +5,7 @@ then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 brew update
-brew install brew-cask
+brew install caskroom/cask/brew-cask
 
 echo Install dependencies
 brew install node
