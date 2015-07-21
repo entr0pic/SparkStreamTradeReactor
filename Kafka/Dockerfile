@@ -45,5 +45,5 @@ ADD run.sh /usr/bin/run.sh
 # 2181 is zookeeper, 9092 is kafka
 EXPOSE 2181 9092
 
-#CMD ["bash","/usr/bin/run.sh"]
-CMD ["supervisord","-n"]
+CMD ["bash","/usr/bin/run.sh"]
+#CMD ["supervisord","-n"]

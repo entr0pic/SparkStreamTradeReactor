@@ -37,6 +37,7 @@ echo Setting up docker local registry
 mkdir registry
 current_dir=`pwd`
 docker run -d -p 5000:5000 -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry -v $current_dir/registry:/var/lib/registry --restart=always --name registry registry:2
+sh docker_cleaner.sh
 
 echo Building all project docker containers
 sh rebuild_all.sh

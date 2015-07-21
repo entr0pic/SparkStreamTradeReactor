@@ -1,6 +1,8 @@
 kafka:
   image: localhost:5000/kafka
   hostname: kafka
+  mem_limit: 256000000
+
   environment:
 #    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
     ADVERTISED_PORT : 9092
@@ -17,6 +19,8 @@ tradegen:
   # build: TradeGenerator/.
   image: localhost:5000/tradegenerator
   hostname: tradegen
+  mem_limit: 100000000
+
   links:
     - kafka
   environment:
@@ -27,6 +31,8 @@ tradewatch:
   # build: TradeGenerator/.
   image: localhost:5000/tradegenerator
   hostname: tradegen
+  mem_limit: 100000000
+
   links:
     - kafka
   environment:
@@ -35,9 +41,11 @@ tradewatch:
 
 master:
   image: localhost:5000/spark
+  mem_limit: 1200000000
+
 #  image: gettyimages/spark:1.4.0-hadoop-2.4
 #  image: gettyimages/spark:1.4.1-hadoop-2.6
-  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h $HOSTNAME
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
   hostname: master
   expose:
     - 7001
@@ -60,6 +68,8 @@ master:
 
 worker1:
   image: localhost:5000/spark
+  mem_limit: 1200000000
+
 #  image: gettyimages/spark:1.4.0-hadoop-2.4
 #  image: gettyimages/spark:1.4.1-hadoop-2.6
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077

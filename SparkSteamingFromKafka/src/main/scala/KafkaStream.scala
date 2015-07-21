@@ -23,8 +23,8 @@ import org.apache.spark.streaming.kafka._
 
 object KafkaStream{
   def main(args: Array[String]) {
-     val conf = new SparkConf().setAppName("trade-reader")
-     val ssc = new StreamingContext(conf, Seconds(10))
+    val conf = new SparkConf().setAppName("trade-reader")
+    val ssc = new StreamingContext(conf, Seconds(10))
     val Array(brokers, topics) = args
     //val topics = "trade-stream"
     //val brokers = "kafka:2181"
