@@ -39,4 +39,5 @@ To run:
 ```shell
 docker-compose up -d #start main containers
 cd SparkStreamingFromKafka
-docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"```
+docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"
+```
