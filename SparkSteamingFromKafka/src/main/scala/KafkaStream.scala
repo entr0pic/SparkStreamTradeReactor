@@ -5,47 +5,67 @@ import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
 
 
-//object KafkaStream {
-//  def main(args: Array[String]) {
-//    val conf = new SparkConf().setAppName("trade-reader").setMaster("local[2]")
-//    val ssc = new StreamingContext(conf, Seconds(10))
-//
-//    val kafkaStream = KafkaUtils.createStream(ssc, "sandbox", "trade-generator", Map("trade-stream" -> 1))
-//    val trades = kafkaStream.map(_._2)
-//    trades.print()
-//
-//    ssc.start()
-//    ssc.awaitTermination()
-//  }
-//
-//}
-
-
-object KafkaStream{
+object KafkaStream {
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("trade-reader")
     val ssc = new StreamingContext(conf, Seconds(10))
-    val Array(brokers, topics) = args
-    //val topics = "trade-stream"
-    //val brokers = "kafka:2181"
-    val topicsSet = topics.split(",").toSet
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-      ssc, kafkaParams, topicsSet)
+    val Array(brokers, topic) = args
 
-    // Get the lines, split them into words, count the words and print
-    val lines = messages.map(_._2)
-//    val words = lines.flatMap(_.split(" "))
-//    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
+    val kafkaStream = KafkaUtils.createStream(ssc, brokers, "trade-generator", Map(topic -> 1))
+    val trades = kafkaStream.map(_._2)
+    println(trades)
 
-//    println(lines.size + " Trades")
-    lines.print()
-
-    // Start the computation
     ssc.start()
     ssc.awaitTermination()
   }
+
 }
+//
+//
+//object KafkaStream{
+//
+//  def createStream[K: ClassTag, V: ClassTag, U <: Decoder[_]: ClassTag, T <: Decoder[_]: ClassTag](
+//      ssc: StreamingContext,
+//      kafkaParams: Map[String, String],
+//      topics: Map[String, Int],
+//      storageLevel: StorageLevel
+//    ): ReceiverInputDStream[(K, V)]
+//
+//  val Array(zkQuorum, topics) = args
+//
+//  val kafkaParams = Map[String, String](
+//      "zookeeper.connect" -> zkQuorum, "group.id" -> groupId,
+//      "zookeeper.connection.timeout.ms" -> "10000",
+//      "kafka.auto.offset.reset" -> "smallest"
+//  )
+//}
+//
+//
+//object KafkaStream{
+//  def main(args: Array[String]) {
+//    val conf = new SparkConf().setAppName("trade-reader")
+//    val ssc = new StreamingContext(conf, Seconds(10))
+//    val Array(brokers, topics) = args
+//    //val topics = "trade-stream"
+//    //val brokers = "kafka:2181"
+//    val topicsSet = topics.split(",").toSet
+//    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers)
+//    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
+//      ssc, kafkaParams, topicsSet)
+//
+//    // Get the lines, split them into words, count the words and print
+//    val lines = messages.map(_._2)
+////    val words = lines.flatMap(_.split(" "))
+////    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
+//
+////    println(lines.size + " Trades")
+//    lines.print()
+//
+//    // Start the computation
+//    ssc.start()
+//    ssc.awaitTermination()
+//  }
+//}
 
 //object KafkaWordCount {
 //  def main(args: Array[String]) {
@@ -72,3 +92,4 @@ object KafkaStream{
 //    ssc.awaitTermination()
 //  }
 //}
+

@@ -26,10 +26,12 @@ Not currently working properly.
 
 To build:
 
-- ```sbt package```
+- ```cd SparkStreamingFromKafka && sbt package```
 
 To run:
 
-- ```sbt run```
+- Start main contianers (```docker-compose up -d ```)
+- ```cd SparkStreamingFromKafka```
+- ```docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"```
 
 
