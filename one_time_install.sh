@@ -12,7 +12,9 @@ brew install node
 brew install sbt
 
 echo Installing vagrant and docker...
-brew cask install vagrant docker docker-compose
+brew install docker
+brew install docker-compose
+brew cask install vagrant
 cd coreos-vagrant
 echo Booting up a new CoreOS VM
 vagrant init
