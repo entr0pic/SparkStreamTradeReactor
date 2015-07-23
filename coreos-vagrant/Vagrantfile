@@ -18,7 +18,7 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 5000
 $vm_cpus = 6
-$shared_folders = {"/Working" => "/Working", "/Users" => "/Users"}
+$shared_folders = {"/Users" => "/Users"}
 $forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to
@@ -133,7 +133,7 @@ Vagrant.configure("2") do |config|
         config.vm.synced_folder ENV['HOME'], ENV['HOME'], id: "home", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       end
 
-      DOCKER_SOCKET = File.join(File.dirname(__FILE__), "user-data")
+      DOCKER_SOCKET = File.join(File.dirname(__FILE__), "docker-tcp.socket")
       config.vm.provision :file, :source => "#{DOCKER_SOCKET}", :destination => "/etc/systemd/system/docker-tcp.socket"
 
       if File.exist?(CLOUD_CONFIG_PATH)

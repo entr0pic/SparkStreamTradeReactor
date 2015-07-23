@@ -1,5 +1,14 @@
-echo Checking if homebrew is isntalled
+echo Updating homebrew
+current_dir=`pwd`
 brew_location=`which brew`
+
+RED='\033[1;31m'
+BLUE='\033[0;34m'
+LBLUE='\033[1;34m'
+YEL='\033[1;33m'
+NC='\033[0m' # No Color
+#printf "I ${RED}love${NC} Stack Overflow\n"
+
 if [[ ! $brew_location == *"usr"* ]]
 then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -7,57 +16,59 @@ fi
 brew update
 brew install caskroom/cask/brew-cask
 
-echo Install dependencies
+printf "${LBLUE}Install dependencies${NC}\n"
 brew install node
 brew install sbt
 
-echo Installing vagrant and docker...
+printf "${LBLUE}Installing vagrant and docker...${NC}\n"
 brew install docker
 brew install docker-compose
 brew cask install vagrant
-cd coreos-vagrant
-echo Booting up a new CoreOS VM
-vagrant init
-vagrant up
 
+
+cd coreos-vagrant
+printf "${LBLUE}Booting up a new CoreOS VM${NC}\n"
+sed -i '.bk' "s|\(\(\$shared_folders = \){\(.*\)}\).*|\2{\3,\"${current_dir}\" => \"${current_dir}\"}|g" Vagrantfile
+vagrant up
 vagrant_int_ip=$(vagrant ssh -c "ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
 vagrant_ext_ip=$(vagrant ssh -c "ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
-echo vagrant IP address is $vagrant_ext_ip, this is used to connect to services running in the docker environment. Good idea to add this to your /etc/hosts file as 'vagrant'
 
-vagrant ssh
-systemctl enable docker-tcp.socket
-systemctl stop docker
-systemctl start docker-tcp.socket
-systemctl start docker
-exit
+vagrant_int_ip=${vagrant_int_ip//$'\r'/}
+vagrant_ext_ip=${vagrant_ext_ip//$'\r'/}
+
+printf "${LBLUE}Vagrant IP address is ${YEL}$vagrant_ext_ip${LBLUE}, this is used to connect to services running in the docker environment. Good idea to add this to your /etc/hosts file as 'vagrant'${NC}\n"
+
+vagrant ssh -c "sudo systemctl enable docker-tcp.socket"
+vagrant ssh -c "sudo systemctl stop docker"
+vagrant ssh -c "sudo systemctl start docker-tcp.socket"
+vagrant ssh -c "sudo systemctl start docker"
 
 cd ..
-
 DOCKER_HOST=tcp://$vagrant_ext_ip:2375
 echo export DOCKER_HOST=$DOCKER_HOST >> ~/.bash_profile
 . ~/.bash_profile
 
-echo Setting up docker local registry
+printf "${LBLUE}Setting up docker local registry${NC}\n"
 mkdir registry
-current_dir=`pwd`
-docker run -d -p 5000:5000 -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry -v $current_dir/registry:/var/lib/registry --restart=always --name registry registry:2
+
+#docker run -d -p 5000:5000 -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry -v $current_dir/registry:/var/lib/registry --restart=always --name registry registry:2
 sh docker_cleaner.sh
 
-echo Building all project docker containers
+printf "${LBLUE}Building all project docker containers${NC}\n"
 sh rebuild_all.sh
 
-echo Starting shipyard
+printf "${LBLUE}Starting shipyard${NC}\n"
 sh shipyard_bootup.sh
 
-echo Shipyard provides an online GUI to monitor docker containers.
-echo You will need to add the docker engine for it to work.
-echo Engine name: docker-host
-echo Labels: base
-echo CPU: 6
-echo Memory: 4096 (if you want to add more you will need to add more memory to the vagrant file)
-echo Host: http://$vagrant_int_ip:2375
+printf "${LBLUE}Shipyard provides an online GUI to monitor docker containers.${NC}\n"
+printf "${LBLUE}You will need to add the docker engine for it to work.${NC}\n"
+printf "${YEL}Engine name: docker-host${NC}\n"
+printf "${YEL}Labels: base${NC}\n"
+printf "${YEL}CPU: 6${NC}\n"
+printf "${YEL}Memory: 4096 \(if you want to add more you will need to add more memory to the vagrant file\)${NC}\n"
+printf "${YEL}Host: http://$vagrant_int_ip:2375${NC}\n"
 
-echo You can access shipyard at http://$vagrant_ext_ip:88
+printf "${LBLUE}You can access shipyard at ${YEL}http://$vagrant_ext_ip:88${NC}\n"
 
-echo Booting up project containers (use "docker-compose up -d" to start them up and "docker-compose kill" to shut them down)
+printf "${LBLUE}Booting up project containers \(use \"${YEL}docker-compose up -d${LBLUE}\" to start them up and \"${YEL}docker-compose kill${LBLUE}\" to shut them down\)${NC}\n"
 docker-compose up -d

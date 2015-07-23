@@ -19,7 +19,7 @@ tradegen:
   # build: TradeGenerator/.
   image: localhost:5000/tradegenerator
   hostname: tradegen
-  mem_limit: 100000000
+  mem_limit: 200000000
 
   links:
     - kafka
@@ -27,17 +27,17 @@ tradegen:
     KAFKA : kafka
   command: node TradeGenerator.js
 
-tradewatch:
-  # build: TradeGenerator/.
-  image: localhost:5000/tradegenerator
-  hostname: tradegen
-  mem_limit: 100000000
-
-  links:
-    - kafka
-  environment:
-    KAFKA : kafka
-  command: node TradeConsumer.js
+#tradewatch:
+#  # build: TradeGenerator/.
+#  image: localhost:5000/tradegenerator
+#  hostname: tradegen
+#  mem_limit: 100000000
+#
+#  links:
+#    - kafka
+#  environment:
+#    KAFKA : kafka
+#  command: node TradeConsumer.js
 
 master:
   image: localhost:5000/spark
