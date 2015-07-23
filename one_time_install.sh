@@ -53,13 +53,14 @@ echo export DOCKER_HOST=$DOCKER_HOST >> ~/.bash_profile
 #printf "${LBLUE}Setting up docker local registry${NC}\n"
 #mkdir registry
 #docker run -d -p 5000:5000 -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry -v $current_dir/registry:/var/lib/registry --restart=always --name registry registry:2
+
 sh docker_cleaner.sh
 
 printf "${LBLUE}Building all project docker containers${NC}\n"
 sh rebuild_all.sh
 
 printf "${LBLUE}Starting shipyard${NC}\n"
-sh shipyard_bootup.sh
+sh shipyard-bootup.sh
 
 printf "${LBLUE}Shipyard provides an online GUI to monitor docker containers.${NC}\n"
 printf "${LBLUE}You will need to add the docker engine for it to work.${NC}\n"
@@ -70,6 +71,7 @@ printf "${YEL}Memory: 4096 (if you want to add more you will need to add more me
 printf "${YEL}Host: http://$vagrant_int_ip:2375${NC}\n"
 
 printf "${LBLUE}You can access shipyard at ${YEL}http://$vagrant_ext_ip:88${NC}\n"
+printf "${LBLUE}Username is ${YEL}admin${LBLUE} and password is ${YEL}shipyard${NC}\n"
 
 printf "${LBLUE}Booting up project containers (use \"${YEL}docker-compose up -d${LBLUE}\" to start them up and \"${YEL}docker-compose kill${LBLUE}\" to shut them down)${NC}\n"
 docker-compose up -d
