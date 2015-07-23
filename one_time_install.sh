@@ -1,4 +1,4 @@
-echo Updating homebrew
+
 current_dir=`pwd`
 brew_location=`which brew`
 
@@ -9,6 +9,7 @@ YEL='\033[1;33m'
 NC='\033[0m' # No Color
 #printf "I ${RED}love${NC} Stack Overflow\n"
 
+printf "${LBLUE}Updating homebrew${NC}\n"
 if [[ ! $brew_location == *"usr"* ]]
 then
   ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
