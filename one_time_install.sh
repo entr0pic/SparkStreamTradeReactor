@@ -39,6 +39,10 @@ vagrant_ext_ip=${vagrant_ext_ip//$'\r'/}
 
 printf "${LBLUE}Vagrant IP address is ${YEL}$vagrant_ext_ip${LBLUE}, this is used to connect to services running in the docker environment. Good idea to add this to your /etc/hosts file as 'vagrant'${NC}\n"
 
+vagrant ssh -c "sudo systemctl stop docker-tcp.socket"
+vagrant ssh -c "sudo rm /etc/systemd/system/docker-tcp.socket"
+vagrant ssh -c "sudo touch /etc/systemd/system/docker-tcp.socket && sudo chmod 777 /etc/systemd/system/docker-tcp.socket && sudo echo [Unit] >> /etc/systemd/system/docker-tcp.socket && sudo echo Description=Docker Socket for the API >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Socket] >> /etc/systemd/system/docker-tcp.socket && sudo echo ListenStream=2375 >> /etc/systemd/system/docker-tcp.socket && sudo echo BindIPv6Only=both >> /etc/systemd/system/docker-tcp.socket && sudo echo Service=docker.service >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Install] >> /etc/systemd/system/docker-tcp.socket && sudo echo WantedBy=sockets.target >> /etc/systemd/system/docker-tcp.socket"
+
 vagrant ssh -c "sudo systemctl enable docker-tcp.socket"
 vagrant ssh -c "sudo systemctl stop docker"
 vagrant ssh -c "sudo systemctl start docker-tcp.socket"
