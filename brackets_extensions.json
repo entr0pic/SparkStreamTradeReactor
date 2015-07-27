@@ -1,0 +1,29 @@
+{
+  "extensions": {
+    "martypenner.autosave-files-on-window-blur": true,
+    "hirse.beautify": true,
+    "crot4lus.brackets-tabs": true,
+    "zaggino.brackets-git": true,
+    "ivogabe.icons": true,
+    "jeffbooher.new-project": true,
+    "colorhints": true,
+    "torin.duplicate": true,
+    "brackets-emmet": true,
+    "dockerfile-syntax-highlighter": true,
+    "milosh86.extensions-bulk-installer": false,
+    "adobe.brackets.extract": true,
+    "jonwolfe.file-tree-exclude": true,
+    "tommalbran.brackets-fonts-viewer": true,
+    "brackets-indent-guides": true,
+    "jquinter": true,
+    "jslint.configurator": true,
+    "globexdesigns.brackets-jsxhint": true,
+    "rain.monokai-dark-soda": true,
+    "renanveroneze.brackets-open-terminal-here": true,
+    "pretty_json": true,
+    "quickdocsjs": true,
+    "react_jsx": true,
+    "scientech-com-ua.brackets-trailingspaces": true,
+    "camden.w3cvalidation": true
+  }
+}
