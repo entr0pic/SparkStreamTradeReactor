@@ -1,4 +1,4 @@
-FROM localhost:5000/base
+FROM localhost:5000/hadoop
 
 
 #

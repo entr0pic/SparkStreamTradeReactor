@@ -2,7 +2,6 @@ kafka:
   image: localhost:5000/kafka
   hostname: kafka
   mem_limit: 256000000
-
   environment:
 #    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
     ADVERTISED_PORT : 9092
@@ -14,37 +13,21 @@ kafka:
     - 9092:9092
   volumes:
     - /Working/HadoopHackathon/SparkStreamTradeReactor/Kafka/data:/tmp
+    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
 
 tradegen:
-  # build: TradeGenerator/.
   image: localhost:5000/tradegenerator
   hostname: tradegen
   mem_limit: 200000000
-
   links:
     - kafka
   environment:
-    KAFKA : kafka
+    KAFKA: kafka
   command: node TradeGenerator.js
-
-#tradewatch:
-#  # build: TradeGenerator/.
-#  image: localhost:5000/tradegenerator
-#  hostname: tradegen
-#  mem_limit: 100000000
-#
-#  links:
-#    - kafka
-#  environment:
-#    KAFKA : kafka
-#  command: node TradeConsumer.js
 
 master:
   image: localhost:5000/spark
   mem_limit: 1200000000
-
-#  image: gettyimages/spark:1.4.0-hadoop-2.4
-#  image: gettyimages/spark:1.4.1-hadoop-2.6
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
   hostname: master
   expose:
@@ -65,13 +48,12 @@ master:
     - 7077:7077
     - 8080:8080
     - 50070:50070
+  volumes:
+    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
 
 worker1:
   image: localhost:5000/spark
   mem_limit: 1200000000
-
-#  image: gettyimages/spark:1.4.0-hadoop-2.4
-#  image: gettyimages/spark:1.4.1-hadoop-2.6
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
@@ -92,3 +74,4 @@ worker1:
     - 8081:8081
   volumes:
     - $HOME/docker_files:/zeppelin/data
+    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
