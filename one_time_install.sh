@@ -55,7 +55,9 @@ echo export DOCKER_HOST=$DOCKER_HOST >> ~/.bash_profile
 . ~/.bash_profile
 
 #printf "${LBLUE}Setting up docker local registry${NC}\n"
-#mkdir registry
+mkdir registry
+
+sh docker_registry.sh
 #docker run -d -p 5000:5000 -e REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY=/var/lib/registry -v $current_dir/registry:/var/lib/registry --restart=always --name registry registry:2
 
 sh docker_cleaner.sh
