@@ -7,4 +7,6 @@
 /Spark/jars
 /coreos-vagrant/Vagrantfile.bk
 /Hadoop/data
+/image_backups
 /image_backup
+/Hadoop/data/namenode/dfs/namenode/current/VERSION
