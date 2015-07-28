@@ -1,5 +1,4 @@
 /SparkSteamingFromKafka/project/target/streams/compile/managedClasspath/$global/streams/export
-/SparkSteamingFromKafka/project/
 /SparkSteamingFromKafka/target/
 /registry
 /Kafka/data
@@ -10,3 +9,5 @@
 /image_backups
 /image_backup
 /Hadoop/data/namenode/dfs/namenode/current/VERSION
+/SparkSteamingFromKafka/project/project/
+/SparkSteamingFromKafka/project/target/
