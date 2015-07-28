@@ -32,7 +32,7 @@ sudo pip install pyopenssl ndg-httpsclient pyasn1
 
 printf "${LBLUE}How much memory can you spare?${NC}\n"
 read memory_limit
-docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory "$memory" dev4g
+docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory "$memory_limit" dev4g
 eval "$(docker-machine env dev4g)"
 
 #cd coreos-vagrant
@@ -95,7 +95,3 @@ sh rebuild_all.sh
 #printf "${LBLUE}Username is ${YEL}admin${LBLUE} and password is ${YEL}shipyard${NC}\n"
 
 printf "${LBLUE}Booting up project containers (use \"${YEL}docker-compose up -d${LBLUE}\" to start them up and \"${YEL}docker-compose kill${LBLUE}\" to shut them down)${NC}\n"
-docker-compose up -d
-
-open http://`docker-machine ip dev4g`:8888
-open http://`docker-machine ip dev4g`:9000
