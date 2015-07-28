@@ -2,12 +2,12 @@ kafka:
   image: localhost:5000/kafka
   hostname: kafka
   mem_limit: 256000000
-  command: hdfs datanode & bash /usr/bin/run.sh
+  command: bash run.sh
   environment:
 #    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
     ADVERTISED_PORT : 9092
   links:
-    - master:namenode
+    - namenode
   expose:
     - 2181
     - 9092
@@ -16,7 +16,6 @@ kafka:
     - 9092:9092
   volumes:
     - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Kafka/data:/tmp
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
 
 tradegen:
   image: localhost:5000/tradegenerator
@@ -33,8 +32,10 @@ tradegen:
 master:
   image: localhost:5000/spark
   mem_limit: 1200000000
-  command: hdfs namenode & /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
   hostname: master
+  links:
+    - namenode
   expose:
     - 7001
     - 7002
@@ -52,14 +53,12 @@ master:
     - 6066:6066
     - 7077:7077
     - 8080:8080
-    - 50070:50070
-  volumes:
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
+    - 50071:50070
 
 worker1:
   image: localhost:5000/spark
   mem_limit: 1200000000
-  command: hdfs datanode /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
     SPARK_WORKER_CORES: 2
@@ -68,7 +67,7 @@ worker1:
     SPARK_WORKER_WEBUI_PORT: 8081
   links:
     - master
-    - master:namenode
+    - namenode
   expose:
     - 7012
     - 7013
@@ -81,3 +80,53 @@ worker1:
   volumes:
     - $HOME/docker_files:/zeppelin/data
     - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
+
+namenode:
+  image: localhost:5000/hadoop
+  hostname: namenode
+  volumes:
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
+  ports:
+    - "8020:8020"
+    - "50070:50070"
+  command: hdfs namenode
+
+datanode1:
+  image: localhost:5000/hadoop
+  hostname: datanode1
+  volumes:
+      - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
+  links:
+      - namenode
+  ports:
+      - "5001:50075"
+  command: hdfs datanode
+
+datanode2:
+  image: localhost:5000/hadoop
+  hostname: datanode2
+  volumes:
+      - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
+  links:
+      - namenode
+  ports:
+      - "5002:50075"
+  command: hdfs datanode
+
+cadvisor:
+  image: google/cadvisor:latest
+  hostname: cadvisor
+  volumes:
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  ports:
+    - 8888:8080
+
+dockerui:
+  image: dockerui/dockerui
+  hostname: dockerui
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  ports:
+    - 9000:9000

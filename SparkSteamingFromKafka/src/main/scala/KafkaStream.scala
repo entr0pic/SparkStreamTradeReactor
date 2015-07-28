@@ -11,7 +11,7 @@ object KafkaStream extends Logging{
   def main(args: Array[String]) {
     val conf = new SparkConf().setAppName("trade-reader")
     val ssc = new StreamingContext(conf, Seconds(10))
-    ssc.checkpoint("hdfs://checkpoint")
+    ssc.checkpoint("hdfs://namenode:8020/checkpoint")
 
     setStreamingLogLevels()
 

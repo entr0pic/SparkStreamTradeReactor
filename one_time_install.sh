@@ -30,8 +30,8 @@ brew cask install docker-machine
 
 sudo pip install pyopenssl ndg-httpsclient pyasn1
 
-docker-machine create --driver virtualbox spark-streaming
-eval "$(docker-machine env spark-streaming)"
+docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory "4096" dev4g
+eval "$(docker-machine env dev4g)"
 
 #cd coreos-vagrant
 #printf "${LBLUE}Booting up a new CoreOS VM${NC}\n"
@@ -78,19 +78,22 @@ sh docker_cleaner.sh
 printf "${LBLUE}Building all project docker containers${NC}\n"
 sh rebuild_all.sh
 
-printf "${LBLUE}Starting shipyard${NC}\n"
-sh shipyard-bootup.sh
+#printf "${LBLUE}Starting shipyard${NC}\n"
+#sh shipyard-bootup.sh
 
-printf "${LBLUE}Shipyard provides an online GUI to monitor docker containers.${NC}\n"
-printf "${LBLUE}You will need to add the docker engine for it to work.${NC}\n"
-printf "${YEL}Engine name: docker-host${NC}\n"
-printf "${YEL}Labels: base${NC}\n"
-printf "${YEL}CPU: 6${NC}\n"
-printf "${YEL}Memory: 4096 (if you want to add more you will need to add more memory to the vagrant file)${NC}\n"
-printf "${YEL}Host: http://$vagrant_int_ip:2375${NC}\n"
-
-printf "${LBLUE}You can access shipyard at ${YEL}http://$vagrant_ext_ip:88${NC}\n"
-printf "${LBLUE}Username is ${YEL}admin${LBLUE} and password is ${YEL}shipyard${NC}\n"
+#printf "${LBLUE}Shipyard provides an online GUI to monitor docker containers.${NC}\n"
+#printf "${LBLUE}You will need to add the docker engine for it to work.${NC}\n"
+#printf "${YEL}Engine name: docker-host${NC}\n"
+#printf "${YEL}Labels: base${NC}\n"
+#printf "${YEL}CPU: 6${NC}\n"
+#printf "${YEL}Memory: 4096 (if you want to add more you will need to add more memory to the vagrant file)${NC}\n"
+#printf "${YEL}Host: http://$vagrant_int_ip:2375${NC}\n"
+#
+#printf "${LBLUE}You can access shipyard at ${YEL}http://$vagrant_ext_ip:88${NC}\n"
+#printf "${LBLUE}Username is ${YEL}admin${LBLUE} and password is ${YEL}shipyard${NC}\n"
 
 printf "${LBLUE}Booting up project containers (use \"${YEL}docker-compose up -d${LBLUE}\" to start them up and \"${YEL}docker-compose kill${LBLUE}\" to shut them down)${NC}\n"
 docker-compose up -d
+
+open http://`docker-machine ip dev4g`:8888
+open http://`docker-machine ip dev4g`:9000

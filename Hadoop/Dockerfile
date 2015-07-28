@@ -29,14 +29,17 @@ RUN wget http://archive.apache.org/dist/hadoop/core/hadoop-$HADOOP_VERSION/hadoo
     mv hadoop-$HADOOP_VERSION $HADOOP_PREFIX && \
     mkdir -p $HADOOP_VERSION/logs
 
+ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_PREFIX/lib/native
+ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_PREFIX/lib"
+
 VOLUME /shared
 
 ADD core-site.xml $HADOOP_CONF_DIR/core-site.xml
 ADD hdfs-site.xml $HADOOP_CONF_DIR/hdfs-site.xml
 
-#RUN ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa && \
-#  cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys && \
-#  export HADOOP\_PREFIX=/usr/local/hadoop
+RUN ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa && \
+  cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys && \
+  export HADOOP\_PREFIX=/usr/local/hadoop
 #
 #RUN echo Host * StrictHostKeyChecking no >> ~/.ssh/config
 
