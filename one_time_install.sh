@@ -24,13 +24,15 @@ brew install sbt
 printf "${LBLUE}Installing vagrant and docker...${NC}\n"
 brew install docker
 brew install docker-compose
-brew cask install vagrant
+#brew cask install vagrant
 brew cask install docker-machine
 #vagrant plugin install vagrant-vmware-appcatalyst
 
 sudo pip install pyopenssl ndg-httpsclient pyasn1
 
-docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory "4096" dev4g
+printf "${LBLUE}How much memory can you spare?${NC}\n"
+read memory_limit
+docker-machine create --driver virtualbox --virtualbox-cpu-count 4 --virtualbox-memory "$memory" dev4g
 eval "$(docker-machine env dev4g)"
 
 #cd coreos-vagrant
