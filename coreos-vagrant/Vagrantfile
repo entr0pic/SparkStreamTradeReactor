@@ -18,7 +18,7 @@ $share_home = false
 $vm_gui = false
 $vm_memory = 5000
 $vm_cpus = 6
-$shared_folders = {"/Users" => "/Users"}
+$shared_folders = {"/Users" => "/Users","/Working/HadoopHackathon/SparkStreamTradeReactor" => "/Working/HadoopHackathon/SparkStreamTradeReactor"}
 $forwarded_ports = {}
 
 # Attempt to apply the deprecated environment variable NUM_INSTANCES to

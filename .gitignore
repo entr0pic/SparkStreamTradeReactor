@@ -4,3 +4,5 @@
 /registry
 /Kafka/data
 /Spark/spark-1.4.0-bin-hadoop2.6.tgz
+/Spark/jars
+/coreos-vagrant/Vagrantfile.bk
