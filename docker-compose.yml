@@ -2,9 +2,12 @@ kafka:
   image: localhost:5000/kafka
   hostname: kafka
   mem_limit: 256000000
+  command: hdfs datanode & bash /usr/bin/run.sh
   environment:
 #    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
     ADVERTISED_PORT : 9092
+  links:
+    - master:namenode
   expose:
     - 2181
     - 9092
@@ -12,8 +15,8 @@ kafka:
     - 2181:2181
     - 9092:9092
   volumes:
-    - /Working/HadoopHackathon/SparkStreamTradeReactor/Kafka/data:/tmp
-    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Kafka/data:/tmp
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
 
 tradegen:
   image: localhost:5000/tradegenerator
@@ -24,11 +27,13 @@ tradegen:
   environment:
     KAFKA: kafka
   command: node TradeGenerator.js
+  volumes:
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/TradeGenerator:/shared
 
 master:
   image: localhost:5000/spark
   mem_limit: 1200000000
-  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
+  command: hdfs namenode & /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
   hostname: master
   expose:
     - 7001
@@ -49,12 +54,12 @@ master:
     - 8080:8080
     - 50070:50070
   volumes:
-    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
 
 worker1:
   image: localhost:5000/spark
   mem_limit: 1200000000
-  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  command: hdfs datanode /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
     SPARK_WORKER_CORES: 2
@@ -63,6 +68,7 @@ worker1:
     SPARK_WORKER_WEBUI_PORT: 8081
   links:
     - master
+    - master:namenode
   expose:
     - 7012
     - 7013
@@ -74,4 +80,4 @@ worker1:
     - 8081:8081
   volumes:
     - $HOME/docker_files:/zeppelin/data
-    - /Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
+    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared

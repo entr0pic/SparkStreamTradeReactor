@@ -3,6 +3,16 @@ FROM localhost:5000/base
 USER root
 ENV DEBIAN_FRONTEND noninteractive
 
+# Java version
+ENV JDK_VERSION 7
+
+# Install Java
+RUN apt-get update && apt-get install -y --force-yes openjdk-$JDK_VERSION-jdk
+
+# Set java environment
+ENV JAVA_HOME /usr/lib/jvm/java-$JDK_VERSION-openjdk-amd64
+ENV PATH $PATH:$JAVA_HOME/bin
+
 # Programs version
 ENV HADOOP_VERSION 2.6.0
 
@@ -24,10 +34,10 @@ VOLUME /shared
 ADD core-site.xml $HADOOP_CONF_DIR/core-site.xml
 ADD hdfs-site.xml $HADOOP_CONF_DIR/hdfs-site.xml
 
-RUN ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa && \
-  cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys && \
-  export HADOOP\_PREFIX=/usr/local/hadoop
-
-RUN echo Host * StrictHostKeyChecking no >> ~/.ssh/config
+#RUN ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa && \
+#  cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys && \
+#  export HADOOP\_PREFIX=/usr/local/hadoop
+#
+#RUN echo Host * StrictHostKeyChecking no >> ~/.ssh/config
 
 EXPOSE 50020 50090 50070 50010 50075 8031 8032 8033 8040 8042 49707 22 8088 8030

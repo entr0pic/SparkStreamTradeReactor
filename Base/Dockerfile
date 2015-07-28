@@ -1,8 +1,10 @@
 FROM debian:jessie
 
-RUN apt-get update && apt-get install -y sudo apt-utils zip unzip curl net-tools python wget ca-certificates supervisor dnsutils zookeeper npm openssh-server openssh-client rsync build-essential
+#Basics
+RUN apt-get update && apt-get install -y --fix-missing sudo apt-utils zip unzip curl net-tools python wget ca-certificates dnsutils
 
-
+#Hadoop Dependencies
+RUN apt-get install -y zookeeper openssh-server openssh-client rsync
 
 # JAVA
 #ENV JAVA_HOME /usr/jdk1.8.0_31
@@ -18,7 +20,7 @@ RUN apt-get update && apt-get install -y sudo apt-utils zip unzip curl net-tools
 #RUN ln -s $JAVA_HOME $JAVA_HOME/default
 
 RUN curl --silent --location https://deb.nodesource.com/setup_0.12 | bash - && \
-    apt-get install -y nodejs
+    apt-get install -y nodejs build-essential
 # Zookeeper manual
 #RUN curl -sL --retry 3 --insecure \
 #  "http://apache.mirror.digitalpacific.com.au/zookeeper/zookeeper-3.4.6/zookeeper-3.4.6.tar.gz" \
@@ -26,14 +28,6 @@ RUN curl --silent --location https://deb.nodesource.com/setup_0.12 | bash - && \
 #  | tar x -C /usr/share \
 #  && ln -s /usr/share/zookeeper-3.4.6 /usr/share/zookeeper
 
-ENV JDK_VERSION 7
-
-# Install Java
-RUN apt-get install -y openjdk-$JDK_VERSION-jdk
-
-# Set java environment
-ENV JAVA_HOME /usr/lib/jvm/java-$JDK_VERSION-openjdk-amd64
-ENV PATH $PATH:$JAVA_HOME/bin
 
 #RUN rm /etc/ssh/ssh_host_dsa_key
 #RUN rm /etc/ssh/ssh_host_rsa_key

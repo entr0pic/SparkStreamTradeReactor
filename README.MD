@@ -1,6 +1,7 @@
 Spark Trade Streaming
 ============
-
+##Dependencies
+- [VMWare AppCatalyst](https://communities.vmware.com/community/vmtn/devops/vmware-appcatalyst) is required prior to running the install scripts.
 
 ##Instructions
 

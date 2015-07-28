@@ -25,34 +25,47 @@ printf "${LBLUE}Installing vagrant and docker...${NC}\n"
 brew install docker
 brew install docker-compose
 brew cask install vagrant
+brew cask install docker-machine
+#vagrant plugin install vagrant-vmware-appcatalyst
 
+sudo pip install pyopenssl ndg-httpsclient pyasn1
 
-cd coreos-vagrant
-printf "${LBLUE}Booting up a new CoreOS VM${NC}\n"
-sed -i '.bk' "s|\(\(\$shared_folders = \){\(.*\)}\).*|\2{\3,\"${current_dir}\" => \"${current_dir}\"}|g" Vagrantfile
-vagrant up
-vagrant_int_ip=$(vagrant ssh -c "ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
-vagrant_ext_ip=$(vagrant ssh -c "ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
+docker-machine create --driver virtualbox spark-streaming
+eval "$(docker-machine env spark-streaming)"
 
-vagrant_int_ip=${vagrant_int_ip//$'\r'/}
-vagrant_ext_ip=${vagrant_ext_ip//$'\r'/}
+#cd coreos-vagrant
+#printf "${LBLUE}Booting up a new CoreOS VM${NC}\n"
+#sed -i '.bk' "s|\(\(\$shared_folders = \){\(.*\)}\).*|\2{\3,\"${current_dir}\" => \"${current_dir}\"}|g" Vagrantfile
 
-printf "${LBLUE}Vagrant IP address is ${YEL}$vagrant_ext_ip${LBLUE}, this is used to connect to services running in the docker environment. Good idea to add this to your /etc/hosts file as 'vagrant'${NC}\n"
+#printf "${LBLUE}Creating and AppCatalyst VM${NC}\n"
+#cd appcatalyst
+#sed "s|\({{SHARE}}\)|${current_dir}|g" Vagrantfile.template > Vagrantfile
 
-vagrant ssh -c "sudo systemctl stop docker-tcp.socket"
-vagrant ssh -c "sudo rm /etc/systemd/system/docker-tcp.socket"
-vagrant ssh -c "sudo touch /etc/systemd/system/docker-tcp.socket && sudo chmod 777 /etc/systemd/system/docker-tcp.socket && sudo echo [Unit] >> /etc/systemd/system/docker-tcp.socket && sudo echo Description=Docker Socket for the API >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Socket] >> /etc/systemd/system/docker-tcp.socket && sudo echo ListenStream=2375 >> /etc/systemd/system/docker-tcp.socket && sudo echo BindIPv6Only=both >> /etc/systemd/system/docker-tcp.socket && sudo echo Service=docker.service >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Install] >> /etc/systemd/system/docker-tcp.socket && sudo echo WantedBy=sockets.target >> /etc/systemd/system/docker-tcp.socket"
+#
+#
+#vagrant up
+#vagrant_int_ip=$(vagrant ssh -c "ip address show eth0 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
+#vagrant_ext_ip=$(vagrant ssh -c "ip address show eth1 | grep 'inet ' | sed -e 's/^.*inet //' -e 's/\/.*$//'")
+#
+#vagrant_int_ip=${vagrant_int_ip//$'\r'/}
+#vagrant_ext_ip=${vagrant_ext_ip//$'\r'/}
+#
+#printf "${LBLUE}Vagrant IP address is ${YEL}$vagrant_ext_ip${LBLUE}, this is used to connect to services running in the docker environment. Good idea to add this to your /etc/hosts file as 'vagrant'${NC}\n"
+#
+#vagrant ssh -c "sudo systemctl stop docker-tcp.socket"
+#vagrant ssh -c "sudo rm /etc/systemd/system/docker-tcp.socket"
+#vagrant ssh -c "sudo touch /etc/systemd/system/docker-tcp.socket && sudo chmod 777 /etc/systemd/system/docker-tcp.socket && sudo echo [Unit] >> /etc/systemd/system/docker-tcp.socket && sudo echo Description=Docker Socket for the API >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Socket] >> /etc/systemd/system/docker-tcp.socket && sudo echo ListenStream=2375 >> /etc/systemd/system/docker-tcp.socket && sudo echo BindIPv6Only=both >> /etc/systemd/system/docker-tcp.socket && sudo echo Service=docker.service >> /etc/systemd/system/docker-tcp.socket && sudo echo  >> /etc/systemd/system/docker-tcp.socket && sudo echo [Install] >> /etc/systemd/system/docker-tcp.socket && sudo echo WantedBy=sockets.target >> /etc/systemd/system/docker-tcp.socket"
+#
+#vagrant ssh -c "sudo systemctl enable docker-tcp.socket"
+#vagrant ssh -c "sudo systemctl stop docker"
+#vagrant ssh -c "sudo systemctl start docker-tcp.socket"
+#vagrant ssh -c "sudo systemctl start docker"
 
-vagrant ssh -c "sudo systemctl enable docker-tcp.socket"
-vagrant ssh -c "sudo systemctl stop docker"
-vagrant ssh -c "sudo systemctl start docker-tcp.socket"
-vagrant ssh -c "sudo systemctl start docker"
-
-cd ..
-DOCKER_HOST=tcp://$vagrant_ext_ip:2375
-sed 's/.*DOCKER_HOST.*//g' ~/.bash_profile > ~/.bash_profile
-echo export DOCKER_HOST=$DOCKER_HOST >> ~/.bash_profile
-. ~/.bash_profile
+#cd ..
+#DOCKER_HOST=tcp://$vagrant_ext_ip:2375
+#sed 's/.*DOCKER_HOST.*//g' ~/.bash_profile > ~/.bash_profile
+#echo export DOCKER_HOST=$DOCKER_HOST >> ~/.bash_profile
+#. ~/.bash_profile
 
 #printf "${LBLUE}Setting up docker local registry${NC}\n"
 mkdir registry
