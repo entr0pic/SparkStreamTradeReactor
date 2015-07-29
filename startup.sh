@@ -11,6 +11,4 @@ rm -R Hadoop/data/datanode2/*
 rm -R Hadoop/data/namenode/*
 sh reformat_hdfs.sh
 docker-compose up -d
-open http://`docker-machine ip dev4g`:50070
-open http://`docker-machine ip dev4g`:8888
-open http://`docker-machine ip dev4g`:9000
+sh open_web.sh

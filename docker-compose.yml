@@ -164,18 +164,18 @@ tradegen:
   volumes:
     - TradeGenerator:/shared
 
-tradecon:
-  image: localhost:5000/tradegenerator
-  hostname: tradegen
-  mem_limit: 200000000
-  links:
-    - kafka
-    - master
-    - tradegen
-  environment:
-    KAFKA: kafka
-    KAFKA_PORT: 9092
-    KAFKA_TOPIC: trades
-  command: bash -c "sleep 10 && node TradeConsumer.js"
-  volumes:
-    - TradeGenerator:/shared
+#tradecon:
+#  image: localhost:5000/tradegenerator
+#  hostname: tradegen
+#  mem_limit: 200000000
+#  links:
+#    - kafka
+#    - master
+#    - tradegen
+#  environment:
+#    KAFKA: kafka
+#    KAFKA_PORT: 9092
+#    KAFKA_TOPIC: trades
+#  command: bash -c "sleep 10 && node TradeConsumer.js"
+#  volumes:
+#    - TradeGenerator:/shared
