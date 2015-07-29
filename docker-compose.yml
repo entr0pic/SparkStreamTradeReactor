@@ -1,3 +1,35 @@
+namenode:
+  image: localhost:5000/hadoop
+  hostname: namenode
+  volumes:
+    - Hadoop/data/namenode:/shared
+  ports:
+    - "8020:8020"
+    - "50070:50070"
+  command: hdfs namenode
+
+datanode1:
+  image: localhost:5000/hadoop
+  hostname: datanode1
+  volumes:
+      - Hadoop/data/datanode1:/shared
+  links:
+      - namenode
+  ports:
+      - "5001:50075"
+  command: hdfs datanode
+
+datanode2:
+  image: localhost:5000/hadoop
+  hostname: datanode2
+  volumes:
+      - Hadoop/data/datanode2:/shared
+  links:
+      - namenode
+  ports:
+      - "5002:50075"
+  command: hdfs datanode
+
 kafka:
   image: localhost:5000/kafka
   hostname: kafka
@@ -14,20 +46,8 @@ kafka:
   ports:
     - 2181:2181
     - 9092:9092
-  volumes:
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Kafka/data:/tmp
-
-tradegen:
-  image: localhost:5000/tradegenerator
-  hostname: tradegen
-  mem_limit: 200000000
-  links:
-    - kafka
-  environment:
-    KAFKA: kafka
-  command: node TradeGenerator.js
-  volumes:
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/TradeGenerator:/shared
+#  volumes:
+#    - Kafka/data:/tmp
 
 master:
   image: localhost:5000/spark
@@ -36,6 +56,7 @@ master:
   hostname: master
   links:
     - namenode
+    - kafka
   expose:
     - 7001
     - 7002
@@ -54,6 +75,8 @@ master:
     - 7077:7077
     - 8080:8080
     - 50071:50070
+  volumes:
+    - Spark/jars:/jars
 
 worker1:
   image: localhost:5000/spark
@@ -78,40 +101,19 @@ worker1:
   ports:
     - 8081:8081
   volumes:
-    - $HOME/docker_files:/zeppelin/data
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
+    - Spark/jars:/jars
 
-namenode:
-  image: localhost:5000/hadoop
-  hostname: namenode
-  volumes:
-    - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
-  ports:
-    - "8020:8020"
-    - "50070:50070"
-  command: hdfs namenode
-
-datanode1:
-  image: localhost:5000/hadoop
-  hostname: datanode1
-  volumes:
-      - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
+sumbitter:
+  image: localhost:5000/spark
+  mem_limit: 1200000000
+  command: bash /base_files/trade-stream.sh
+  hostname: sumbitter
   links:
-      - namenode
-  ports:
-      - "5001:50075"
-  command: hdfs datanode
-
-datanode2:
-  image: localhost:5000/hadoop
-  hostname: datanode2
+    - master
+    - namenode
+    - kafka
   volumes:
-      - ~/Working/HadoopHackathon/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
-  links:
-      - namenode
-  ports:
-      - "5002:50075"
-  command: hdfs datanode
+    - Spark/jars:/jars
 
 cadvisor:
   image: google/cadvisor:latest
@@ -123,6 +125,7 @@ cadvisor:
   ports:
     - 8888:8080
 
+
 dockerui:
   image: dockerui/dockerui
   hostname: dockerui
@@ -130,3 +133,16 @@ dockerui:
     - /var/run/docker.sock:/var/run/docker.sock
   ports:
     - 9000:9000
+
+tradegen:
+  image: localhost:5000/tradegenerator
+  hostname: tradegen
+  mem_limit: 200000000
+  links:
+    - kafka
+    - master
+  environment:
+    KAFKA: kafka
+  command: node TradeGenerator.js
+  volumes:
+    - TradeGenerator:/shared

@@ -10,7 +10,7 @@ ENV SPARK_HOME /usr/spark-$SPARK_PACKAGE
 ENV PATH $PATH:$SPARK_HOME/bin
 RUN /base_files/get_spark.sh
 
-COPY ./jars /jars
+#COPY ./jars /jars
 
 CMD /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master
 

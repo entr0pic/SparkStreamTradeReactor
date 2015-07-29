@@ -1,11 +1,14 @@
 /SparkSteamingFromKafka/project/target/streams/compile/managedClasspath/$global/streams/export
 /SparkSteamingFromKafka/target/
 /registry
-/Kafka/data
+/Kafka/data/hsperfdata_root
+/Kafka/data/kafka-logs
 /Spark/spark-1.4.0-bin-hadoop2.6.tgz
 /Spark/jars
 /coreos-vagrant/Vagrantfile.bk
-/Hadoop/data
+/Hadoop/data/namenode/dfs
+/Hadoop/data/datanode1/dfs
+/Hadoop/data/datanode2/dfs
 /image_backups
 /image_backup
 /Hadoop/data/namenode/dfs/namenode/current/VERSION
