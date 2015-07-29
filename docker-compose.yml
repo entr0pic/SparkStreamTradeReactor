@@ -115,6 +115,18 @@ sumbitter:
   volumes:
     - Spark/jars:/jars
 
+#sumbitter2:
+#  image: localhost:5000/spark
+#  mem_limit: 1200000000
+#  command: /usr/spark/bin/spark-submit --master spark://master:7077 /jars/JAR_NAME.jar
+#  hostname: sumbitter
+#  links:
+#    - master
+#    - namenode
+#    - kafka
+#  volumes:
+#    - Spark/jars:/jars
+
 cadvisor:
   image: google/cadvisor:latest
   hostname: cadvisor

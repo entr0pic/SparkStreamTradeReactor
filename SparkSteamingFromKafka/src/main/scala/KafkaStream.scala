@@ -20,7 +20,9 @@ object KafkaStream extends Logging{
     val kafkaStream = KafkaUtils.createStream(ssc, brokers, "trade-generator", Map(topic -> 1))
     val trades = kafkaStream.map(_._2)
 
-    val words = trades.flatMap(_.split("\""))
+    val words = trades.flatMap(_.split(","))
+    words.print()
+    println("TEST")
     val wordCounts = words.map(x => (x, 1L))
       .reduceByKeyAndWindow(_ + _, _ - _, Minutes(1), Seconds(10), 2)
     wordCounts.print()
