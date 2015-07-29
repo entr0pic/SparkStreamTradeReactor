@@ -179,3 +179,23 @@ tradegen:
 #  command: bash -c "sleep 10 && node TradeConsumer.js"
 #  volumes:
 #    - TradeGenerator:/shared
+
+zeppelin:
+  image: localhost:5000/zeppelin
+  hostname: zeppelin
+  environment:
+    ZEPPELIN_PORT: 8090
+    ZEPPELIN_JAVA_OPTS: "-Dspark.driver.port=5432"
+    MASTER: spark://master:7077
+    ZEPPELIN_NOTEBOOK_DIR: /zeppelin/data/notebooks
+  links:
+    - master
+    - namenode
+    - kafka
+  expose:
+    - 5432
+  ports:
+    - 8090:8090
+    - 8091:8091
+  volumes:
+    - Zeppelin/data:/zeppelin/data

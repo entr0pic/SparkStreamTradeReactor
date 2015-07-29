@@ -1,14 +1,12 @@
 Spark Trade Streaming
 ============
-##Dependencies
-- [VMWare AppCatalyst](https://communities.vmware.com/community/vmtn/devops/vmware-appcatalyst) is required prior to running the install scripts.
 
 ##Instructions
 
 - Clone into a directory either under /Users/username or /Working (others are possible but you must edit the vagrantfile to add them as shared folders)
-- Run ```sh one_time_install.sh```
+- Run ```./one_time_install.sh```
 - This script will provide instructions along the way. (Beware will be downloading a few hundred mb)
-- Recommended to edit your hosts file ```sudo vi /etc/hosts``` and add the vagrant IP addresss provided by the script using the name "vagrant"
+- Recommended to edit your hosts file ```sudo vi /etc/hosts``` and add the VM IP addresss provided by the script using the name "vagrant"
 
 
 ##Usage
