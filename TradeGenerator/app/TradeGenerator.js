@@ -5,6 +5,7 @@ var tradesPerSecond = [0,20];
 var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
+var topicName = process.env.KAFKA_TOPIC || "trades";
 
 var mapCSVtoJSON = function(csvString) {
   var trimQuotes = function(input) {
@@ -146,10 +147,10 @@ producer = new Producer(client);
 //        { topic: 'new-trade', messages: 'hi' },
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
-producer.createTopics(['trade-stream'], true, function (err, data) {});
+producer.createTopics([topicName], true, function (err, data) {});
 producer.on('ready', function () {
     setInterval(function(){
-      payloads = [{topic:'trade-stream',messages: generateTradePairs(getRandomInt(tradesPerSecond)).map(JSON.stringify)}];
+      payloads = [{topic:topicName,messages: generateTradePairs(getRandomInt(tradesPerSecond)).map(JSON.stringify)}];
       producer.send(payloads, function (err, data) {
         console.log(err||data);
       });

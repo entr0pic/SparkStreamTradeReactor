@@ -71,6 +71,8 @@ object DirectKafkaWordCount {
 
     val Array(brokers, topics) = args
 
+    println(brokers)
+    println(topics)
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount")
     val ssc = new StreamingContext(sparkConf, Seconds(2))

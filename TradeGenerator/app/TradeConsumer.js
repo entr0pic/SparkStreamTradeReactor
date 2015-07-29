@@ -1,11 +1,12 @@
 var kafkaLocation = process.env.KAFKA || 'vagrant';
+var topicName = process.env.KAFKA_TOPIC || "trades";
 var kafka = require('kafka-node'),
     Consumer = kafka.Consumer,
     client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
     consumer = new Consumer(
         client,
         [
-            { topic: 'trade-stream'}
+            { topic: topicName}
         ],
         {
             autoCommit: false

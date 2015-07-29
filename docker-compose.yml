@@ -103,11 +103,14 @@ worker1:
   volumes:
     - Spark/jars:/jars
 
-sumbitter:
+submitter:
   image: localhost:5000/spark
   mem_limit: 1200000000
   command: bash /base_files/trade-stream.sh
   hostname: sumbitter
+  environment:
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
   links:
     - master
     - namenode
@@ -155,6 +158,8 @@ tradegen:
     - master
   environment:
     KAFKA: kafka
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
   command: node TradeGenerator.js
   volumes:
     - TradeGenerator:/shared
@@ -169,6 +174,8 @@ tradecon:
     - tradegen
   environment:
     KAFKA: kafka
-  command: node TradeConsumer.js
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
+  command: bash -c "sleep 10 && node TradeConsumer.js"
   volumes:
     - TradeGenerator:/shared
