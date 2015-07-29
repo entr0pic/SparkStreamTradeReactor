@@ -16,6 +16,4 @@ docker build -t localhost:5000/spark Spark/.
 docker build -t localhost:5000/tradegenerator TradeGenerator/.
 #docker push localhost:5000/tradegenerator
 
-docker-compose up -d
-open http://`docker-machine ip dev4g`:8888
-open http://`docker-machine ip dev4g`:9000
+
