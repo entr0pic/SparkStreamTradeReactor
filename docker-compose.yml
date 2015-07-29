@@ -84,7 +84,7 @@ worker1:
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
-    SPARK_WORKER_CORES: 2
+    SPARK_WORKER_CORES: 4
     SPARK_WORKER_MEMORY: 1g
     SPARK_WORKER_PORT: 8881
     SPARK_WORKER_WEBUI_PORT: 8081
@@ -106,7 +106,8 @@ worker1:
 submitter:
   image: localhost:5000/spark
   mem_limit: 1200000000
-  command: bash /base_files/trade-stream.sh
+#  command: bash /base_files/trade-stream.sh
+  command: bash -c "/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 2 /jars/tradeStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC"
   hostname: sumbitter
   environment:
     KAFKA_PORT: 9092
