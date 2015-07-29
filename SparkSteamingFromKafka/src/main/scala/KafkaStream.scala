@@ -3,6 +3,7 @@ import kafka.serializer.StringDecoder
 import org.apache.spark._
 import org.apache.spark.streaming._
 import org.apache.spark.streaming.kafka._
+import org.apache.spark.sql._
 import org.apache.spark.Logging
 
 //import org.apache.log4j.{Level, Logger}
@@ -75,19 +76,35 @@ object DirectKafkaWordCount {
     println(topics)
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount")
+    //val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sparkConf, Seconds(2))
+    //val sqlContext = new SQLContext(sc)
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, topicsSet)
+    val path = "hdfs://namenode:8020/trade/store.parquet"
 
     // Get the lines, split them into words, count the words and print
-    val lines = messages.map(_._2)
-    val words = lines.flatMap(_.split(","))
-    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
-    wordCounts.print()
+    val trades = messages.map(_._2)
+
+    trades.foreachRDD{rdd =>
+      if (rdd.toLocalIterator.nonEmpty) {
+        val sqlContext = new SQLContext(rdd.sparkContext)
+        //val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
+        import sqlContext.implicits._
+        // Convert your data to a DataFrame, depends on the structure of your data
+        //sqlContext.read.format("json").load("examples/src/main/resources/people.json")
+        val df = sqlContext.jsonRDD(rdd).toDF
+        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+      }
+    }
+    trades.print
+//    val words = lines.flatMap(_.split(","))
+//    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
+//    wordCounts.print()
 
     // Start the computation
     ssc.start()
