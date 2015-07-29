@@ -158,3 +158,17 @@ tradegen:
   command: node TradeGenerator.js
   volumes:
     - TradeGenerator:/shared
+
+tradecon:
+  image: localhost:5000/tradegenerator
+  hostname: tradegen
+  mem_limit: 200000000
+  links:
+    - kafka
+    - master
+    - tradegen
+  environment:
+    KAFKA: kafka
+  command: node TradeConsumer.js
+  volumes:
+    - TradeGenerator:/shared
