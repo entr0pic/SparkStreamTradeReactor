@@ -13,32 +13,29 @@ Spark Trade Streaming
 
 ##Usage
 
-Start a cluster (includes nodes for Kafka, Zookeeper, Spark and node.js):
+Start/Restart a VM with a cluster (includes nodes for Kafka, Zookeeper, Spark and node.js), this includes building packaged jars using SBT:
 
 ```shell
-docker-compose up -d
+./startup.sh
 ```
 
-Destroy a cluster:
+Stop the VM:
 
 ```shell
-docker-compose kill
+./shutdown.sh
 ```
 
+Restart the VM (usefull if you lose external internet access from the VM):
+
+```shell
+./restart.sh
+```
 ##Kafka Stream
 
 Not currently working properly.
 
-To build:
+To build (seperated from startup script):
 
 ```shell
 cd SparkStreamingFromKafka && sbt package && sbt assembly
-```
-
-To run:
-
-```shell
-docker-compose up -d #start main containers
-cd SparkStreamingFromKafka
-docker run -it -v `pwd`:`pwd` -e "projectDir=`pwd`" --link sparkstreamtradereactor_master_1:master --link sparkstreamtradereactor_kafka_1:kafka localhost:5000/spark bash -c "base_files/trade-stream.sh"
 ```
