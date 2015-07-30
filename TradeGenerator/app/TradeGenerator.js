@@ -86,6 +86,12 @@ var getRandomPrice = function(symbol) {
 
 var generateTradePairs = function(count, startDate) {
   if (!startDate) startDate = new Date();
+    var GenerateIdFromStr = function (str) {
+        return [].concat("asdf".split("")).map(function (ch){
+            var n = ch.charCodeAt(0);
+            return (n<10?"0":"")+(n<100?"0":"")+n.toString();
+        }).join("");
+    };
   var trades = [];
   for (var i = 0; i<count; i++) {
     startDate.setMilliseconds(startDate.getMilliseconds() + Math.random() * 1000)
@@ -97,15 +103,23 @@ var generateTradePairs = function(count, startDate) {
     var side = Math.random()>0.5;
     var price = getRandomPrice(symbol[0])||Math.random()*10;
     var volume = Math.ceil(Math.random()*(symbol[0].AverageDailyVolume||1000));
+      
+      var party_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
+      var counterparty_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
+      var currency_id = GenerateIdFromStr(symbol[0].Currency);
+    
     trades = trades.concat([{
       trade_date: dateTime[0],
       trade_time: startDate.toISOString(),
       party: bank[0].swift,
+      party_id: party_id,
       counterparty: bank[1].swift,
+      counterparty_id: counterparty_id,
       ccp: ccp[0].BICCode,
       exchange: symbol[0].Exchange,
       symbol: symbol[0].Symbol,
       currency: symbol[0].Currency,
+        currency_id : currency_id,
       side: side?'B':'S',
       type: symbol[0].Type,
       category: symbol[0].Category,
@@ -116,11 +130,14 @@ var generateTradePairs = function(count, startDate) {
       trade_date: dateTime[0],
       trade_time: startDate.toISOString(),
       party: banks[1].swift,
+      party_id: party_id,
       counterparty: banks[0].swift,
+      counterparty_id: counterparty_id,
       ccp: ccp[0].BICCode,
       exchange: symbol[0].Exchange,
       symbol: symbol[0].Symbol,
       currency: symbol[0].Currency,
+        currency_id : currency_id,
       side: side?'S':'B',
       type: symbol[0].Type,
       category: symbol[0].Category,
