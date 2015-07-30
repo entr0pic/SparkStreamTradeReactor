@@ -24,6 +24,7 @@ ENV ZEPPELIN_PORT         8080
 
 RUN git clone https://github.com/apache/incubator-zeppelin.git $ZEPPELIN_HOME
 COPY ./install.sh $ZEPPELIN_HOME/install.sh
+COPY ./.m2 /root/.m2
 
 WORKDIR $ZEPPELIN_HOME
 
@@ -37,6 +38,7 @@ RUN cat > $ZEPPELIN_HOME/conf/zeppelin-env.sh <<CONF
 
 RUN rm -rf /root/.m2 \
   && rm -rf /root/.npm
+
 
 ENV ZEPPELIN_MEM "-Xmx512m"
 ENV ZEPPELIN_JAVA_OPTS "-Dspark.home=/usr/spark"
