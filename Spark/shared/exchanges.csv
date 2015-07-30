@@ -1,0 +1,60 @@
+Country,Exchange,Suffix,Open,Close,Offset
+United States of America,American Stock Exchange,,9.5,16,-4
+United States of America,BATS Exchange,,9.5,16,-4
+United States of America,Chicago Board of Trade,.CBT,9.5,16,-6
+United States of America,Chicago Mercantile Exchange,.CME,9.5,16,-6
+United States of America,Dow Jones Indexes,,9.5,16,-4
+United States of America,NASDAQ Stock Exchange,,9.5,16,-4
+United States of America,New York Board of Trade,.NYB,9.5,16,-4
+United States of America,New York Commodities Exchange,.CMX,9.5,16,-4
+United States of America,New York Mercantile Exchange,.NYM,9.5,16,-4
+United States of America,New York Stock Exchange,,9.5,16,-4
+United States of America,OTC Bulletin Board Market,.OB,9.5,16,-4
+United States of America,Pink Sheets,.PK,9.5,16,-4
+United States of America,S & P Indices,,9.5,16,-4
+Argentina,Buenos Aires Stock Exchange,.BA,9.5,16.5,-3
+Austria,Vienna Stock Exchange,.VI,9,20,2
+Australia,Australian Stock Exchange,.AX,10,16,10
+Brazil,BOVESPA - Sao Paolo Stock Exchange,.SA,9.5,16.5,-3
+Canada,Toronto Stock Exchange,.TO,9.5,16.5,-4
+Canada,TSX Venture Exchange,.V,9.5,16.5,-4
+Chile,Santiago Stock Exchange,.SN,9.5,16.5,-3
+China,Shanghai Stock Exchange,.SS,9.5,16.5,8
+China,Shenzhen Stock Exchange,.SZ,9.5,16.5,8
+Denmark,Copenhagen Stock Exchange,.CO,9.5,16.5,2
+France,Euronext,.NX,9.5,16.5,2
+France,Paris Stock Exchange,.PA,9.5,16.5,2
+Germany,Berlin Stock Exchange,.BE,9,20,2
+Germany,Bremen Stock Exchange,.BM,9,20,2
+Germany,Dusseldorf Stock Exchange,.DU,9,20,2
+Germany,Frankfurt Stock Exchange,.F,9,20,2
+Germany,Hamburg Stock Exchange,.HM,9,20,2
+Germany,Hanover Stock Exchange,.HA,9,20,2
+Germany,Munich Stock Exchange,.MU,9,20,2
+Germany,Stuttgart Stock Exchange,.SG,9,20,2
+Germany,XETRA Stock Exchange,.DE,9,20,2
+Hong Kong,Hong Kong Stock Exchange,.HK,9.5,16,8
+India,Bombay Stock Exchange,.BO,9.5,16.5,7
+India,National Stock Exchange of India,.NS,9.5,16.5,7
+Indonesia,Jakarta Stock Exchange,.JK,9.5,16.5,8
+Israel,Tel Aviv Stock Exchange,.TA,9.5,16.5,3
+Italy,Milan Stock Exchange,.MI,9.5,16.5,2
+Japan,Nikkei Indices,,9.5,16.5,10
+Mexico,Mexico Stock Exchange,.MX,9.5,16.5,-5
+Netherlands,Amsterdam Stock Exchange,.AS,9.5,16.5,2
+New Zealand,New Zealand Stock Exchange,.NZ,9.5,16.5,12
+Norway,Oslo Stock Exchange,.OL,9.5,16.5,2
+Singapore,Singapore Stock Exchange,.SI,9.5,16.5,8
+South Korea,Korea Stock Exchange,.KS,9.5,16.5,9
+South Korea,KOSDAQ,.KQ,9.5,16.5,9
+Spain,Barcelona Stock Exchange,.BC,9.5,16.5,2
+Spain,Bilbao Stock Exchange,.BI,9.5,16.5,2
+Spain,Madrid Fixed Income Market,.MF,9.5,16.5,2
+Spain,Madrid SE C.A.T.S.,.MC,9.5,16.5,2
+Spain,Madrid Stock Exchange,.MA,9.5,16.5,2
+Sweden,Stockholm Stock Exchange,.ST,9.5,16.5,2
+Switzerland,Swiss Exchange,.SW,9.5,16.5,2
+Taiwan,Taiwan OTC Exchange,.TWO,9.5,16.5,8
+Taiwan,Taiwan Stock Exchange,.TW,9.5,16.5,8
+United Kingdom,FTSE Indices,,8,16.5,1
+United Kingdom,London Stock Exchange,.L,8,16.5,1

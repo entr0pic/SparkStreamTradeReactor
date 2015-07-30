@@ -1,7 +1,7 @@
 {
   "paragraphs": [
     {
-      "text": "val df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/store.parquet\")\ndf.registerTempTable(\"trades\")",
+      "text": "val df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/store.parquet\")\ndf.registerTempTable(\"trades\")\nval df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/ref/banks.parquet\")\ndf.registerTempTable(\"banks\")\nval df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/ref/ccps.parquet\")\ndf.registerTempTable(\"ccps\")\nval df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/ref/exchanges.parquet\")\ndf.registerTempTable(\"exchanges\")\nval df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/ref/symbols.parquet\")\ndf.registerTempTable(\"symbols\")",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -22,14 +22,14 @@
       "jobName": "paragraph_1438181905863_891381589",
       "id": "20150729-145825_677113928",
       "result": {
-        "code": "SUCCESS",
+        "code": "ERROR",
         "type": "TEXT",
-        "msg": "df: org.apache.spark.sql.DataFrame \u003d [category: string, ccp: string, counterparty: string, currency: string, exchange: string, party: string, price: string, side: string, symbol: string, trade_date: string, trade_time: string, type: string, unit: string, volume: bigint]\n"
+        "msg": "java.io.IOException: Could not read footer: java.lang.RuntimeException: hdfs://namenode:8020/trade/store.parquet/_metadata is not a Parquet file. expected magic number at tail [80, 65, 82, 49] but found [53, 58, 53, 52]\n\tat parquet.hadoop.ParquetFileReader.readAllFootersInParallel(ParquetFileReader.java:238)\n\tat org.apache.spark.sql.parquet.ParquetRelation2$MetadataCache.refresh(newParquet.scala:369)\n\tat org.apache.spark.sql.parquet.ParquetRelation2.org$apache$spark$sql$parquet$ParquetRelation2$$metadataCache$lzycompute(newParquet.scala:154)\n\tat org.apache.spark.sql.parquet.ParquetRelation2.org$apache$spark$sql$parquet$ParquetRelation2$$metadataCache(newParquet.scala:152)\n\tat org.apache.spark.sql.parquet.ParquetRelation2$$anonfun$dataSchema$1.apply(newParquet.scala:193)\n\tat org.apache.spark.sql.parquet.ParquetRelation2$$anonfun$dataSchema$1.apply(newParquet.scala:193)\n\tat scala.Option.getOrElse(Option.scala:120)\n\tat org.apache.spark.sql.parquet.ParquetRelation2.dataSchema(newParquet.scala:193)\n\tat org.apache.spark.sql.sources.HadoopFsRelation.schema$lzycompute(interfaces.scala:505)\n\tat org.apache.spark.sql.sources.HadoopFsRelation.schema(interfaces.scala:504)\n\tat org.apache.spark.sql.sources.LogicalRelation.\u003cinit\u003e(LogicalRelation.scala:30)\n\tat org.apache.spark.sql.SQLContext.baseRelationToDataFrame(SQLContext.scala:438)\n\tat org.apache.spark.sql.DataFrameReader.parquet(DataFrameReader.scala:264)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:55)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:60)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:62)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:64)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:66)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:68)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:70)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:72)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:74)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:76)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:78)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:80)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:82)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:84)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:86)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:88)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:90)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:92)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:94)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:96)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:98)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:100)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:102)\n\tat $iwC$$iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:104)\n\tat $iwC$$iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:106)\n\tat $iwC$$iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:108)\n\tat $iwC$$iwC.\u003cinit\u003e(\u003cconsole\u003e:110)\n\tat $iwC.\u003cinit\u003e(\u003cconsole\u003e:112)\n\tat \u003cinit\u003e(\u003cconsole\u003e:114)\n\tat .\u003cinit\u003e(\u003cconsole\u003e:118)\n\tat .\u003cclinit\u003e(\u003cconsole\u003e)\n\tat .\u003cinit\u003e(\u003cconsole\u003e:7)\n\tat .\u003cclinit\u003e(\u003cconsole\u003e)\n\tat $print(\u003cconsole\u003e)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)\n\tat sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)\n\tat sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.apache.spark.repl.SparkIMain$ReadEvalPrint.call(SparkIMain.scala:1065)\n\tat org.apache.spark.repl.SparkIMain$Request.loadAndRun(SparkIMain.scala:1338)\n\tat org.apache.spark.repl.SparkIMain.loadAndRunReq$1(SparkIMain.scala:840)\n\tat org.apache.spark.repl.SparkIMain.interpret(SparkIMain.scala:871)\n\tat org.apache.spark.repl.SparkIMain.interpret(SparkIMain.scala:819)\n\tat org.apache.zeppelin.spark.SparkInterpreter.interpretInput(SparkInterpreter.java:610)\n\tat org.apache.zeppelin.spark.SparkInterpreter.interpret(SparkInterpreter.java:586)\n\tat org.apache.zeppelin.spark.SparkInterpreter.interpret(SparkInterpreter.java:579)\n\tat org.apache.zeppelin.interpreter.ClassloaderInterpreter.interpret(ClassloaderInterpreter.java:57)\n\tat org.apache.zeppelin.interpreter.LazyOpenInterpreter.interpret(LazyOpenInterpreter.java:93)\n\tat org.apache.zeppelin.interpreter.remote.RemoteInterpreterServer$InterpretJob.jobRun(RemoteInterpreterServer.java:276)\n\tat org.apache.zeppelin.scheduler.Job.run(Job.java:170)\n\tat org.apache.zeppelin.scheduler.FIFOScheduler$1.run(FIFOScheduler.java:118)\n\tat java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:471)\n\tat java.util.concurrent.FutureTask.run(FutureTask.java:262)\n\tat java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$201(ScheduledThreadPoolExecutor.java:178)\n\tat java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:292)\n\tat java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)\n\tat java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)\n\tat java.lang.Thread.run(Thread.java:745)\nCaused by: java.lang.RuntimeException: hdfs://namenode:8020/trade/store.parquet/_metadata is not a Parquet file. expected magic number at tail [80, 65, 82, 49] but found [53, 58, 53, 52]\n\tat parquet.hadoop.ParquetFileReader.readFooter(ParquetFileReader.java:418)\n\tat parquet.hadoop.ParquetFileReader$2.call(ParquetFileReader.java:228)\n\tat parquet.hadoop.ParquetFileReader$2.call(ParquetFileReader.java:224)\n\tat java.util.concurrent.FutureTask.run(FutureTask.java:262)\n\t... 3 more\n\n"
       },
       "dateCreated": "Jul 29, 2015 2:58:25 PM",
-      "dateStarted": "Jul 30, 2015 3:05:24 AM",
-      "dateFinished": "Jul 30, 2015 3:07:13 AM",
-      "status": "FINISHED",
+      "dateStarted": "Jul 30, 2015 6:30:54 AM",
+      "dateFinished": "Jul 30, 2015 6:31:18 AM",
+      "status": "ERROR",
       "progressUpdateIntervalMs": 500
     },
     {
@@ -286,15 +286,15 @@
   "name": "Test Trades",
   "id": "2AVD697CF",
   "angularObjects": {
-    "2AX8NHSJC": [],
-    "2AW917Y5E": [],
-    "2AW8VDRXJ": [],
-    "2AV7PREVH": [],
-    "2AVZU3X5A": [],
-    "2AVRC3CUS": [],
-    "2ATQGZU4C": [],
-    "2AUR2728K": [],
-    "2ATJW7XE6": []
+    "2ATZMQSZJ": [],
+    "2AUW36TN2": [],
+    "2AX8NXZ1M": [],
+    "2AV8VD5R8": [],
+    "2ATYTV1F3": [],
+    "2ATNFMH4A": [],
+    "2AX8DP9TT": [],
+    "2AVS9ZSWY": [],
+    "2AUKJ1FUB": []
   },
   "config": {
     "looknfeel": "default"
