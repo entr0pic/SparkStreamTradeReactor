@@ -56,11 +56,11 @@ import org.apache.spark.Logging
 
 
 
-object DirectKafkaWordCount {
+object TradeStreamReader {
   def main(args: Array[String]) {
     if (args.length < 2) {
       System.err.println(s"""
-        |Usage: DirectKafkaWordCount <brokers> <topics>
+        |Usage: TradeStreamReader <brokers> <topics>
         |  <brokers> is a list of one or more Kafka brokers
         |  <topics> is a list of one or more kafka topics to consume from
         |
@@ -70,12 +70,12 @@ object DirectKafkaWordCount {
 
     StreamingExamples.setStreamingLogLevels()
 
-    val Array(brokers, topics) = args
+    val Array(brokers, topics, path) = args
 
     println(brokers)
     println(topics)
     // Create context with 2 second batch interval
-    val sparkConf = new SparkConf().setAppName("DirectKafkaWordCount")
+    val sparkConf = new SparkConf().setAppName("TradeStreamReader")
     //val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sparkConf, Seconds(2))
     //val sqlContext = new SQLContext(sc)
@@ -85,7 +85,6 @@ object DirectKafkaWordCount {
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, topicsSet)
-    val path = "hdfs://namenode:8020/trade/store.parquet"
 
     // Get the lines, split them into words, count the words and print
     val trades = messages.map(_._2)
@@ -93,15 +92,13 @@ object DirectKafkaWordCount {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
         val sqlContext = new SQLContext(rdd.sparkContext)
-        //val sqlContext = SQLContextSingleton.getInstance(rdd.sparkContext)
         import sqlContext.implicits._
         // Convert your data to a DataFrame, depends on the structure of your data
-        //sqlContext.read.format("json").load("examples/src/main/resources/people.json")
         val df = sqlContext.jsonRDD(rdd).toDF
         df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
       }
     }
-    trades.print
+    trades.count().print
 //    val words = lines.flatMap(_.split(","))
 //    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
 //    wordCounts.print()

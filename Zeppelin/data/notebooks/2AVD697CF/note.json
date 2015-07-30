@@ -1,68 +1,6 @@
 {
   "paragraphs": [
     {
-      "text": "sc.parallelize(1 to 5).count",
-      "config": {
-        "colWidth": 12.0,
-        "graph": {
-          "mode": "table",
-          "height": 300.0,
-          "optionOpen": false,
-          "keys": [],
-          "values": [],
-          "groups": [],
-          "scatter": {}
-        }
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "jobName": "paragraph_1438180663470_1995665127",
-      "id": "20150729-143743_34112943",
-      "result": {
-        "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": "res0: Long \u003d 5\n"
-      },
-      "dateCreated": "Jul 29, 2015 2:37:43 PM",
-      "dateStarted": "Jul 29, 2015 3:13:17 PM",
-      "dateFinished": "Jul 29, 2015 3:13:57 PM",
-      "status": "FINISHED",
-      "progressUpdateIntervalMs": 500
-    },
-    {
-      "text": "(1 to 12).map(println)",
-      "config": {
-        "colWidth": 12.0,
-        "graph": {
-          "mode": "table",
-          "height": 300.0,
-          "optionOpen": false,
-          "keys": [],
-          "values": [],
-          "groups": [],
-          "scatter": {}
-        }
-      },
-      "settings": {
-        "params": {},
-        "forms": {}
-      },
-      "jobName": "paragraph_1438180694449_-692944863",
-      "id": "20150729-143814_694259580",
-      "result": {
-        "code": "SUCCESS",
-        "type": "TEXT",
-        "msg": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\nres4: scala.collection.immutable.IndexedSeq[Unit] \u003d Vector((), (), (), (), (), (), (), (), (), (), (), ())\n"
-      },
-      "dateCreated": "Jul 29, 2015 2:38:14 PM",
-      "dateStarted": "Jul 29, 2015 2:59:42 PM",
-      "dateFinished": "Jul 29, 2015 2:59:43 PM",
-      "status": "FINISHED",
-      "progressUpdateIntervalMs": 500
-    },
-    {
       "text": "val df \u003d sqlContext.read.parquet(\"hdfs://namenode:8020/trade/store.parquet\")\ndf.registerTempTable(\"trades\")",
       "config": {
         "colWidth": 12.0,
@@ -74,7 +12,8 @@
           "values": [],
           "groups": [],
           "scatter": {}
-        }
+        },
+        "editorHide": false
       },
       "settings": {
         "params": {},
@@ -88,8 +27,8 @@
         "msg": "df: org.apache.spark.sql.DataFrame \u003d [category: string, ccp: string, counterparty: string, currency: string, exchange: string, party: string, price: string, side: string, symbol: string, trade_date: string, trade_time: string, type: string, unit: string, volume: bigint]\n"
       },
       "dateCreated": "Jul 29, 2015 2:58:25 PM",
-      "dateStarted": "Jul 29, 2015 3:18:28 PM",
-      "dateFinished": "Jul 29, 2015 3:19:02 PM",
+      "dateStarted": "Jul 30, 2015 3:05:24 AM",
+      "dateFinished": "Jul 30, 2015 3:07:13 AM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -101,11 +40,35 @@
           "mode": "table",
           "height": 300.0,
           "optionOpen": false,
-          "keys": [],
-          "values": [],
+          "keys": [
+            {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "ccp",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
           "groups": [],
-          "scatter": {}
-        }
+          "scatter": {
+            "xAxis": {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "ccp",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorHide": false
       },
       "settings": {
         "params": {},
@@ -125,7 +88,136 @@
       "progressUpdateIntervalMs": 500
     },
     {
-      "text": "%sql\nselect category, sum(price*volume) as total_value\nfrom trades \ngroup by category\nhaving sum(price*volume) \u003c\u003e 0",
+      "text": "%sql\nselect category,currency, sum(price*volume) as total_value\nfrom trades \nwhere category is not null and category not in (\u0027\u0027,\u0027Foreign Exchange\u0027)\ngroup by category,currency\nhaving sum(price*volume) \u003c\u003e 0",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "multiBarChart",
+          "height": 458.0,
+          "optionOpen": true,
+          "keys": [
+            {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "category",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "currency",
+              "index": 1.0,
+              "aggr": "sum"
+            },
+            "group": {
+              "name": "total_value",
+              "index": 2.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1438183169525_-991415372",
+      "id": "20150729-151929_1524790287",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "category\tcurrency\ttotal_value\nDiversified Utilities\tUSD\t2645.662581869401\nIndependent Oil \u0026 Gas\tCAD\t171.36\nFarm Products\tGBp\t62480.0\nIndustrial Metals \u0026 Minerals\tAUD\t7311.408102931455\nDiversified Investments\tUSD\t4043.256853921339\nConglomerates\tCAD\t5.96\n"
+      },
+      "dateCreated": "Jul 29, 2015 3:19:29 PM",
+      "dateStarted": "Jul 29, 2015 3:48:59 PM",
+      "dateFinished": "Jul 29, 2015 3:49:54 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect trade_date, substr(trade_time,12,2) as hour, substr(trade_time,15,2) as min,sum(price*volume) as total_value, sum(volume) as volume, avg(price) as avg_price\nfrom trades \ngroup by trade_date, substr(trade_time,12,2), substr(trade_time,15,2)\norder by trade_date, hour, min",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "lineChart",
+          "height": 324.0,
+          "optionOpen": true,
+          "keys": [
+            {
+              "name": "trade_date",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            {
+              "name": "hour",
+              "index": 1.0,
+              "aggr": "sum"
+            },
+            {
+              "name": "min",
+              "index": 2.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "volume",
+              "index": 4.0,
+              "aggr": "sum"
+            },
+            {
+              "name": "avg_price",
+              "index": 5.0,
+              "aggr": "sum"
+            },
+            {
+              "name": "total_value",
+              "index": 3.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "trade_date",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "hour",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1438183314588_-667225291",
+      "id": "20150729-152154_810181892",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "trade_date\thour\tmin\ttotal_value\tvolume\tavg_price\n2015-07-29\t13\t48\t115503.31635097256\t156254496\t4.933267294759086\n2015-07-29\t13\t49\t3668087.948780844\t299253140\t131.5847539401637\n2015-07-29\t13\t50\t-1657146.014924607\t603900248\t-56.62513425543403\n2015-07-29\t14\t36\t34229.67613393292\t64241714\t4.582683678747466\n2015-07-29\t14\t37\t215980.86321090718\t746388764\t82.10883838096977\n2015-07-29\t14\t44\t2463.9310120381415\t100471380\t1.1247120018489658\n2015-07-29\t14\t45\t1766.5497779939324\t20375070\t7.816591938026249\n2015-07-29\t14\t58\t1826330.0978248287\t219763506\t8.126629791997837\n2015-07-29\t14\t59\t3.50462918703662E7\t391071710\t738.2138264409433\n2015-07-29\t15\t00\t0.0\t2452098\tnull\n2015-07-29\t15\t12\t-54037.84167908218\t63371554\t-0.09601520581703125\n2015-07-29\t15\t13\t-125729.11918511894\t388811592\t-208.47889810379795\n2015-07-29\t15\t14\t-6.219700985830277E7\t284559736\t-2880.037341465986\n2015-07-29\t15\t15\t0.0\t8984\tnull\n2015-07-29\t15\t39\t-8519253.461101387\t66237618\t-1709.233805894976\n"
+      },
+      "dateCreated": "Jul 29, 2015 3:21:54 PM",
+      "dateStarted": "Jul 29, 2015 4:49:59 PM",
+      "dateFinished": "Jul 29, 2015 4:51:00 PM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%sql\nselect max(trade_time), sum(volume), count(trade_time)\nfrom trades ",
       "config": {
         "colWidth": 12.0,
         "graph": {
@@ -134,7 +226,7 @@
           "optionOpen": false,
           "keys": [
             {
-              "name": "category",
+              "name": "_c0",
               "index": 0.0,
               "aggr": "sum"
             }
@@ -149,7 +241,7 @@
           "groups": [],
           "scatter": {
             "xAxis": {
-              "name": "category",
+              "name": "_c0",
               "index": 0.0,
               "aggr": "sum"
             },
@@ -165,16 +257,16 @@
         "params": {},
         "forms": {}
       },
-      "jobName": "paragraph_1438183169525_-991415372",
-      "id": "20150729-151929_1524790287",
+      "jobName": "paragraph_1438185183698_-1736809741",
+      "id": "20150729-155303_178901420",
       "result": {
         "code": "SUCCESS",
         "type": "TABLE",
-        "msg": "category\t_c1\nBuilding Materials Wholesale\t0.0\nBusiness Equipment\t0.0\nGas Utilities\t0.0\nFood Wholesale\t0.0\nTextile - Apparel Clothing\t0.0\nRegional - Northeast Banks\t0.0\nElectric Utilities\t0.0\nMarketing Services\t0.0\nManagement Services\t0.0\nHeavy Construction\t0.0\nTrucking\t0.0\nMajor Airlines\t0.0\nBeverages - Soft Drinks\t0.0\nBeverages - Brewers\t0.0\nLife Insurance\t0.0\nWaste Management\t0.0\nTechnical \u0026 System Software\t0.0\nData Storage Devices\t0.0\nInternet Software \u0026 Services\t0.0\nIndustrial Electrical Equipment\t0.0\nCatalog \u0026 Mail Order Houses\t0.0\nPersonal Services\t0.0\nSemiconductor - Broad Line\t0.0\nSporting Goods\t0.0\nScientific \u0026 Technical Instruments\t0.0\nEducation \u0026 Training Services\t0.0\nDiversified Computer Systems\t0.0\nIndependent Oil \u0026 Gas\t171.36\nForeign Utilities\t0.0\nAuto Parts Wholesale\t0.0\nSemiconductor - Specialized\t0.0\nREIT - Retail\t0.0\nOffice Supplies\t0.0\nRailroads\t0.0\nAdvertising Agencies\t0.0\nIndustrial Equipment \u0026 Components\t0.0\nAuto Parts\t0.0\nSavings \u0026 Loans\t0.0\nDrug Manufacturers - Major\t0.0\nPublishing - Newspapers\t0.0\nPrinted Circuit Boards\t0.0\nBroadcasting - TV\t0.0\nSemiconductor - Integrated Circuits\t0.0\nRubber \u0026 Plastics\t0.0\nResorts \u0026 Casinos\t0.0\nResidential Construction\t0.0\nAccident \u0026 Health Insurance\t0.0\nDrug Delivery\t0.0\nHome Health Care\t0.0\nIndustrial Equipment Wholesale\t0.0\nAppliances\t0.0\nInvestment Brokerage - Regional\t0.0\nCleaning Products\t0.0\nREIT - Diversified\t0.0\nBroadcasting - Radio\t0.0\nOil \u0026 Gas Equipment \u0026 Services\t0.0\nPublishing - Books\t0.0\nCredit Services\t0.0\nSecurity \u0026 Protection Services\t0.0\nChemicals - Major Diversified\t0.0\nMoney Center Banks\t0.0\nSilver\t0.0\nDrug Stores\t0.0\nConglomerates\t5.96\nDiversified Communication Services\t0.0\nMedical Instruments \u0026 Supplies\t0.0\nInformation Technology Services\t0.0\nStaffing \u0026 Outsourcing Services\t0.0\nShipping\t0.0\nREIT - Residential\t0.0\nAir Delivery \u0026 Freight Services\t0.0\nClosed-End Fund - Equity\t0.0\nOil \u0026 Gas Refining \u0026 Marketing\t0.0\nBeverages - Wineries \u0026 Distillers\t0.0\nMachine Tools \u0026 Accessories\t0.0\nDiversified Utilities\t2645.662581869401\nPaper \u0026 Paper Products\t0.0\nDrug Manufacturers - Other\t0.0\nAluminum\t0.0\nBusiness Services\t0.0\nMortgage Investment\t0.0\nTelecom Services - Foreign\t0.0\nTelecom Services - Domestic\t0.0\nAgricultural Chemicals\t0.0\nToys \u0026 Games\t0.0\nRegional - Pacific Banks\t0.0\nAuto Manufacturers - Major\t0.0\nWater Utilities\t0.0\nCement\t0.0\nMajor Integrated Oil \u0026 Gas\t0.0\nDrugs - Generic\t0.0\nWireless Communications\t0.0\nPersonal Products\t0.0\nMedical Laboratories \u0026 Research\t0.0\nSpecialty Eateries\t0.0\nSporting Activities\t0.0\nReal Estate Development\t0.0\nInternet Information Providers\t0.0\nTextile - Apparel Footwear \u0026 Accessories\t0.0\nEntertainment - Diversified\t0.0\nFood - Major Diversified\t0.0\nSurety \u0026 Title Insurance\t0.0\nAsset Management\t0.0\nApplication Software\t0.0\nComputer Based Systems\t0.0\nDiversified Machinery\t0.0\nHealth Care Plans\t0.0\nSemiconductor Equipment \u0026 Materials\t0.0\nHome Furnishings \u0026 Fixtures\t0.0\nREIT - Office\t0.0\nForeign Money Center Banks\t0.0\nComputer Peripherals\t0.0\nElectronic Equipment\t0.0\nLong-Term Care Facilities\t0.0\nHousewares \u0026 Accessories\t0.0\nProperty Management\t0.0\nRegional - Southeast Banks\t0.0\nHospitals\t0.0\nGeneral Building Materials\t0.0\nFarm \u0026 Construction Machinery\t0.0\nSpecialty Chemicals\t0.0\nRegional - Southwest  Banks\t0.0\nDepartment Stores\t0.0\nSynthetics\t0.0\nSpecialized Health Services\t0.0\nSemiconductor- Memory Chips\t0.0\nInvestment Brokerage - National\t0.0\nTrucks \u0026 Other Vehicles\t0.0\nGeneral Contractors\t0.0\nRestaurants\t0.0\nRegional - Mid-Atlantic Banks\t0.0\nOil \u0026 Gas Drilling \u0026 Exploration\t0.0\nDairy Products\t0.0\nTechnical Services\t0.0\nRegional - Midwest Banks\t0.0\nInsurance Brokers\t0.0\nCommunication Equipment\t0.0\nFarm Products\t62480.0\nPollution \u0026 Treatment Controls\t0.0\nProcessed \u0026 Packaged Goods\t0.0\nPackaging \u0026 Containers\t0.0\nHealthcare Information Services\t0.0\nCATV Systems\t0.0\nConfectioners\t0.0\nIndustrial Metals \u0026 Minerals\t7311.408102931455\n\t4.078732046840742E7\nGold\t0.0\nCopper\t0.0\nBusiness Software \u0026 Services\t0.0\nResearch Services\t0.0\nDiversified Electronics\t0.0\nREIT - Industrial\t0.0\nMeat Products\t0.0\nNonmetallic Mineral Mining\t0.0\nLodging\t0.0\nDiversified Investments\t4043.256853921339\nAuto Dealerships\t0.0\nGrocery Stores\t0.0\nSteel \u0026 Iron\t0.0\nREIT - Healthcare Facilities\t0.0\nOil \u0026 Gas Pipelines\t0.0\nApparel Stores\t0.0\nMedical Appliances \u0026 Equipment\t0.0\nElectronics Wholesale\t0.0\nRental \u0026 Leasing Services\t0.0\nClosed-End Fund - Debt\t0.0\nMultimedia \u0026 Graphics Software\t0.0\nForeign Exchange\t-2219717.5689284382\nJewelry Stores\t0.0\nCigarettes\t0.0\nBiotechnology\t0.0\nGaming Activities\t0.0\nNetworking \u0026 Communication Devices\t0.0\nMetal Fabrication\t0.0\nProperty \u0026 Casualty Insurance\t0.0\n"
+        "msg": "_c0\t_c1\t_c2\n2015-07-30T02:19:23.305Z\t5836352138\t14550\n"
       },
-      "dateCreated": "Jul 29, 2015 3:19:29 PM",
-      "dateStarted": "Jul 29, 2015 3:21:54 PM",
-      "dateFinished": "Jul 29, 2015 3:22:54 PM",
+      "dateCreated": "Jul 29, 2015 3:53:03 PM",
+      "dateStarted": "Jul 30, 2015 2:32:36 AM",
+      "dateFinished": "Jul 30, 2015 2:34:00 AM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -184,25 +276,28 @@
         "params": {},
         "forms": {}
       },
-      "jobName": "paragraph_1438183314588_-667225291",
-      "id": "20150729-152154_810181892",
-      "dateCreated": "Jul 29, 2015 3:21:54 PM",
+      "jobName": "paragraph_1438224363162_1787273109",
+      "id": "20150730-024603_376857775",
+      "dateCreated": "Jul 30, 2015 2:46:03 AM",
       "status": "READY",
       "progressUpdateIntervalMs": 500
     }
   ],
+  "name": "Test Trades",
   "id": "2AVD697CF",
   "angularObjects": {
-    "2AUN2R6GA": [],
-    "2AUPV12Y2": [],
-    "2AUUFM1CF": [],
-    "2ATGF5QE3": [],
-    "2AX7GXNFD": [],
-    "2AV9DKXUW": [],
-    "2AUFK9T7G": [],
-    "2ATPKNPP7": [],
-    "2AVNY3PUB": []
+    "2AX8NHSJC": [],
+    "2AW917Y5E": [],
+    "2AW8VDRXJ": [],
+    "2AV7PREVH": [],
+    "2AVZU3X5A": [],
+    "2AVRC3CUS": [],
+    "2ATQGZU4C": [],
+    "2AUR2728K": [],
+    "2ATJW7XE6": []
   },
-  "config": {},
+  "config": {
+    "looknfeel": "default"
+  },
   "info": {}
 }
