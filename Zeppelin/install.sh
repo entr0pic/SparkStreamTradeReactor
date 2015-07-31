@@ -1,23 +1,36 @@
 #!/bin/bash
 
+if [ ! -f /build_files/zeppelin.tar.gz ]; then
+  git clone https://github.com/apache/incubator-zeppelin.git $ZEPPELIN_HOME
 
-#curl -sL --retry 3 \
-#  "http://mirrors.ibiblio.org/apache/spark/spark-$SPARK_VERSION/spark-$SPARK_VERSION-bin-hadoop$HADOOP_PROFILE.tgz" \
-#  | gunzip \
-#  | tar x -C /usr/ \
-#  && ln -s /usr/spark-$SPARK_VERSION-bin-hadoop$HADOOP_PROFILE /usr/spark \
-#  && rm -rf /usr/spark/examples \
-#  && rm /usr/spark/lib/spark-examples*.jar
+  # MAVEN
+  export MAVEN_VERSION=3.3.1
+  export MAVEN_HOME=/usr/apache-maven-$MAVEN_VERSION
+  export PATH=$PATH:$MAVEN_HOME/bin
 
-git pull
+  curl -sL http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz \
+    | gunzip \
+    | tar x -C /usr/ \
+    && ln -s $MAVEN_HOME /usr/maven
 
-mvn clean package -DskipTests \
-  -Pspark-$SPARK_PROFILE \
-  -Dspark.version=$SPARK_VERSION \
-  -Phadoop-$HADOOP_PROFILE \
-  -Dhadoop.version=$HADOOP_VERSION
+  git pull
 
-cat > $ZEPPELIN_HOME/conf/zeppelin-env.sh <<CONF
+  mvn clean package -DskipTests \
+    -Pspark-$SPARK_PROFILE \
+    -Dspark.version=$SPARK_VERSION \
+    -Phadoop-$HADOOP_PROFILE \
+    -Dhadoop.version=$HADOOP_VERSION
+
+  rm -rf /root/.m2 \
+  && rm -rf /root/.npm
+else
+   tar -xzvf  /build_files/zeppelin.tar.gz
+fi
+
+
+
+
+
 # There are several ways to configure Zeppelin
 # 1. pass individual --environment variables during docker run
 # 2. assign a volume and change the conf directory i.e.,
@@ -29,7 +42,3 @@ cat > $ZEPPELIN_HOME/conf/zeppelin-env.sh <<CONF
 # See conf/zeppelin-env.sh.template for additional
 # Zeppelin environment variables to set from here.
 #
-
-export ZEPPELIN_MEM="-Xmx512m"
-export ZEPPELIN_JAVA_OPTS="-Dspark.home=/usr/spark"
-CONF
