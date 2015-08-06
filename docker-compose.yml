@@ -33,7 +33,6 @@ datanode2:
 kafka:
   image: localhost:5000/kafka
   hostname: kafka
-  mem_limit: 384000000
   command: bash run.sh
   environment:
 #    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
@@ -51,7 +50,6 @@ kafka:
 
 master:
   image: localhost:5000/spark
-  mem_limit: 1200000000
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
   hostname: master
   links:
@@ -73,7 +71,7 @@ master:
     - 4040:4040
     - 6066:6066
     - 7077:7077
-    - 8080:8080
+    - 8081:8080
     - 50071:50070
   volumes:
     - Spark/jars:/jars
@@ -81,7 +79,6 @@ master:
 
 worker1:
   image: localhost:5000/spark
-  mem_limit: 1200000000
   command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
   hostname: worker1
   environment:
@@ -100,14 +97,13 @@ worker1:
     - 7016
     - 8881
   ports:
-    - 8081:8081
+    - 8082:8081
   volumes:
     - Spark/jars:/jars
     - Spark/shared:/shared/data
 
 submitter:
   image: localhost:5000/spark
-  mem_limit: 1200000000
 #  command: bash /base_files/trade-stream.sh
   command: bash -c "/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 1 /jars/tradeStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC hdfs://namenode:8020/trade/store.parquet"
   hostname: sumbitter
@@ -124,7 +120,6 @@ submitter:
 
 #sumbitter2:
 #  image: localhost:5000/spark
-#  mem_limit: 1200000000
 #  command: /usr/spark/bin/spark-submit --master spark://master:7077 /jars/JAR_NAME.jar
 #  hostname: sumbitter
 #  links:
@@ -156,7 +151,6 @@ dockerui:
 tradegen:
   image: localhost:5000/tradegenerator
   hostname: tradegen
-  mem_limit: 200000000
   links:
     - kafka
     - master
@@ -171,7 +165,6 @@ tradegen:
 #tradecon:
 #  image: localhost:5000/tradegenerator
 #  hostname: tradegen
-#  mem_limit: 200000000
 #  links:
 #    - kafka
 #    - master
