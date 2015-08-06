@@ -1,0 +1,1 @@
+gcloud compute --project "spark-trade-streaming" instances create coreos-main --image https://www.googleapis.com/compute/v1/projects/coreos-cloud/global/images/coreos-alpha-758-1-0-v20150730 --zone asia-east1-a --machine-type n1-highmem-4 --metadata-from-file user-data=cloud-config.yml

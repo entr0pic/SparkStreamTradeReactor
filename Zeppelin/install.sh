@@ -3,6 +3,7 @@
 if [ ! -f /build_files/zeppelin.tar.gz ]; then
   git clone https://github.com/apache/incubator-zeppelin.git $ZEPPELIN_HOME
 
+
   # MAVEN
   export MAVEN_VERSION=3.3.1
   export MAVEN_HOME=/usr/apache-maven-$MAVEN_VERSION
@@ -13,6 +14,7 @@ if [ ! -f /build_files/zeppelin.tar.gz ]; then
     | tar x -C /usr/ \
     && ln -s $MAVEN_HOME /usr/maven
 
+  cd $ZEPPELIN_HOME
   git pull
 
   mvn clean package -DskipTests \
