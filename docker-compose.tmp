@@ -83,7 +83,7 @@ worker1:
   hostname: worker1
   environment:
     SPARK_WORKER_CORES: 4
-    SPARK_WORKER_MEMORY: 1g
+    SPARK_WORKER_MEMORY: 4g
     SPARK_WORKER_PORT: 8881
     SPARK_WORKER_WEBUI_PORT: 8081
   links:
@@ -98,6 +98,31 @@ worker1:
     - 8881
   ports:
     - 8082:8081
+  volumes:
+    - {root}Spark/jars:/jars
+    - {root}Spark/shared:/shared/data
+    
+worker2:
+  image: localhost:5000/spark
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  hostname: worker1
+  environment:
+    SPARK_WORKER_CORES: 4
+    SPARK_WORKER_MEMORY: 4g
+    SPARK_WORKER_PORT: 8881
+    SPARK_WORKER_WEBUI_PORT: 8081
+  links:
+    - master
+    - namenode
+  expose:
+    - 7012
+    - 7013
+    - 7014
+    - 7015
+    - 7016
+    - 8881
+  ports:
+    - 8083:8081
   volumes:
     - {root}Spark/jars:/jars
     - {root}Spark/shared:/shared/data
