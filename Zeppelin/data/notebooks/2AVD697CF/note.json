@@ -94,7 +94,7 @@
         "graph": {
           "mode": "multiBarChart",
           "height": 458.0,
-          "optionOpen": true,
+          "optionOpen": false,
           "keys": [
             {
               "name": "category",
@@ -148,7 +148,7 @@
         "graph": {
           "mode": "lineChart",
           "height": 324.0,
-          "optionOpen": true,
+          "optionOpen": false,
           "keys": [
             {
               "name": "trade_date",
@@ -286,15 +286,16 @@
   "name": "Test Trades",
   "id": "2AVD697CF",
   "angularObjects": {
-    "2AV81VSY2": [],
-    "2AUJZW7MQ": [],
-    "2ATHVEK2A": [],
-    "2AWUB83C8": [],
-    "2AUHKWK6P": [],
-    "2AWSFYU8R": [],
-    "2AWYR7F5J": [],
-    "2AUGJE51W": [],
-    "2AWZAQ5T9": []
+    "2AVF78RHX": [],
+    "2AWQUPMX5": [],
+    "2AWU4ES82": [],
+    "2AUPRPK4P": [],
+    "2AWCPEQWJ": [],
+    "2AY46WSWW": [],
+    "2AUB5D116": [],
+    "2AX2WT43K": [],
+    "2AW8ZC167": [],
+    "2AW6DDK7P": []
   },
   "config": {
     "looknfeel": "default"

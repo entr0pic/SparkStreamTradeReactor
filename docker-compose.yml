@@ -2,7 +2,7 @@ namenode:
   image: localhost:5000/hadoop
   hostname: namenode
   volumes:
-    - Hadoop/data/namenode:/shared
+    - /media/storage/repos/SparkStreamTradeReactor/Hadoop/data/namenode:/shared
   ports:
     - "8020:8020"
     - "50070:50070"
@@ -12,7 +12,7 @@ datanode1:
   image: localhost:5000/hadoop
   hostname: datanode1
   volumes:
-      - Hadoop/data/datanode1:/shared
+      - /media/storage/repos/SparkStreamTradeReactor/Hadoop/data/datanode1:/shared
   links:
       - namenode
   ports:
@@ -23,7 +23,7 @@ datanode2:
   image: localhost:5000/hadoop
   hostname: datanode2
   volumes:
-      - Hadoop/data/datanode2:/shared
+      - /media/storage/repos/SparkStreamTradeReactor/Hadoop/data/datanode2:/shared
   links:
       - namenode
   ports:
@@ -74,8 +74,8 @@ master:
     - 8081:8080
     - 50071:50070
   volumes:
-    - Spark/jars:/jars
-    - Spark/shared:/shared/data
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
 
 worker1:
   image: localhost:5000/spark
@@ -83,7 +83,7 @@ worker1:
   hostname: worker1
   environment:
     SPARK_WORKER_CORES: 4
-    SPARK_WORKER_MEMORY: 1g
+    SPARK_WORKER_MEMORY: 4g
     SPARK_WORKER_PORT: 8881
     SPARK_WORKER_WEBUI_PORT: 8081
   links:
@@ -99,8 +99,33 @@ worker1:
   ports:
     - 8082:8081
   volumes:
-    - Spark/jars:/jars
-    - Spark/shared:/shared/data
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
+    
+worker2:
+  image: localhost:5000/spark
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  hostname: worker1
+  environment:
+    SPARK_WORKER_CORES: 4
+    SPARK_WORKER_MEMORY: 4g
+    SPARK_WORKER_PORT: 8881
+    SPARK_WORKER_WEBUI_PORT: 8081
+  links:
+    - master
+    - namenode
+  expose:
+    - 7012
+    - 7013
+    - 7014
+    - 7015
+    - 7016
+    - 8881
+  ports:
+    - 8083:8081
+  volumes:
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
 
 submitter:
   image: localhost:5000/spark
@@ -115,8 +140,8 @@ submitter:
     - namenode
     - kafka
   volumes:
-    - Spark/jars:/jars
-    - Spark/shared:/shared/data
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
 
 #sumbitter2:
 #  image: localhost:5000/spark
@@ -160,7 +185,7 @@ tradegen:
     KAFKA_TOPIC: trades
   command: node TradeGenerator.js
   volumes:
-    - TradeGenerator:/shared
+    - /media/storage/repos/SparkStreamTradeReactor/TradeGenerator:/shared
 
 #tradecon:
 #  image: localhost:5000/tradegenerator
@@ -195,5 +220,6 @@ zeppelin:
     - 8090:8090
     - 8091:8091
   volumes:
-    - Zeppelin/data:/zeppelin/data
-    - Spark/shared:/shared/data
+    - /media/storage/repos/SparkStreamTradeReactor/Zeppelin/data:/zeppelin/data
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
+    - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars

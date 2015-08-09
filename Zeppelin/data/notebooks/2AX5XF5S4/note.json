@@ -26,8 +26,8 @@
         "msg": "banks.csv\nccps.csv\nexchanges.csv\nsymbols_clean.csv\n/zeppelin\n"
       },
       "dateCreated": "Jul 30, 2015 5:52:08 AM",
-      "dateStarted": "Jul 30, 2015 6:24:04 AM",
-      "dateFinished": "Jul 30, 2015 6:24:04 AM",
+      "dateStarted": "Aug 8, 2015 1:35:48 PM",
+      "dateFinished": "Aug 8, 2015 1:35:50 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -54,11 +54,11 @@
       "result": {
         "code": "SUCCESS",
         "type": "TEXT",
-        "msg": "res0: org.apache.zeppelin.spark.dep.Dependency \u003d org.apache.zeppelin.spark.dep.Dependency@7baac821\n"
+        "msg": "res0: org.apache.zeppelin.spark.dep.Dependency \u003d org.apache.zeppelin.spark.dep.Dependency@72fc5124\n"
       },
       "dateCreated": "Jul 30, 2015 5:52:32 AM",
-      "dateStarted": "Jul 30, 2015 2:12:01 PM",
-      "dateFinished": "Jul 30, 2015 2:12:29 PM",
+      "dateStarted": "Aug 8, 2015 1:35:54 PM",
+      "dateFinished": "Aug 8, 2015 1:36:13 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -85,11 +85,11 @@
       "result": {
         "code": "SUCCESS",
         "type": "TEXT",
-        "msg": "import org.apache.spark.sql._\nsqlContext: org.apache.spark.sql.SQLContext \u003d org.apache.spark.sql.SQLContext@3586ba44\nbanks: org.apache.spark.sql.DataFrame \u003d [name: string, country: string, city: string, branch: string, swift: string]\nccps: org.apache.spark.sql.DataFrame \u003d [BICCode: string, FullName: string, CountryCode: string, Authority: string]\nexchanges: org.apache.spark.sql.DataFrame \u003d [Country: string, Exchange: string, Suffix: string, Open: string, Close: string, Offset: string]\nsymbols: org.apache.spark.sql.DataFrame \u003d [Symbol: string, Name: string, Exchange: string, Type: string, Category: string, Currency: string, Unit: string, LastPrice: string, YearLow: string, YearHigh: string, MarketCapitalisation: string, AverageDailyVolume: string]\n"
+        "msg": "import org.apache.spark.sql._\nsqlContext: org.apache.spark.sql.SQLContext \u003d org.apache.spark.sql.SQLContext@6a729b81\nbanks: org.apache.spark.sql.DataFrame \u003d [name: string, country: string, city: string, branch: string, swift: string]\nccps: org.apache.spark.sql.DataFrame \u003d [BICCode: string, FullName: string, CountryCode: string, Authority: string]\nexchanges: org.apache.spark.sql.DataFrame \u003d [Country: string, Exchange: string, Suffix: string, Open: string, Close: string, Offset: string]\nsymbols: org.apache.spark.sql.DataFrame \u003d [Symbol: string, Name: string, Exchange: string, Type: string, Category: string, Currency: string, Unit: string, LastPrice: string, YearLow: string, YearHigh: string, MarketCapitalisation: string, AverageDailyVolume: string]\n"
       },
       "dateCreated": "Jul 30, 2015 5:55:40 AM",
-      "dateStarted": "Jul 30, 2015 2:12:35 PM",
-      "dateFinished": "Jul 30, 2015 2:13:32 PM",
+      "dateStarted": "Aug 8, 2015 1:36:22 PM",
+      "dateFinished": "Aug 8, 2015 1:37:15 PM",
       "status": "FINISHED",
       "progressUpdateIntervalMs": 500
     },
@@ -109,15 +109,16 @@
   "name": "Create Ref Tables",
   "id": "2AX5XF5S4",
   "angularObjects": {
-    "2AWZ4V4E3": [],
-    "2AVS2B9RF": [],
-    "2AUVY8ZBN": [],
-    "2AXDE1STJ": [],
-    "2AVQST2GU": [],
-    "2AUHN846R": [],
-    "2AU3FJKMB": [],
-    "2AVJA4582": [],
-    "2AU7GUSDZ": []
+    "2AVF78RHX": [],
+    "2AWQUPMX5": [],
+    "2AWU4ES82": [],
+    "2AUPRPK4P": [],
+    "2AWCPEQWJ": [],
+    "2AY46WSWW": [],
+    "2AUB5D116": [],
+    "2AX2WT43K": [],
+    "2AW8ZC167": [],
+    "2AW6DDK7P": []
   },
   "config": {
     "looknfeel": "default"
