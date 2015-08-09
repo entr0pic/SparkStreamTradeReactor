@@ -130,9 +130,9 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
              println(row.get(3))
              
                 val buffer:Array[Double] = new Array[Double](3)
-                buffer(1) = row.get(1).toString.toDouble //get bank id
-                buffer(2) = row.get(2).toString.toDouble  //get counter party id
-                buffer(3) = row.get(3).toString.toDouble  // currency id
+                buffer(0) = row.get(1).toString.toDouble //get bank id
+                buffer(1) = row.get(2).toString.toDouble  //get counter party id
+                buffer(2) = row.get(3).toString.toDouble  // currency id
 
              println(row)
             val vector = Vectors.dense(buffer) 
