@@ -20,6 +20,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" % "akka-agent"   % "2.0.5" % "provided" ,
   "com.typesafe.akka" % "akka-testkit" % "2.0.5" % "test",
     "voldemort.store.compress" % "h2-lzf" % "1.0"  % "provided" ,
-  "org.apache.spark" %% "spark-streaming-kafka" % "1.4.1" % "provided",
+  "org.apache.spark" %% "spark-streaming-kafka" % "1.4.1" ,
     "org.apache.spark" %% "spark-mllib" % "1.4.1" % "provided" 
 )
+
