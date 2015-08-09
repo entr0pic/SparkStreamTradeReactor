@@ -1,0 +1,225 @@
+namenode:
+  image: localhost:5000/hadoop
+  hostname: namenode
+  volumes:
+    - {root}Hadoop/data/namenode:/shared
+  ports:
+    - "8020:8020"
+    - "50070:50070"
+  command: hdfs namenode
+
+datanode1:
+  image: localhost:5000/hadoop
+  hostname: datanode1
+  volumes:
+      - {root}Hadoop/data/datanode1:/shared
+  links:
+      - namenode
+  ports:
+      - "5001:50075"
+  command: hdfs datanode
+
+datanode2:
+  image: localhost:5000/hadoop
+  hostname: datanode2
+  volumes:
+      - {root}Hadoop/data/datanode2:/shared
+  links:
+      - namenode
+  ports:
+      - "5002:50075"
+  command: hdfs datanode
+
+kafka:
+  image: localhost:5000/kafka
+  hostname: kafka
+  command: bash run.sh
+  environment:
+#    ADVERTISED_HOST : 172.17.8.101 #either 'boot2docker ip' or vagrant address
+    ADVERTISED_PORT : 9092
+  links:
+    - namenode
+  expose:
+    - 2181
+    - 9092
+  ports:
+    - 2181:2181
+    - 9092:9092
+#  volumes:
+#    - Kafka/data:/tmp
+
+master:
+  image: localhost:5000/spark
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
+  hostname: master
+  links:
+    - namenode
+    - kafka
+  expose:
+    - 7001
+    - 7002
+    - 7003
+    - 7004
+    - 7005
+    - 7006
+    - 7077
+    - 6066
+    - 4040
+    - 8080
+    - 50070
+  ports:
+    - 4040:4040
+    - 6066:6066
+    - 7077:7077
+    - 8081:8080
+    - 50071:50070
+  volumes:
+    - {root}Spark/jars:/jars
+    - {root}Spark/shared:/shared/data
+
+worker1:
+  image: localhost:5000/spark
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  hostname: worker1
+  environment:
+    SPARK_WORKER_CORES: 4
+    SPARK_WORKER_MEMORY: 4g
+    SPARK_WORKER_PORT: 8881
+    SPARK_WORKER_WEBUI_PORT: 8081
+  links:
+    - master
+    - namenode
+  expose:
+    - 7012
+    - 7013
+    - 7014
+    - 7015
+    - 7016
+    - 8881
+  ports:
+    - 8082:8081
+  volumes:
+    - {root}Spark/jars:/jars
+    - {root}Spark/shared:/shared/data
+    
+worker2:
+  image: localhost:5000/spark
+  command: /usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+  hostname: worker1
+  environment:
+    SPARK_WORKER_CORES: 4
+    SPARK_WORKER_MEMORY: 4g
+    SPARK_WORKER_PORT: 8881
+    SPARK_WORKER_WEBUI_PORT: 8081
+  links:
+    - master
+    - namenode
+  expose:
+    - 7012
+    - 7013
+    - 7014
+    - 7015
+    - 7016
+    - 8881
+  ports:
+    - 8083:8081
+  volumes:
+    - {root}Spark/jars:/jars
+    - {root}Spark/shared:/shared/data
+
+submitter:
+  image: localhost:5000/spark
+#  command: bash /base_files/trade-stream.sh
+  command: bash -c "/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 1 /jars/tradeStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC hdfs://namenode:8020/trade/store.parquet"
+  hostname: sumbitter
+  environment:
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
+  links:
+    - master
+    - namenode
+    - kafka
+  volumes:
+    - {root}Spark/jars:/jars
+    - {root}Spark/shared:/shared/data
+
+#sumbitter2:
+#  image: localhost:5000/spark
+#  command: /usr/spark/bin/spark-submit --master spark://master:7077 /jars/JAR_NAME.jar
+#  hostname: sumbitter
+#  links:
+#    - master
+#    - namenode
+#    - kafka
+#  volumes:
+#    - Spark/jars:/jars
+
+cadvisor:
+  image: google/cadvisor:latest
+  hostname: cadvisor
+  volumes:
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+  ports:
+    - 8888:8080
+
+
+dockerui:
+  image: dockerui/dockerui
+  hostname: dockerui
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+  ports:
+    - 9000:9000
+
+tradegen:
+  image: localhost:5000/tradegenerator
+  hostname: tradegen
+  links:
+    - kafka
+    - master
+  environment:
+    KAFKA: kafka
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
+  command: node TradeGenerator.js
+  volumes:
+    - {root}TradeGenerator:/shared
+
+#tradecon:
+#  image: localhost:5000/tradegenerator
+#  hostname: tradegen
+#  links:
+#    - kafka
+#    - master
+#    - tradegen
+#  environment:
+#    KAFKA: kafka
+#    KAFKA_PORT: 9092
+#    KAFKA_TOPIC: trades
+#  command: bash -c "sleep 10 && node TradeConsumer.js"
+#  volumes:
+#    - TradeGenerator:/shared
+
+zeppelin:
+  image: localhost:5000/zeppelin
+  hostname: zeppelin
+  environment:
+    ZEPPELIN_PORT: 8090
+    ZEPPELIN_JAVA_OPTS: "-Dspark.driver.port=5432 -Dspark.cores.max=2"
+    MASTER: spark://master:7077
+    ZEPPELIN_NOTEBOOK_DIR: /zeppelin/data/notebooks
+  links:
+    - master
+    - namenode
+    - kafka
+  expose:
+    - 5432
+  ports:
+    - 8090:8090
+    - 8091:8091
+  volumes:
+    - {root}Zeppelin/data:/zeppelin/data
+    - {root}Spark/shared:/shared/data
+    - {root}Spark/jars:/jars
