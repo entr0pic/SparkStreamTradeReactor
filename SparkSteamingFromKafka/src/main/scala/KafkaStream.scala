@@ -20,6 +20,7 @@ import org.apache.spark.rdd._
 
 //import org.apache.log4j.{Level, Logger}
 
+/*
 //object KafkaStream extends Logging{
 //  def main(args: Array[String]) {
 //    val conf = new SparkConf().setAppName("trade-reader")
@@ -65,6 +66,7 @@ import org.apache.spark.rdd._
 //      }
 //  }
 //}
+*/
 
 object TradeStreamReader {
   def main(args: Array[String]) {
@@ -124,36 +126,33 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
         val df = sqlContext.jsonRDD(rdd).toDF
         df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
           
-     val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
-        row =>
-            val label = row.get(0);
-            val buffer:Array[Double] = new Array[Double](3)
-            buffer(1) = row.get(1).asInstanceOf[Double] //get bank id
-            buffer(2) = row.get(2).asInstanceOf[Double] //get counter party id
-            buffer(3) = row.get(3).asInstanceOf[Double] // currency id
-            
-         println(row)
-        val vector = Vectors.dense(buffer) 
-         (label,vector)
-      }
-         val data = cleanData.values.cache()
-        clusteringScore(data, 34, 10).foreach(println)
-          
-//    val parsedData = data.map(s => Vectors.dense(s.split(' ').map(_.toDouble))).cache()
+         val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
+            row =>
+                val label = row.get(0);
+                val buffer:Array[Double] = new Array[Double](3)
+                buffer(1) = row.get(1).asInstanceOf[Double] //get bank id
+                buffer(2) = row.get(2).asInstanceOf[Double] //get counter party id
+                buffer(3) = row.get(3).asInstanceOf[Double] // currency id
 
-//// Cluster the data into two classes using KMeans
-//val numClusters = 2
-//val numIterations = 20
-//val clusters = KMeans.train(parsedData, numClusters, numIterations)
-//
-//// Evaluate clustering by computing Within Set Sum of Squared Errors
-//val WSSSE = clusters.computeCost(parsedData)
-//println("Within Set Sum of Squared Errors = " + WSSSE)
+             println(row)
+            val vector = Vectors.dense(buffer) 
+             (label,vector)
+          }
+         val data = cleanData.values.cache()
+        val numClusters = 34
+        val numIterations = 20
+          
+          val clusters = KMeans.train(parsedData, numClusters, numIterations)
+  val WSSSE = clusters.computeCost(parsedData)
+println("Within Set Sum of Squared Errors = " + WSSSE)
+println("clustering results:")        
+        clusteringScore(data, numClusters, numIterations).foreach(println)
+          
 
 
       }
                      }
-    trades.count().print
+   // trades.count().print
       
     /*
     import org.apache.spark.mllib.linalg._
