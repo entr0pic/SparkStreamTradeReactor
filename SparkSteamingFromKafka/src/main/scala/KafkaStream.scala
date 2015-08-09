@@ -139,13 +139,13 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
              (label,vector)
           }
          val data = cleanData.values.cache()
-        val numClusters = 34
+        val numClusters = 2
         val numIterations = 20
           
-          val clusters = KMeans.train(data, numClusters, numIterations)
-  val WSSSE = clusters.computeCost(data)
-println("Within Set Sum of Squared Errors = " + WSSSE)
-println("clustering results:")        
+//          val clusters = KMeans.train(data, numClusters, numIterations)
+//  val WSSSE = clusters.computeCost(data)
+//println("Within Set Sum of Squared Errors = " + WSSSE)
+//println("clustering results:")        
         clusteringScore(data, numClusters, numIterations).foreach(println)
           
 
