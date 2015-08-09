@@ -1,4 +1,5 @@
 cd SparkSteamingFromKafka
+sbt clean
 sbt package
 sbt assembly
 cd ..
