@@ -124,10 +124,10 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
          val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
             row =>
                 val label = row.get(0);
-             row.get(0).println
-             row.get(1).println
-             row.get(2).println
-             row.get(3).println
+             println(row.get(0))
+             println(row.get(1))
+             println(row.get(2))
+             println(row.get(3))
              
                 val buffer:Array[Double] = new Array[Double](3)
                 buffer(1) = row.get(1).asInstanceOf[Double] //get bank id
