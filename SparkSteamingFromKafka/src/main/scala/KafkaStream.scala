@@ -16,7 +16,6 @@ import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.clustering.StreamingKMeans
 
- import sqlContext.implicits._
 
 
 //import org.apache.log4j.{Level, Logger}
@@ -136,6 +135,7 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
 //        val sqlContext = new SQLContext(rdd.sparkContext)
+//           import sqlContext.implicits._
 //       
 //        // Convert your data to a DataFrame, depends on the structure of your data
 //        val df = sqlContext.jsonRDD(rdd).toDF
