@@ -12,6 +12,10 @@ import org.apache.spark.mllib.clustering._
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd._
 
+import org.apache.spark.mllib.linalg.Vectors
+import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.mllib.clustering.StreamingKMeans
+
 
 //import org.apache.log4j.{Level, Logger}
 
