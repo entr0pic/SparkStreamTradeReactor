@@ -1,0 +1,51 @@
+{
+  "name": "lightning.js",
+  "version": "1.5.0",
+  "description": "Node.js client for the Lightning data visualization server.",
+  "homepage": "http://lightning-viz.org",
+  "author": {
+    "name": "Matthew Conlen",
+    "email": "code@mathisonian.com",
+    "url": "http://mathisonian.com"
+  },
+  "browser": {
+    "open": false
+  },
+  "browserify": {
+    "transform": [
+      "bulkify",
+      "brfs"
+    ]
+  },
+  "repository": "http://github.com/lightning-viz/lightning.js",
+  "license": "MIT",
+  "main": "index.js",
+  "keywords": [
+    "lightning.js",
+    "lightning",
+    "lightning-viz",
+    "data",
+    "dataviz",
+    "data viz",
+    "three.js",
+    "d3"
+  ],
+  "dependencies": {
+    "bluebird": "~2.9.4",
+    "lodash": "~3.0.1",
+    "open": "0.0.5",
+    "param-case": "~1.1.1",
+    "remove-trailing-slash": "~0.1.0",
+    "request-promise": "~0.3.3",
+    "bulk-require": "~0.2.1",
+    "bulkify": "~1.1.1",
+    "brfs": "~1.4.0"
+  },
+  "devDependencies": {
+    "expect.js": "~0.3.1",
+    "mocha": "~2.1.0"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test mocha --timeout 10000"
+  }
+}
