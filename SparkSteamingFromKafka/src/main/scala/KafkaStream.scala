@@ -120,7 +120,7 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
  val cleanData = trades.map(msg => {
                   val buffer:Array[Double] = new Array[Double](3)
         val src = msg.split(",")
-     src.count().print
+     src.length.print
 //          buffer(0) = src(3)
 //          buffer(1) = src(5)
 //          buffer(2) = src(10)
