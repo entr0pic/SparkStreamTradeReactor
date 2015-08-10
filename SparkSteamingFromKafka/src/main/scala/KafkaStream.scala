@@ -170,7 +170,7 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
 
       }
     }
-      Print("Trades count "+trades.count())
+      print("Trades count "+trades.count())
     
       
     /*
