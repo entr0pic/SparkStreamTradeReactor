@@ -120,14 +120,16 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
  val cleanData = trades.map(msg => {
                   val buffer:Array[Double] = new Array[Double](3)
         val src = msg.split(",")
-     print(src)//.length
 //          buffer(0) = src(3)
 //          buffer(1) = src(5)
 //          buffer(2) = src(10)
 //          val label = src(3)
 //          (label, buffer)
-        msg
-      })      
+        src
+      })  
+      
+           print(cleanData)//.length
+
 
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
@@ -168,7 +170,8 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
 
       }
     }
-    trades.count().print
+      Print("Trades count "+trades.count())
+    
       
     /*
     import org.apache.spark.mllib.linalg._
