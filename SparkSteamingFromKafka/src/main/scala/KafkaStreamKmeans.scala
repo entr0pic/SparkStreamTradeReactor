@@ -12,6 +12,7 @@ import org.apache.spark.mllib.clustering._
 import org.apache.spark.mllib.linalg._
 import org.apache.spark.rdd._
 
+import sqlContext.implicits._
 
 //import org.apache.log4j.{Level, Logger}
 
@@ -79,22 +80,35 @@ object TradeStreamReader {
 
     val Array(brokers, topics, path) = args
 
-    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
+//    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
+//
+//    def distToCentroid(datum: Vector, model: KMeansModel) = { 
+//        val cluster = model.predict(datum)
+//        val centroid = model.clusterCenters(cluster) 
+//        distance(centroid, datum)
+//    }
+//
+//def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
+//    val kmeans = new KMeans()
+//    kmeans.setK(k)
+//    kmeans.setRuns(runs)
+//    val model = kmeans.run(data)
+//    data.map(datum => distToCentroid(datum, model))
+//    
+//}
+      
+//object Utils {
+//
+//  def printToFile(pathName: String, fileName: String, contents: String) = {
+//    val file = new File(pathName + "/" + fileName + ".txt")
+//    val bw = new BufferedWriter(new FileWriter(file))
+//    bw.write(contents)
+//    bw.close()
+//  }
 
-    def distToCentroid(datum: Vector, model: KMeansModel) = { 
-        val cluster = model.predict(datum)
-        val centroid = model.clusterCenters(cluster) 
-        distance(centroid, datum)
-    }
 
-def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
-    val kmeans = new KMeans()
-    kmeans.setK(k)
-    kmeans.setRuns(runs)
-    val model = kmeans.run(data)
-    data.map(datum => distToCentroid(datum, model))
-    
-}
+}      
+
 
 //    println(brokers)
 //    println(topics)
@@ -110,18 +124,56 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
       ssc, kafkaParams, topicsSet)
 
-    // Get the lines, split them into words, count the words and print
     val trades = messages.map(_._2)
 
-    trades.foreachRDD{rdd =>
-      if (rdd.toLocalIterator.nonEmpty) {
-        val sqlContext = new SQLContext(rdd.sparkContext)
-        import sqlContext.implicits._
-        // Convert your data to a DataFrame, depends on the structure of your data
-        val df = sqlContext.jsonRDD(rdd).toDF
-        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-          
-//         val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
+      val cleanData = trades.map(msg => {
+                  val buffer:Array[Double] = new Array[Double](3)
+        val src = msg.split(",")
+          buffer(0) = src(3)
+          buffer(1) = src(5)
+          buffer(2) = src(10)
+          val label = src(3)
+          (label, buffer)
+      })
+      
+      var testingData = cleanData.map(l => LabeledPoint(l._1, l._2)).map(LabeledPoint.parse)
+      var trainingData = cleanData.map(_._2).map(Vectors.parse)
+
+      val numClusters = 34
+      var numDimensions = 3
+      
+    val model = new StreamingKMeans()
+      .setK(numClusters)
+    .setDecayFactor(1.0)
+      //.setHalfLife(halfLife, timeUnit)
+      .setRandomCenters(numDimensions, 0.0)
+
+    model.trainOn(trainingData)
+    model.predictOnValues(testingData).print()
+
+
+    //    model.trainOn(trainingData)
+
+//    val predictions = model.predictOn(trainingData)
+//
+//    predictions.foreachRDD { rdd =>
+//      val modelString = model.latestModel().clusterCenters
+//        .map(c => c.toString.slice(1, c.toString.length-1)).mkString("\n")
+//      val predictString = rdd.map(p => p.toString).collect().mkString("\n")
+//      val dateString = Calendar.getInstance().getTime.toString.replace(" ", "-").replace(":", "-")
+//
+//                            println(predictString, dateString)
+//    }
+      
+//    trades.foreachRDD{rdd =>
+//      if (rdd.toLocalIterator.nonEmpty) {
+//        val sqlContext = new SQLContext(rdd.sparkContext)
+//        // Convert your data to a DataFrame, depends on the structure of your data
+//        val df = sqlContext.jsonRDD(rdd).toDF
+//        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+
+      
+    //         val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
 //            row =>
 //                val label = row.get(0);
 //             println(row.get(0))
@@ -139,19 +191,18 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
 //             (label,vector)
 //          }
 //         val data = cleanData.values.cache()
-//        val numClusters = 34
+//        val numClusters = 2
 //        val numIterations = 20
 //          
-//          val clusters = KMeans.train(data, numClusters, numIterations)
-//  val WSSSE = clusters.computeCost(data)
-//println("Within Set Sum of Squared Errors = " + WSSSE)
-//println("clustering results:")        
+////          val clusters = KMeans.train(data, numClusters, numIterations)
+////  val WSSSE = clusters.computeCost(data)
+////println("Within Set Sum of Squared Errors = " + WSSSE)
+////println("clustering results:")        
 //        clusteringScore(data, numClusters, numIterations).foreach(println)
-          
-
-
-      }
-                     }
+//      
+//  }
+  // }
+      
    // trades.count().print
       
     /*

@@ -143,6 +143,21 @@ submitter:
     - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
     - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
 
+#kmeans:
+#  image: localhost:5000/spark
+#  command: bash -c "/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 1 /jars/kmeanStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC hdfs://namenode:8020/trade/store.parquet"
+#  hostname: kmeans
+#  environment:
+#    KAFKA_PORT: 9092
+#    KAFKA_TOPIC: trades
+#  links:
+#    - master
+#    - namenode
+#    - kafka
+#  volumes:
+#    - Spark/jars:/jars
+#    - Spark/shared:/shared/data
+
 #sumbitter2:
 #  image: localhost:5000/spark
 #  command: /usr/spark/bin/spark-submit --master spark://master:7077 /jars/JAR_NAME.jar
