@@ -126,7 +126,7 @@ def CreateDataArray(src: Array[String]) : Array[Double] = {
     // Get the lines, split them into words, count the words and print
     val trades = messages.map(_._2)
       
-      messages.print()
+      //messages.print()
       
  val cleanData = messages.map{
      case(_,line) => line.split(",")
