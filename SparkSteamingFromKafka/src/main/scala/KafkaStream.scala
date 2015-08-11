@@ -107,9 +107,10 @@ object TradeStreamReader {
       
 
     def preformatForDouble(src:String):String = {
-        val ret = src.split("\":\"")(1);
+        val ret = src.split("\":\"")
+        if (ret.length>0) ret = src(1) else ret = src
         val parts = ret.split(".")
-        if (parts.length<=1) ret else parts(0)+"."+parts(1)
+        if (parts.length>1) parts(0)+"."+parts(1) else ret
     }
 
 def CreateDataArray(src: Array[String]) : Array[String] = {
@@ -146,8 +147,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       
 cleanData.print()
       
-//val trainingData = cleanData.map(_.take(4)).map(_.toDouble).map(Vectors.parse)
-      
+//val trainingData = cleanData.map(_.take(4))//.map(_.toDouble).map(Vectors.parse)
 //trainingData.print()
 
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
