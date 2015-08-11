@@ -130,11 +130,11 @@ def CreateDataArray(src: Array[String]) : Array[Double] = {
       
  val cleanData = messages.map{
      case(_,line) => line.split(",")
- }.flatMap(CreateDataArray(_))
+ }.flatMap(CreateDataArray(_)).print()
 
       
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
-      var trainingData = cleanData.map(x => Vectors.parse(x))
+//      var trainingData = cleanData.map(x => Vectors.parse(x))
 //
 //      val numClusters = 34
 //      var numDimensions = 3
