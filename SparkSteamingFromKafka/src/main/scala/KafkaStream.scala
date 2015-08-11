@@ -105,7 +105,7 @@ object TradeStreamReader {
 //}
 */
       
-def CreateDataArray(src: Array[String]) : Array[Double] = {
+def CreateDataArray(src: Array[String]) : Array[String] = {
         //val buffer:Array[Double] = new Array[Double](4)
     val buffer:Array[String] = new Array[String](4)
           buffer(0) = src(3) // .split(":").map(_._2).toDouble // party_id 
