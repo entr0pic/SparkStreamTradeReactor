@@ -129,7 +129,7 @@ object TradeStreamReader {
         src
       })  
       
-cleanData.foreach(println)
+cleanData.foreach(_.foreach(println))
 
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
