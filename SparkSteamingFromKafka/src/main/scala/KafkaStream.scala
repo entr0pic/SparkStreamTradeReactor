@@ -131,7 +131,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       
       //messages.print()
       
- val cleanData = messages.map{
+ val cleanData = messages.flatMap{
      case(_,line) => line.split(",").map(x => x.split(":")(1))
  }.print()
       //.flatMap(CreateDataArray(_)).print()
