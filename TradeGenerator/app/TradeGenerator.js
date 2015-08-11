@@ -105,7 +105,7 @@ var generateTradePairs = function(count, startDate) {
     var volume = Math.ceil(Math.random()*(symbol[0].AverageDailyVolume||1000));
       
       var party_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
-      var counterparty_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
+      var counterparty_id = GenerateIdFromStr(bank[1].swift.slice(0,4));
       var currency_id = GenerateIdFromStr(symbol[0].Currency);
     
     trades = trades.concat([{
