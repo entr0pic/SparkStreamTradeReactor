@@ -107,8 +107,8 @@ object TradeStreamReader {
       
 
     def preformatForDouble(src:String):String = {
-        var ret = src.split("\":\"")
-        if (ret.length>0) ret = src(1) else ret = src
+        var ret = src
+        if (src.split("\":\"").length>0) ret = src.split("\":\"")(1)
         val parts = ret.split(".")
         if (parts.length>1) parts(0)+"."+parts(1) else ret
     }
