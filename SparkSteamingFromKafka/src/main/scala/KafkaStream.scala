@@ -107,7 +107,7 @@ object TradeStreamReader {
       
 
     def preformatForDouble(src:String):String = {
-        val ret = src.split(":")(1).replace("\"", "")
+        val ret = src.split(":")(1)
         val parts = ret.split(".")
         if (parts.length>1) parts(0)+"."+parts(1) else ret
     }
