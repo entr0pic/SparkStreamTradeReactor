@@ -107,8 +107,7 @@ object TradeStreamReader {
       
 
     def preformatForDouble(src:String):String = {
-        var ret = src
-        if (src.split("\":\"").length>0) ret = src.split("\":\"")(1)
+        val ret = src.split(":")(1).replace("\"", "")
         val parts = ret.split(".")
         if (parts.length>1) parts(0)+"."+parts(1) else ret
     }
@@ -142,7 +141,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       //messages.print()
       
  val cleanData = messages.map{
-     case(_,line) => line.split(",")//.map(x => x.split(":")(1))
+     case(_,line) => line.split(",")//.map(x => x.split(":"))
  }.flatMap(CreateDataArray(_))
       
 cleanData.print()
