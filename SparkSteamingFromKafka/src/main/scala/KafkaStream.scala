@@ -105,12 +105,19 @@ object TradeStreamReader {
 //}
 */
       
+
+    def preformatForDouble(src:String):String = {
+        src.split("\":\"")(1).replaceAll("\"","")
+        val parts = src.split(".")
+        if (parts.length<=1) src else parts(0)+"."+parts(1)
+    }
+
 def CreateDataArray(src: Array[String]) : Array[String] = {
         val buffer:Array[String] = new Array[String](8)
-          buffer(0) = src(3).split("\":\"")(1)//.toDouble // party_id 
-          buffer(1) = src(5).split("\":\"")(1)//.toDouble // counterparty_id 
-          buffer(2) = src(10).split("\":\"")(1)//.toDouble // currency_id
-          buffer(3) = src(14).split("\":\"")(1)//.toDouble // price
+          buffer(0) = preformatForDouble(src(3))//.toDouble // party_id 
+          buffer(1) = preformatForDouble(src(5))//.toDouble // counterparty_id 
+          buffer(2) = preformatForDouble(src(10))//.toDouble // currency_id
+          buffer(3) = preformatForDouble(src(14))//.toDouble // price
           buffer(4) = src(3)//.toDouble // party_id 
           buffer(5) = src(5)//.toDouble // counterparty_id 
           buffer(6) = src(10)//.toDouble // currency_id
