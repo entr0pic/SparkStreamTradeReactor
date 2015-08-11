@@ -145,7 +145,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
      case(_,line) => line.split(",")//.map(x => x.split(":"))
  }.map(CreateDataArray(_))
       
-cleanData.flatMap(_).print()
+1 to cleanData.size flatMap(cleanData.get).print()
       
 val trainingData = cleanData.map(_.take(4))//.map(_.toDouble).map(Vectors.parse)
 trainingData.print()
