@@ -83,7 +83,10 @@ object TradeStreamReader {
     StreamingExamples.setStreamingLogLevels()
 
     val Array(brokers, topics, path) = args
+//    println(brokers)
+//    println(topics)
 
+/*
 //    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
 //
 //    def distToCentroid(datum: Vector, model: KMeansModel) = { 
@@ -100,36 +103,53 @@ object TradeStreamReader {
 //    data.map(datum => distToCentroid(datum, model))
 //    
 //}
-
-//    println(brokers)
-//    println(topics)
+*/
+      
+def CreateDataArray(src: Array[String]) : Array[Double] = {
+        val buffer:Array[Double] = new Array[Double](3)
+          buffer(0) = src(3).toDouble
+          buffer(1) = src(5).toDouble
+          buffer(2) = src(10).toDouble
+    (buffer)
+}
+      
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
-    //val sc = new SparkContext(sparkConf)
     val ssc = new StreamingContext(sparkConf, Seconds(2))
     //val sqlContext = new SQLContext(sc)
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](
-      ssc, kafkaParams, topicsSet)
+    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
     // Get the lines, split them into words, count the words and print
     val trades = messages.map(_._2)
       
- val cleanData = trades.map(msg => {
-                  val buffer:Array[Double] = new Array[Double](3)
-        val src = msg.split(",")
-//          buffer(0) = src(3)
-//          buffer(1) = src(5)
-//          buffer(2) = src(10)
-//          val label = src(3)
-//          (label, buffer)
-        src
-      })  
+// val cleanData = messages.map{
+//     case(_,line) => line.split(",")
+// }.map(CreateDataArray(_))
+
+ val cleanData = messages.map{
+     case(_,line) => line.split(",")
+ }.println
+
       
-cleanData.foreach(x => x.count().print)
+//      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
+//      var trainingData = cleanData.map(Vectors.parse)
+//
+//      val numClusters = 34
+//      var numDimensions = 3
+//      
+//    val model = new StreamingKMeans()
+//      .setK(numClusters)
+//    .setDecayFactor(1.0)
+//      //.setHalfLife(halfLife, timeUnit)
+//      .setRandomCenters(numDimensions, 0.0)
+
+//    model.trainOn(trainingData)
+//    model.predictOnValues(testingData).print()
+     
 
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
@@ -139,27 +159,6 @@ cleanData.foreach(x => x.count().print)
 //        // Convert your data to a DataFrame, depends on the structure of your data
 //        val df = sqlContext.jsonRDD(rdd).toDF
 //        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-          
-//         val cleanData = df.select("category", "party_id", "counterparty_id", "currency_id").map{
-//            row =>
-//                val label = row.get(0);
-//             println(row.get(0))
-//             println(row.get(1))
-//             println(row.get(2))
-//             println(row.get(3))
-//             
-//                val buffer:Array[Double] = new Array[Double](3)
-//                buffer(0) = row.get(1).toString.toDouble //get bank id
-//                buffer(1) = row.get(2).toString.toDouble  //get counter party id
-//                buffer(2) = row.get(3).toString.toDouble  // currency id
-//
-//             println(row)
-//            val vector = Vectors.dense(buffer) 
-//             (label,vector)
-//          }
-//         val data = cleanData.values.cache()
-//        val numClusters = 34
-//        val numIterations = 20
 //          
 //          val clusters = KMeans.train(data, numClusters, numIterations)
 //  val WSSSE = clusters.computeCost(data)
@@ -167,29 +166,12 @@ cleanData.foreach(x => x.count().print)
 //println("clustering results:")        
 //        clusteringScore(data, numClusters, numIterations).foreach(println)
           
-
-
       }
     }
       
       trades.count().print
     
       
-    /*
-    import org.apache.spark.mllib.linalg._
-    
-    var rawData = // read the current message into this variable as row from parquet file
-    var cleanData = rawData.map {
-        row =>
-            val label = row.get(2);
-            val buffer = Array(
-            row.get(1),//get bank id
-            row.get(3),//get counter party id
-            row.get(4),//get symbol id
-            row.get(6),//get currency id
-            );
-    
-            val vector = Vectors.dense(buffer.map(_.toDouble).toArray) (label,vector)
 //            
 //                  trade_date: dateTime[0],
 //      trade_time: startDate.toISOString(),
@@ -208,31 +190,6 @@ cleanData.foreach(x => x.count().print)
 //      price: price,
 //      volume: volume,
 //      unit: symbol[0].Unit
-
-    }
-    val data = cleanData.values.cache()
-    
-    import org.apache.spark.mllib.clustering._ 
-    
-    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
-
-    def distToCentroid(datum: Vector, model: KMeansModel) = { 
-        val cluster = model.predict(datum)
-        val centroid = model.clusterCenters(cluster) distance(centroid, datum)
-    }
-
-import org.apache.spark.rdd._
-def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
-    val kmeans = new KMeans()
-    kmeans.setK(k)
-    kmeans.setRuns(runs)
-    val model = kmeans.run(data)
-    data.map(datum => distToCentroid(datum, model)).mean() 
-}
-
-    clusteringScore(data, 34, 10).foreach(println)
-    
-    */
 
     // Start the computation
     ssc.start()
