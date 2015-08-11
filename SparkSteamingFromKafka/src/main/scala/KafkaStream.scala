@@ -129,7 +129,7 @@ object TradeStreamReader {
         src
       })  
       
-cleanData.foreach(_.foreach(println))
+cleanData.foreach(x => x.count().print)
 
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
@@ -171,7 +171,7 @@ cleanData.foreach(_.foreach(println))
 
       }
     }
-      print ("Trades count ")
+      
       trades.count().print
     
       
