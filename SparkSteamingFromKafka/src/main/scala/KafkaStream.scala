@@ -126,17 +126,15 @@ def CreateDataArray(src: Array[String]) : Array[Double] = {
     // Get the lines, split them into words, count the words and print
     val trades = messages.map(_._2)
       
-// val cleanData = messages.map{
-//     case(_,line) => line.split(",")
-// }.map(CreateDataArray(_))
-
+      messages.print()
+      
  val cleanData = messages.map{
      case(_,line) => line.split(",")
- }.println
+ }.map(CreateDataArray(_)).cache()
 
       
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
-//      var trainingData = cleanData.map(Vectors.parse)
+      var trainingData = cleanData.map(Vectors.parse)
 //
 //      val numClusters = 34
 //      var numDimensions = 3
