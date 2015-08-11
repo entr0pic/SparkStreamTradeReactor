@@ -128,9 +128,10 @@ def CreateDataArray(src: Array[String]) : Array[Double] = {
       
       //messages.print()
       
- val cleanData = messages.map{
+ val cleanData = messages.flatMap{
      case(_,line) => line.split(",")
- }.flatMap(CreateDataArray(_)).print()
+ }.print()
+      //.flatMap(CreateDataArray(_)).print()
 
       
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
