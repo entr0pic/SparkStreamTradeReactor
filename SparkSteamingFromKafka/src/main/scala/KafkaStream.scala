@@ -84,22 +84,22 @@ object TradeStreamReader {
 
     val Array(brokers, topics, path) = args
 
-    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
-
-    def distToCentroid(datum: Vector, model: KMeansModel) = { 
-        val cluster = model.predict(datum)
-        val centroid = model.clusterCenters(cluster) 
-        distance(centroid, datum)
-    }
-
-def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
-    val kmeans = new KMeans()
-    kmeans.setK(k)
-    kmeans.setRuns(runs)
-    val model = kmeans.run(data)
-    data.map(datum => distToCentroid(datum, model))
-    
-}
+//    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
+//
+//    def distToCentroid(datum: Vector, model: KMeansModel) = { 
+//        val cluster = model.predict(datum)
+//        val centroid = model.clusterCenters(cluster) 
+//        distance(centroid, datum)
+//    }
+//
+//def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
+//    val kmeans = new KMeans()
+//    kmeans.setK(k)
+//    kmeans.setRuns(runs)
+//    val model = kmeans.run(data)
+//    data.map(datum => distToCentroid(datum, model))
+//    
+//}
 
 //    println(brokers)
 //    println(topics)
@@ -129,8 +129,7 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
         src
       })  
       
-           print(cleanData)//.length
-
+cleanData.foreach(println)
 
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
@@ -172,7 +171,8 @@ def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = {
 
       }
     }
-      print("Trades count "+trades.count())
+      print ("Trades count ")
+      trades.count().print
     
       
     /*
