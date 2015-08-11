@@ -107,11 +107,12 @@ object TradeStreamReader {
       
 def CreateDataArray(src: Array[String]) : Array[String] = {
         //val buffer:Array[Double] = new Array[Double](4)
+    
     val buffer:Array[String] = new Array[String](4)
-          buffer(0) = src(3).map(x => x.split(":")(1))//.toDouble // party_id 
-          buffer(1) = src(5).map(x => x.split(":")(1))//.toDouble // counterparty_id 
-          buffer(2) = src(10).map(x => x.split(":")(1))//.toDouble // currency_id
-          buffer(3) = src(14).map(x => x.split(":")(1))//.toDouble // price
+          buffer(0) = src(3)//.toDouble // party_id 
+          buffer(1) = src(5)//.toDouble // counterparty_id 
+          buffer(2) = src(10)//.toDouble // currency_id
+          buffer(3) = src(14)//.toDouble // price
     (buffer)
 }
       
@@ -131,8 +132,9 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       //messages.print()
       
  val cleanData = messages.map{
-     case(_,line) => line.split(",")
- }.flatMap(CreateDataArray(_)).print()
+     case(_,line) => line.split(",").map(x => x.split(":")(1))
+ }.print()
+      //.flatMap(CreateDataArray(_)).print()
 
       
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
