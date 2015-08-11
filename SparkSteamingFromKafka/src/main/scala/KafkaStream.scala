@@ -106,11 +106,15 @@ object TradeStreamReader {
 */
       
 def CreateDataArray(src: Array[String]) : Array[String] = {
-        val buffer:Array[String] = new Array[String](4)
-          buffer(0) = src(3).replaceAll("\"","")//.toDouble // party_id 
-          buffer(1) = src(5).replaceAll("\"","")//.toDouble // counterparty_id 
-          buffer(2) = src(10).replaceAll("\"","")//.toDouble // currency_id
-          buffer(3) = src(14).replaceAll("\"","")//.toDouble // price
+        val buffer:Array[String] = new Array[String](8)
+          buffer(0) = src(3).split(":")(1).replaceAll("\"","")//.toDouble // party_id 
+          buffer(1) = src(5).split(":")(1).replaceAll("\"","")//.toDouble // counterparty_id 
+          buffer(2) = src(10).split(":")(1).replaceAll("\"","")//.toDouble // currency_id
+          buffer(3) = src(14).split(":")(1).replaceAll("\"","")//.toDouble // price
+          buffer(4) = src(3)//.toDouble // party_id 
+          buffer(5) = src(5)//.toDouble // counterparty_id 
+          buffer(6) = src(10)//.toDouble // currency_id
+          buffer(7) = src(14)//.toDouble // price
     (buffer)
 }
       
@@ -130,7 +134,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       //messages.print()
       
  val cleanData = messages.map{
-     case(_,line) => line.split(",").map(x => x.split(":")(1))
+     case(_,line) => line.split(",")//.map(x => x.split(":")(1))
  }.flatMap(CreateDataArray(_)).print()
 
       
