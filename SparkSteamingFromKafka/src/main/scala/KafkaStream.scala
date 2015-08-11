@@ -144,8 +144,6 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
      case(_,line) => line.split(",")//.map(x => x.split(":")(1))
  }.flatMap(CreateDataArray(_)).print()
 
-cleanData.count().print
-      
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
 //      var trainingData = cleanData.map(x => Vectors.parse(x))
 //
