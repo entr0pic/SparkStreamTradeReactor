@@ -72,7 +72,7 @@ var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
 var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
 
-var maxCountry = exchanges.map(function(d) { return d.Country; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxCountry = banks.map(function(d) { return d.country; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxBank = banks.map(function(d) { return d.swift; }).map(function (d) { return d.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxBranch = banks.map(function(d) { return d.swift; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxSymbol = symbols.map(function(d) { return d.Symbol; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
@@ -142,7 +142,7 @@ var generateTradePairs = function(count, startDate) {
       party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
       counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
       exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
-      country_weight: GenerateIdFromStr(symbol[0].Country) / maxCountry,
+      country_weight: GenerateIdFromStr(bank[0].country) / maxCountry,
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
         
@@ -171,7 +171,7 @@ var generateTradePairs = function(count, startDate) {
       party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
       counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
       exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
-      country_weight: GenerateIdFromStr(symbol[0].Country) / maxCountry,
+      country_weight: GenerateIdFromStr(bank[1].country) / maxCountry,
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
     }])
