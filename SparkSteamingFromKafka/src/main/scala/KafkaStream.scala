@@ -16,6 +16,8 @@ import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.clustering.StreamingKMeans
 
+import scala.util.parsing.json._
+
 
 
 //import org.apache.log4j.{Level, Logger}
