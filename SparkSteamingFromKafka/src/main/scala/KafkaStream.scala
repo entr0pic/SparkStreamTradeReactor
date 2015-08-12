@@ -150,7 +150,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       
 val cleanData = cleanData1.map(CreateDataArray(_))
 
-//cleanData1.flatMap(CreateDataArray(_)).print()
+cleanData1.flatMap(CreateDataArray(_)).print()
       
 val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 trainingData.print()
