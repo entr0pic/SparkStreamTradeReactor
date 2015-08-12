@@ -144,15 +144,11 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
       
  val cleanData1 = messages.map{
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
-     case (_,line) => JSON.parseFull(line) 
-     //match {
-    //    case Some(m) => m
-//        case _ => Map[String,Any]("party"->"","price"->0.0,"party_weight"->0.0,"country_weight"->0.0,"currency_weight"->0.0,"country"->"","currency"->"")
-    //  }
- }//.print()
+     case (_,line) => JSON.parseFull(line).map(case Some(map: Map[String, Any]) => map)
+ }.print()
       
 //val cleanData = cleanData1.map(CreateDataArray(_))
-cleanData1.flatMap(CreateDataArray(_)).print()
+//cleanData1.flatMap(CreateDataArray(_)).print()
       
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
