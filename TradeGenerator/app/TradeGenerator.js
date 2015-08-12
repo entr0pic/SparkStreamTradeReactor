@@ -137,10 +137,12 @@ var generateTradePairs = function(count, startDate) {
       max_symbol: maxSymbol,
       max_country: maxCountry,
       max_currency: maxCurrency,
+      max_exchange: maxExchange,
 
       party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
       counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
       exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
+      country_weight: GenerateIdFromStr(symbol[0].Country) / maxCountry,
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
         
@@ -168,6 +170,7 @@ var generateTradePairs = function(count, startDate) {
       party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
       counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
       exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
+      country_weight: GenerateIdFromStr(symbol[0].Country) / maxCountry,
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
     }])
