@@ -116,15 +116,15 @@ object TradeStreamReader {
 //        if (parts.length>0) parts(0)+"."+parts(1) else ret
     }
 
-def CreateDataArray(src: Map[String,String]) : Array[String] = {
-        val buffer:Array[Double] = new Array[Double](4)
+def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
+        val buffer:Array[Any] = new Array[Any](7)
         buffer(0) = src("price")
         buffer(1) = src("party_weight")
         buffer(2) = src("country_weight")
         buffer(3) = src("currency_weight")
-//        buffer(4) = src("party")
-//        buffer(5) = src("country")
-//        buffer(6) = src("currency")
+        buffer(4) = src("party")
+        buffer(5) = src("country")
+        buffer(6) = src("currency")
     (buffer)
 }
       
@@ -148,7 +148,7 @@ def CreateDataArray(src: Map[String,String]) : Array[String] = {
         case Some(m) => m
         case _ => None
       }
- }.filter(x => x!=None ).print()
+ }.filter(_!=None ).print()
       
 //val cleanData = cleanData1.map(CreateDataArray(_))
 cleanData1.flatMap(CreateDataArray(_)).print()
