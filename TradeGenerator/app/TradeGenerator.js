@@ -65,6 +65,13 @@ var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
 var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
 
+var maxCountry = exchanges.map(function(d) { return d.country; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxBank = banks.map(function(d) { return d.swift; }).map(function (d) { return d.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxBranch = banks.map(function(d) { return d.swift; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxSymbol = symbols.map(function(d) { return d.symbol; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxCurrency = symbols.map(function(d) { return d.currency; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+
+    
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
 console.log("ccps");
@@ -84,14 +91,15 @@ var getRandomPrice = function(symbol) {
   }
 }
 
+var GenerateIdFromStr = function (str) {
+    return [].concat(str.split("")).map(function (ch){
+        var n = ch.charCodeAt(0);
+        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
+    }).join("").replace(/^[0]+/gi, "");
+};
+
 var generateTradePairs = function(count, startDate) {
   if (!startDate) startDate = new Date();
-    var GenerateIdFromStr = function (str) {
-        return [].concat(str.split("")).map(function (ch){
-            var n = ch.charCodeAt(0);
-            return (n<10?"0":"")+(n<100?"0":"")+n.toString();
-        }).join("");
-    };
   var trades = [];
   for (var i = 0; i<count; i++) {
     startDate.setMilliseconds(startDate.getMilliseconds() + Math.random() * 1000)
@@ -104,46 +112,53 @@ var generateTradePairs = function(count, startDate) {
     var price = getRandomPrice(symbol[0])||Math.random()*10;
     var volume = Math.ceil(Math.random()*(symbol[0].AverageDailyVolume||1000));
       
-      var party_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
-      var counterparty_id = GenerateIdFromStr(bank[1].swift.slice(0,4));
-      var currency_id = GenerateIdFromStr(symbol[0].Currency);
+//      var party_id = GenerateIdFromStr(bank[0].swift.slice(0,4));
+//      var counterparty_id = GenerateIdFromStr(bank[1].swift.slice(0,4));
+//      var currency_id = GenerateIdFromStr(symbol[0].Currency);
     
     trades = trades.concat([{
       trade_date: dateTime[0],
       trade_time: startDate.toISOString(),
       party: bank[0].swift,
-      party_id: party_id,
       counterparty: bank[1].swift,
-      counterparty_id: counterparty_id,
       ccp: ccp[0].BICCode,
       exchange: symbol[0].Exchange,
       symbol: symbol[0].Symbol,
       currency: symbol[0].Currency,
-        currency_id : currency_id,
       side: side?'B':'S',
       type: symbol[0].Type,
       category: symbol[0].Category,
       price: price,
       volume: volume,
-      unit: symbol[0].Unit
+      unit: symbol[0].Unit,
+        
+      party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
+      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
+      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
+      currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
+        
     },{
       trade_date: dateTime[0],
       trade_time: startDate.toISOString(),
       party: banks[1].swift,
-      party_id: party_id,
       counterparty: banks[0].swift,
-      counterparty_id: counterparty_id,
       ccp: ccp[0].BICCode,
       exchange: symbol[0].Exchange,
       symbol: symbol[0].Symbol,
       currency: symbol[0].Currency,
-        currency_id : currency_id,
       side: side?'S':'B',
       type: symbol[0].Type,
       category: symbol[0].Category,
       price: price,
       volume: volume,
-      unit: symbol[0].Unit
+      unit: symbol[0].Unit,
+        
+      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
+      counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
+      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
+      currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
     }])
   }
   return trades;
