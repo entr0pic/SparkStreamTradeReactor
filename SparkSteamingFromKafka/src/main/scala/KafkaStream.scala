@@ -114,15 +114,17 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Array[String]) : Array[String] = {
-        val buffer:Array[String] = new Array[String](8)
+        val buffer:Array[String] = new Array[String](10)
           buffer(0) = preformatForDouble(src(3))//.toDouble // party_id 
           buffer(1) = preformatForDouble(src(5))//.toDouble // counterparty_id 
           buffer(2) = preformatForDouble(src(10))//.toDouble // currency_id
           buffer(3) = preformatForDouble(src(14))//.toDouble // price
-          buffer(4) = src(3)//.toDouble // party_id 
-          buffer(5) = src(5)//.toDouble // counterparty_id 
-          buffer(6) = src(10)//.toDouble // currency_id
-          buffer(7) = src(14)//.toDouble // price
+            buffer(4) = src(2)
+          buffer(5) = src(3)//.toDouble // party_id
+    buffer(6) = src(4)
+          buffer(7) = src(5)//.toDouble // counterparty_id 
+          buffer(8) = src(10)//.toDouble // currency_id
+          buffer(9) = src(14)//.toDouble // price
     (buffer)
 }
       
