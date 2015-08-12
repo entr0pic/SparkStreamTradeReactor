@@ -108,7 +108,7 @@ object TradeStreamReader {
 
     def preformatForDouble(src:String):String = {
         var ret = src.split(":")(1)
-        ret = ret.substring(1, ret.length-2).toString
+        ret = ret.substring(1, ret.length-2).toString.replace("^[0]+", "")//.replace("^[.]{1}", "0.")
         if (ret.indexOf(".")==ret.lastIndexOf(".")) ret else ret.substring(0, ret.lastIndexOf(".")-1)
 //        val parts = ret.split(".")
 //        if (parts.length>0) parts(0)+"."+parts(1) else ret
@@ -140,20 +140,21 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
     // Get the lines, split them into words, count the words and print
-    val trades = messages.map(_._2)
+//    val trades = messages.map(_._2)
+      val trades = messages.map{ case (k,v) => JsonParser.parse(v) }
       
-      //messages.print()
+      trades.print()
       
- val cleanData1 = messages.map{
-     case(_,line) => line.split(",")//.map(x => x.split(":"))
- }
-      
-val cleanData = cleanData1.map(CreateDataArray(_))
-
-cleanData1.flatMap(CreateDataArray(_)).print()
-      
-val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
-trainingData.print()
+// val cleanData1 = messages.map{
+//     case(_,line) => line.split(",")//.map(x => x.split(":"))
+// }
+//      
+//val cleanData = cleanData1.map(CreateDataArray(_))
+//
+//cleanData1.flatMap(CreateDataArray(_)).print()
+//      
+//val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
+//trainingData.print()
 
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
 //      var trainingData = cleanData.map(x => Vectors.parse(x))
