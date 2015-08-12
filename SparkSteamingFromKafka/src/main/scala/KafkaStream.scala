@@ -152,7 +152,7 @@ val cleanData = cleanData1.map(CreateDataArray(_))
 
 //cleanData1.flatMap(CreateDataArray(_)).print()
       
-val trainingData = cleanData.map(_.take(4)).flatMap(_.toDouble)//.map(Vectors.parse)
+val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 trainingData.print()
 
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
