@@ -117,17 +117,14 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Map[String,String]) : Array[String] = {
-        val buffer:Array[String] = new Array[String](10)
-          buffer(0) = preformatForDouble(src("party_id"))//.toDouble // party_id 
-          buffer(1) = preformatForDouble(src("counterparty_id"))
-          buffer(2) = preformatForDouble(src("currency_id"))//.toDouble // currency_id
-          buffer(3) = preformatForDouble(src("price"))//.toDouble // price
-            buffer(4) = src("party")
-          buffer(5) = src("party_id")//.toDouble // party_id
-        buffer(6) = src("counterparty")
-          buffer(7) = src("counterparty_id")//.toDouble // counterparty_id 
-          buffer(8) = src("currency_id")//.toDouble // currency_id
-          buffer(9) = src("price")//.toDouble // price
+        val buffer:Array[String] = new Array[String](7)
+        buffer(0) = src("price")
+        buffer(1) = src("party_weight")
+        buffer(2) = src("country_weight")
+        buffer(3) = src("currency_weight")
+        buffer(4) = src("party")
+        buffer(5) = src("country")
+        buffer(6) = src("currency")
     (buffer)
 }
       
@@ -151,11 +148,10 @@ def CreateDataArray(src: Map[String,String]) : Array[String] = {
         case Some(m) => m
         case _ => Map("party" -> "")
       }
- }.filter(x => x("party") != "" ).print()
+ }.filter(x => x("party") != "" )//.print()
       
 //val cleanData = cleanData1.map(CreateDataArray(_))
-//
-//cleanData1.flatMap(CreateDataArray(_)).print()
+cleanData1.flatMap(CreateDataArray(_)).print()
       
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
