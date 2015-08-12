@@ -116,18 +116,18 @@ object TradeStreamReader {
 //        if (parts.length>0) parts(0)+"."+parts(1) else ret
     }
 
-def CreateDataArray(src: Array[String]) : Array[String] = {
+def CreateDataArray(src: Map[String,String]) : Array[String] = {
         val buffer:Array[String] = new Array[String](10)
-          buffer(0) = preformatForDouble(src(3))//.toDouble // party_id 
-          buffer(1) = preformatForDouble(src(5))//.toDouble // counterparty_id 
-          buffer(2) = preformatForDouble(src(10))//.toDouble // currency_id
-          buffer(3) = preformatForDouble(src(14))//.toDouble // price
-            buffer(4) = src(2)
-          buffer(5) = src(3)//.toDouble // party_id
-    buffer(6) = src(4)
-          buffer(7) = src(5)//.toDouble // counterparty_id 
-          buffer(8) = src(10)//.toDouble // currency_id
-          buffer(9) = src(14)//.toDouble // price
+          buffer(0) = preformatForDouble(src("party_id"))//.toDouble // party_id 
+          buffer(1) = preformatForDouble(src("counterparty_id"))
+          buffer(2) = preformatForDouble(src("currency_id"))//.toDouble // currency_id
+          buffer(3) = preformatForDouble(src("price"))//.toDouble // price
+            buffer(4) = src("party")
+          buffer(5) = src("party_id")//.toDouble // party_id
+        buffer(6) = src("counterparty")
+          buffer(7) = src("counterparty_id")//.toDouble // counterparty_id 
+          buffer(8) = src("currency_id")//.toDouble // currency_id
+          buffer(9) = src("price")//.toDouble // price
     (buffer)
 }
       
@@ -148,12 +148,12 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
  val cleanData1 = messages.map{
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
      case (_,line) => JSON.parseFull(line)
- }.print()
-//      
-//val cleanData = cleanData1.map(CreateDataArray(_))
-//
-//cleanData1.flatMap(CreateDataArray(_)).print()
-//      
+ }
+      
+val cleanData = cleanData1.map(CreateDataArray(_))
+
+cleanData1.flatMap(CreateDataArray(_)).print()
+      
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
 
