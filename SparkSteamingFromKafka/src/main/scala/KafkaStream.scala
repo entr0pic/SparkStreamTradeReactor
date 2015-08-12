@@ -148,7 +148,7 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
         case Some(m) => m
         case _ => None
       }
- }.filter(_!=None ).print()
+ }.filter(_!=None )//.print()
       
 //val cleanData = cleanData1.map(CreateDataArray(_))
 cleanData1.flatMap(CreateDataArray(_)).print()
