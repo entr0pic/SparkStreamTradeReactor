@@ -77,11 +77,7 @@ var maxBank = banks.map(function(d) { return d.swift; }).map(function (d) { retu
 var maxBranch = banks.map(function(d) { return d.swift; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxSymbol = symbols.map(function(d) { return d.Symbol; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxCurrency = symbols.map(function(d) { return d.Currency; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
-
-//var maxCountry = exchanges[0];
-//var maxBank = banks[0];
-//var maxSymbol = symbols[0];
-//var maxCurrency = symbols[0];
+var maxExchange = symbols.map(function(d) { return d.Exchange; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
     
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
