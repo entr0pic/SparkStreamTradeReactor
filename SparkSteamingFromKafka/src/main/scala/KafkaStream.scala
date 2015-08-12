@@ -145,7 +145,7 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       
  val cleanData1 = messages.map{
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
-     case (k,v) => JsonParser.parse(v) 
+     case (_,line) => JSON.parseFull(line)
  }.print()
 //      
 //val cleanData = cleanData1.map(CreateDataArray(_))
