@@ -141,13 +141,15 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
       
       //messages.print()
       
- val cleanData = messages.map{
+ val cleanData1 = messages.map{
      case(_,line) => line.split(",")//.map(x => x.split(":"))
- }.map(CreateDataArray(_))
+ }
       
-1 to cleanData.size flatMap(cleanData.get).print()
+val cleanData = cleanData1.map(CreateDataArray(_))
+
+cleanData1.flatMap(CreateDataArray(_)).print()
       
-val trainingData = cleanData.map(_.take(4))//.map(_.toDouble).map(Vectors.parse)
+val trainingData = cleanData.flatMap(_.take(4))//.map(_.toDouble).map(Vectors.parse)
 trainingData.print()
 
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
