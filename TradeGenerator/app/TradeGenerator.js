@@ -87,7 +87,7 @@ var getRandomPrice = function(symbol) {
 var generateTradePairs = function(count, startDate) {
   if (!startDate) startDate = new Date();
     var GenerateIdFromStr = function (str) {
-        return [].concat("asdf".split("")).map(function (ch){
+        return [].concat(str.split("")).map(function (ch){
             var n = ch.charCodeAt(0);
             return (n<10?"0":"")+(n<100?"0":"")+n.toString();
         }).join("");
