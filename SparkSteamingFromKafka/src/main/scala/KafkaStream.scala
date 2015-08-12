@@ -140,14 +140,13 @@ def CreateDataArray(src: Array[String]) : Array[String] = {
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
     // Get the lines, split them into words, count the words and print
-//    val trades = messages.map(_._2)
-      val trades = messages.map{ case (k,v) => JsonParser.parse(v) }
+     val trades = messages.map(_._2)
       
-      trades.print()
       
-// val cleanData1 = messages.map{
+ val cleanData1 = messages.map{
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
-// }
+     case (k,v) => JsonParser.parse(v) 
+ }.print()
 //      
 //val cleanData = cleanData1.map(CreateDataArray(_))
 //
