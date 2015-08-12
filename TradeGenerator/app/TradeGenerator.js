@@ -60,6 +60,13 @@ var logJsonNicely = function (jsonArray) {
   }
 };
 
+var GenerateIdFromStr = function (str) {
+    return [].concat(str.split("")).map(function (ch){
+        var n = ch.charCodeAt(0);
+        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
+    }).join("").replace(/^[0]+/gi, "");
+};
+
 var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
@@ -91,12 +98,6 @@ var getRandomPrice = function(symbol) {
   }
 }
 
-var GenerateIdFromStr = function (str) {
-    return [].concat(str.split("")).map(function (ch){
-        var n = ch.charCodeAt(0);
-        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
-    }).join("").replace(/^[0]+/gi, "");
-};
 
 var generateTradePairs = function(count, startDate) {
   if (!startDate) startDate = new Date();
