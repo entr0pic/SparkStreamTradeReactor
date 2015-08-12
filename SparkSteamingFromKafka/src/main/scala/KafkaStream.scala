@@ -109,8 +109,9 @@ object TradeStreamReader {
     def preformatForDouble(src:String):String = {
         var ret = src.split(":")(1)
         ret = ret.substring(1, ret.length-2).toString
-        val parts = ret.split(".")
-        if (parts.length>0) parts(0)+"."+parts(1) else ret
+        if (ret.indexOf(".")==ret.lastIndexOf(".")) ret else ret.substring(0, ret.lastIndexOf(".")-1)
+//        val parts = ret.split(".")
+//        if (parts.length>0) parts(0)+"."+parts(1) else ret
     }
 
 def CreateDataArray(src: Array[String]) : Array[String] = {
