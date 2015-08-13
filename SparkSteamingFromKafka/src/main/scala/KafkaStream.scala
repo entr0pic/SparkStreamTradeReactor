@@ -145,9 +145,12 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
      val trades = messages.map(_._2)
       
       
- val cleanData1 = messages.map{
-     case (_,line) => JSON.parseFull(line).get(_)
- }
+ val cleanData1 = messages.map(
+     case (_,line) => JSON.parseFull(line) match {
+      case Some(e) => e
+      case None => Map[String,Any]("party"->"")
+    }
+ )
     
 //cleanData1.print()
 val cleanData = cleanData1.flatMap(x => CreateDataArray(x)).print()
