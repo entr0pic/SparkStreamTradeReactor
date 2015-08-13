@@ -151,9 +151,9 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
      }
  }
     
-     cleanData1.print()
+//     cleanData1.print()
 //val cleanData = cleanData1.map(CreateDataArray(_))
-//cleanData1.flatMap(CreateDataArray(_)).print()
+cleanData1.flatMap(CreateDataArray(_)).print()
       
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
