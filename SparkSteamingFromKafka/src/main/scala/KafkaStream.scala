@@ -145,9 +145,10 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
  val cleanData1 = messages.map{
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
      case (_,line) => {
-         var ret  = JSON.parseFull(line) match {
+         JSON.parseFull(line) match {
             case Some(x) => x
          }
+     }
  }
     
      cleanData1.print()
