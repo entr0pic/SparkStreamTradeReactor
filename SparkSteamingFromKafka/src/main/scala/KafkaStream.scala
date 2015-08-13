@@ -146,7 +146,7 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
 //     case(_,line) => line.split(",")//.map(x => x.split(":"))
      case (_,line) => {
          var ret  = JSON.parseFull(line) match {
-            Some(x) => x
+            case Some(x) => x
          }
  }
     
