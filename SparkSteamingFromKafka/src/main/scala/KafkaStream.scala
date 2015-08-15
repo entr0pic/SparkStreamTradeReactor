@@ -147,13 +147,13 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
       
  val cleanData1 = messages.map(
      case (_,line) => JSON.parseFull(line) match {
-      case Some(e) => e
-      case None => Map[String,Any]("party"->"")
+      case Some(x) => CreateDataArray(x)
+      case None => new Array[Any](0)
     }
- )
+ )//.filter(_.size>1)
     
-//cleanData1.print()
-val cleanData = cleanData1.flatMap(x => CreateDataArray(x)).print()
+cleanData1.print()
+//val cleanData = cleanData1.flatMap(x => CreateDataArray(x)).print()
       
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
