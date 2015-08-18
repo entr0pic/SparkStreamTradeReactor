@@ -143,10 +143,12 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
       
       
  val cleanData = messages.map(
-     case (_,line) => JSON.parseFull(line) match {
+     case (_,line) => { 
+         JSON.parseFull(line) match {
              case Some(x) => {  CreateDataArray(x)  }
              case None =>  { new Array[Any](1) }
         }
+      }
      
  )//.filter(_.size>1)
     
