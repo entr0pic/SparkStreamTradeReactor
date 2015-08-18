@@ -142,14 +142,13 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
      val trades = messages.map(_._2)
       
       
- val cleanData = messages.map( case (_,line) => { 
+ val cleanData = messages.map{ case (_,line) => { 
          JSON.parseFull(line) match {
              case Some(x) => {  CreateDataArray(x)  }
              //case None =>  { None }
         }
       }
-     
- )//.filter(_.size>1)
+ }//.filter(_.size>1)
     
 cleanData.print()
       
