@@ -117,17 +117,14 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
-    val buffer: Array[Any] = new Array[Any](2)
-    buffer(0) = "debug"
-    buffer(1) = src("party")
-//            val buffer:Array[Any] = new Array[Any](7)
-//        buffer(0) = src("price")
-//        buffer(1) = src("party_weight")
-//        buffer(2) = src("country_weight")
-//        buffer(3) = src("currency_weight")
-//        buffer(4) = src("party")
-//        buffer(5) = src("country")
-//        buffer(6) = src("currency")
+        val buffer:Array[Any] = new Array[Any](7)
+        buffer(0) = src("price")
+        buffer(1) = src("party_weight")
+        buffer(2) = src("country_weight")
+        buffer(3) = src("currency_weight")
+        buffer(4) = src("party")
+        buffer(5) = src("country")
+        buffer(6) = src("currency")
     buffer
 }
       
@@ -145,15 +142,14 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
      val trades = messages.map(_._2)
       
       
- val cleanData1 = messages.map(
-     case (_,line) => JSON.parseFull(line) match {
+ val cleanData = messages.map(
+     (_,line) => JSON.parseFull(line) match {
       case Some(x) => CreateDataArray(x)
       case None => new Array[Any](0)
     }
  )//.filter(_.size>1)
     
-cleanData1.print()
-//val cleanData = cleanData1.flatMap(x => CreateDataArray(x)).print()
+cleanData.print()
       
 //val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
@@ -192,29 +188,8 @@ cleanData1.print()
       }
     }
       
-      trades.count().print
-    
+    trades.count().print
       
-//            
-//                  trade_date: dateTime[0],
-//      trade_time: startDate.toISOString(),
-//      party: bank[0].swift,
-//      party_id: party_id,
-//      counterparty: bank[1].swift,
-//      counterparty_id: counterparty_id,
-//      ccp: ccp[0].BICCode,
-//      exchange: symbol[0].Exchange,
-//      symbol: symbol[0].Symbol,
-//      currency: symbol[0].Currency,
-//        currency_id : currency_id,
-//      side: side?'B':'S',
-//      type: symbol[0].Type,
-//      category: symbol[0].Category,
-//      price: price,
-//      volume: volume,
-//      unit: symbol[0].Unit
-
-    // Start the computation
     ssc.start()
     ssc.awaitTermination()
   }
