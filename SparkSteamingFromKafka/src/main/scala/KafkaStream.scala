@@ -158,16 +158,16 @@ def CreateEmptyArray() : Array[Any] = {
             }
         }
     }
-  }//.filter(_.size>1)
+  }.filter(_.size>1)
     
 //cleanData.print()
-      
-val trainingData = cleanData.flatMap(_.take(4)).print()//.flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
-//trainingData.print()
 
-//      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
-//      var trainingData = cleanData.map(x => Vectors.parse(x))
-//
+//println(cleanData.size)
+val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
+      
+val trainingData = left.map(_.take(4)).flatMap(Vectors.parse).print()
+var testingData = right.map(_.take(4)).map(l => LabeledPoint(l(0), l)).flatMap(LabeledPoint.parse).print()
+      
 //      val numClusters = 34
 //      var numDimensions = 3
 //      
@@ -176,13 +176,13 @@ val trainingData = cleanData.flatMap(_.take(4)).print()//.flatMap(x => x.map(_.t
 //    .setDecayFactor(1.0)
 //      //.setHalfLife(halfLife, timeUnit)
 //      .setRandomCenters(numDimensions, 0.0)
-
-//    model.trainOn(trainingData)
+//
+//    model.trainOn(trainingData).print()
 //    model.predictOnValues(testingData).print()
-     
+//     
 
-    trades.foreachRDD{rdd =>
-      if (rdd.toLocalIterator.nonEmpty) {
+//    trades.foreachRDD{rdd =>
+//      if (rdd.toLocalIterator.nonEmpty) {
 //        val sqlContext = new SQLContext(rdd.sparkContext)
 //           import sqlContext.implicits._
 //       
@@ -195,10 +195,10 @@ val trainingData = cleanData.flatMap(_.take(4)).print()//.flatMap(x => x.map(_.t
 //println("Within Set Sum of Squared Errors = " + WSSSE)
 //println("clustering results:")        
 //        clusteringScore(data, numClusters, numIterations).foreach(println)
-          
-      }
-    }
-      
+//          
+//      }
+//    }
+//      
     trades.count().print
       
     ssc.start()
