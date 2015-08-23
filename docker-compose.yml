@@ -127,6 +127,21 @@ worker2:
     - /media/storage/repos/SparkStreamTradeReactor/Spark/jars:/jars
     - /media/storage/repos/SparkStreamTradeReactor/Spark/shared:/shared/data
 
+tradegen:
+  image: localhost:5000/tradegenerator
+  hostname: tradegen
+  links:
+    - kafka
+    - master
+  environment:
+    KAFKA: kafka
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
+  command: node TradeGenerator.js
+  volumes:
+    - /media/storage/repos/SparkStreamTradeReactor/TradeGenerator:/shared
+
+
 submitter:
   image: localhost:5000/spark
 #  command: bash /base_files/trade-stream.sh
@@ -188,19 +203,6 @@ dockerui:
   ports:
     - 9000:9000
 
-tradegen:
-  image: localhost:5000/tradegenerator
-  hostname: tradegen
-  links:
-    - kafka
-    - master
-  environment:
-    KAFKA: kafka
-    KAFKA_PORT: 9092
-    KAFKA_TOPIC: trades
-  command: node TradeGenerator.js
-  volumes:
-    - /media/storage/repos/SparkStreamTradeReactor/TradeGenerator:/shared
 
 #tradecon:
 #  image: localhost:5000/tradegenerator
