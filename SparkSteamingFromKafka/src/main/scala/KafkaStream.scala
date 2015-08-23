@@ -158,7 +158,8 @@ def CreateEmptyArray() : Array[Any] = {
                 case _ => CreateEmptyArray()
             }
         }
-    }//.filter(_.size>1)
+    }
+  }//.filter(_.size>1)
     
 cleanData.print()
       
