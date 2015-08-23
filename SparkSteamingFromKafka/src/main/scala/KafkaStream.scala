@@ -117,8 +117,8 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Any) : Array[Any] = {
-    val ret: Array[Any] = new Array[Any](1)
-    ret(0) = src
+    val buffer: Array[Any] = new Array[Any](1)
+    buffer(0) = src
 //        val buffer:Array[Any] = new Array[Any](7)
 //        buffer(0) = src("price")
 //        buffer(1) = src("party_weight")
@@ -127,6 +127,12 @@ def CreateDataArray(src: Any) : Array[Any] = {
 //        buffer(4) = src("party")
 //        buffer(5) = src("country")
 //        buffer(6) = src("currency")
+    buffer
+}
+      
+def CreateEmptyArray() : Array[Any] = {
+    val buffer: Array[Any] = new Array[Any](1)
+    buffer(0) = 0.00
     buffer
 }
       
@@ -147,7 +153,7 @@ def CreateDataArray(src: Any) : Array[Any] = {
  val cleanData = messages.map{ case (_,line) => { 
          JSON.parseFull(line) match {
              case Some(x) => {  CreateDataArray(x)  }
-             case None =>  { new Array[Any](1)(0.00) }
+             case None =>  { CreateEmptyArray() }
         }
       }
  }//.filter(_.size>1)
