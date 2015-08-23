@@ -117,16 +117,14 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
-    val buffer: Array[Any] = new Array[Any](1)
-    buffer(0) = src("price")
-//        val buffer:Array[Any] = new Array[Any](7)
-//        buffer(0) = src("price")
-//        buffer(1) = src("party_weight")
-//        buffer(2) = src("country_weight")
-//        buffer(3) = src("currency_weight")
-//        buffer(4) = src("party")
-//        buffer(5) = src("country")
-//        buffer(6) = src("currency")
+        val buffer:Array[Any] = new Array[Any](7)
+        buffer(0) = src("price")
+        buffer(1) = src("party_weight")
+        buffer(2) = src("country_weight")
+        buffer(3) = src("currency_weight")
+        buffer(4) = src("party")
+        buffer(5) = src("country")
+        buffer(6) = src("currency")
     buffer
 }
       
