@@ -117,7 +117,7 @@ object TradeStreamReader {
     }
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
-        val buffer:Array[Any] = new Array[Any](7)
+        val buffer:Array[Any] = new Array[Any](6)
         buffer(0) = src("price")
         buffer(1) = src("party_weight")
         buffer(2) = src("country_weight")
@@ -147,6 +147,7 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
+//    messages.flatMap(case (_,line) => line).print()
       
     val cleanData = messages.map{ case (_,line) => { 
         JSON.parseFull(line)  match {

@@ -132,6 +132,7 @@ var generateTradePairs = function(count, startDate) {
       price: price,
       volume: volume,
       unit: symbol[0].Unit,
+        country: bank[0].country,
         
       max_bank: maxBank,
       max_symbol: maxSymbol,
@@ -161,6 +162,7 @@ var generateTradePairs = function(count, startDate) {
       price: price,
       volume: volume,
       unit: symbol[0].Unit,
+        country: bank[1].country,
         
       max_bank: maxBank,
       max_symbol: maxSymbol,
