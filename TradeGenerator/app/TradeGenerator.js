@@ -90,9 +90,9 @@ logJsonNicely(randomSample(symbols, 10));
 
 var getRandomPrice = function(symbol) {
   if (symbol.YearHigh && symbol.YearLow)
-    return Math.random()*(symbol.YearHigh-symbol.YearLow) + symbol.YearLow;
+    return Math.random()*(symbol.YearHigh-symbol.YearLow) + parseFloat(symbol.YearLow);
   if (symbol.LastPrice) {
-    return (Math.random()-0.5)*20 * symbol.LastPrice;
+    return (Math.random()-0.5)*20 * parseFloat(symbol.LastPrice);
   } else {
     return Math.random() * 20;
   }
