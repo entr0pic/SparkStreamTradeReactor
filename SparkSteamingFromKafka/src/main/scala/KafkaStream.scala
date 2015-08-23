@@ -148,7 +148,7 @@ def CreateEmptyArray() : Array[Any] = {
      val trades = messages.map(_._2)
       
       
-    val cleanData = messages.flatMap{ case (_,line) => { 
+    val cleanData = messages.map{ case (_,line) => { 
         JSON.parseFull(line)  match {
             case None => CreateEmptyArray()
             case Some( mapAsAny ) => mapAsAny match {
@@ -159,9 +159,9 @@ def CreateEmptyArray() : Array[Any] = {
     }
   }//.filter(_.size>1)
     
-cleanData.print()
+//cleanData.print()
       
-//val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
+val trainingData = cleanData.flatMap(_.take(4)).print()//.flatMap(x => x.map(_.toDouble))//.map(Vectors.parse)
 //trainingData.print()
 
 //      var testingData = cleanData.map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
