@@ -116,7 +116,7 @@ object TradeStreamReader {
 //        if (parts.length>0) parts(0)+"."+parts(1) else ret
     }
 
-def CreateDataArray(src: Any) : Array[Any] = {
+def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
     val buffer: Array[Any] = new Array[Any](1)
     buffer(0) = src("price")
 //        val buffer:Array[Any] = new Array[Any](7)
