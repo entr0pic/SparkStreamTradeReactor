@@ -165,19 +165,19 @@ def CreateEmptyArray() : Array[Any] = {
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
       
-val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toString.toDouble)).print()//.map(Vectors.parse)
+val trainingData = cleanData.map(_.take(4)).flatMap(x => x.map(_.toString.toDouble)).map(Vectors.parse)
 //var testingData = cleanData.map(_.take(4)).map(x => x.map(_.toString.toDouble)).map(Vectors.parse).map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
       
-//      val numClusters = 34
-//      var numDimensions = 3
-//      
-//    val model = new StreamingKMeans()
-//      .setK(numClusters)
-//    .setDecayFactor(1.0)
-//      //.setHalfLife(halfLife, timeUnit)
-//      .setRandomCenters(numDimensions, 0.0)
-//
-//    model.trainOn(trainingData).print()
+      val numClusters = 34
+      var numDimensions = 3
+      
+    val model = new StreamingKMeans()
+      .setK(numClusters)
+    .setDecayFactor(1.0)
+      //.setHalfLife(halfLife, timeUnit)
+      .setRandomCenters(numDimensions, 0.0)
+
+    model.trainOn(trainingData)
 //    model.predictOnValues(testingData).print()
 //     
 
