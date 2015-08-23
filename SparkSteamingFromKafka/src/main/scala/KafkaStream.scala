@@ -150,7 +150,7 @@ def CreateEmptyArray() : Array[Any] = {
      val trades = messages.map(_._2)
       
       
-    val cleanData = messages.map{ case (_,line) => { 
+    val cleanData = messages.flatMap{ case (_,line) => { 
         JSON.parseFull(line)  match {
             case None => CreateEmptyArray()
             case Some( mapAsAny ) => mapAsAny match {
