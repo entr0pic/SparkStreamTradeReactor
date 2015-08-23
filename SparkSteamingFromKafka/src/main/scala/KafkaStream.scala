@@ -150,13 +150,15 @@ def CreateEmptyArray() : Array[Any] = {
      val trades = messages.map(_._2)
       
       
- val cleanData = messages.map{ case (_,line) => { 
-         JSON.parseFull(line) match {
-             case Some(x) => {  CreateDataArray(x)  }
-             case None =>  { CreateEmptyArray() }
+    val cleanData = messages.map{ case (_,line) => { 
+        JSON.parseFull(line)  match {
+            case None => CreateEmptyArray()
+            case Some( mapAsAny ) => mapAsAny match {
+                case x: Map[ String, Any ] => { CreateDataArray(x) }
+                case _ => CreateEmptyArray()
+            }
         }
-      }
- }//.filter(_.size>1)
+    }//.filter(_.size>1)
     
 cleanData.print()
       
