@@ -163,10 +163,10 @@ def CreateEmptyArray() : Array[Any] = {
 //cleanData.print()
 
 //println(cleanData.size)
-val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
+//val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
       
-val trainingData = left.map(_.take(4)).flatMap(Vectors.parse).print()
-var testingData = right.map(_.take(4)).map(l => LabeledPoint(l(0), l)).flatMap(LabeledPoint.parse).print()
+val trainingData = cleanData.map(_.take(4)).flatMap(Vectors.parse).print()
+var testingData = cleanData.map(_.take(4)).map(l => LabeledPoint(l(0), l)).flatMap(LabeledPoint.parse).print()
       
 //      val numClusters = 34
 //      var numDimensions = 3
