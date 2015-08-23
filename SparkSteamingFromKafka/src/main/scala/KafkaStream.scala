@@ -165,17 +165,24 @@ def CreateEmptyArray() : Array[Any] = {
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
       
-val trainingData = cleanData.map(_.take(4)).filter(_.size==4).flatMap(x => Vectors.dense(x.map(_.toString.toDouble))).print()
+      val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+          Vectors.dense(x.map(_.toString.toDouble)))
+    }.print()
+  
+  val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+          LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+    }.print()
+
 //var testingData = cleanData.map(_.take(4)).map(x => x.map(_.toString.toDouble)).map(Vectors.parse).map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
       
       val numClusters = 34
       var numDimensions = 3
       
-    val model = new StreamingKMeans()
-      .setK(numClusters)
-    .setDecayFactor(1.0)
-      //.setHalfLife(halfLife, timeUnit)
-      .setRandomCenters(numDimensions, 0.0)
+//    val model = new StreamingKMeans()
+//      .setK(numClusters)
+//    .setDecayFactor(1.0)
+//      //.setHalfLife(halfLife, timeUnit)
+//      .setRandomCenters(numDimensions, 0.0)
 
  //   model.trainOn(trainingData)
 //      val WSSSE = clusters.computeCost(trainingData)
