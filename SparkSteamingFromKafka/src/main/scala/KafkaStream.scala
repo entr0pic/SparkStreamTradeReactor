@@ -165,7 +165,7 @@ def CreateEmptyArray() : Array[Any] = {
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
       
-val trainingData = cleanData.map(_.take(4)).map(x => Vectors.dense(x.map(_.toString.toDouble))).cache()
+val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map(x => x.map(_.toString.toDouble).map(Vectors.parse)).cache()
 //var testingData = cleanData.map(_.take(4)).map(x => x.map(_.toString.toDouble)).map(Vectors.parse).map(l => LabeledPoint(l(0), l)).map(LabeledPoint.parse)
       
       val numClusters = 34
@@ -178,6 +178,9 @@ val trainingData = cleanData.map(_.take(4)).map(x => Vectors.dense(x.map(_.toStr
       .setRandomCenters(numDimensions, 0.0)
 
     model.trainOn(trainingData)
+//      val WSSSE = clusters.computeCost(trainingData)
+//      println("Within Set Sum of Squared Errors = " + WSSSE)
+
 //    model.predictOnValues(testingData).print()
 //     
 
