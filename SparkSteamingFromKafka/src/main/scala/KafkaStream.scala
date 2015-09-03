@@ -153,7 +153,7 @@ def CreateEmptyArray() : Array[Any] = {
 //    messages.flatMap(case (_,line) => line).print()
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
-          rdd.toArray().print()
+          rdd.collect().take(10).foreach(a => println(a))
       }
     }
       
