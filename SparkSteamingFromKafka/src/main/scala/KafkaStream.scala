@@ -16,6 +16,9 @@ import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.mllib.clustering.StreamingKMeans
 
+import org.apache.spark.mllib.linalg.Vector
+import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
+
 import scala.util.parsing.json._
 
 
@@ -172,21 +175,29 @@ def CreateEmptyArray() : Array[Any] = {
   val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
           LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
     }
+    
       
 
-trainingData.print()
-testingData.print()
+//trainingData.print()
+//testingData.print()
+      
+      
+val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
+      
+println(summary.mean) // a dense vector containing the mean value for each column
+println(summary.variance) // column-wise variance
+println(summary.numNonzeros) // number of nonzeros in each column
       
       val numClusters = 2
       var numDimensions = 3
       
-    val model = new StreamingKMeans()
-      .setK(numClusters)
-    .setDecayFactor(1.0)
-      //.setHalfLife(halfLife, timeUnit)
-      .setRandomCenters(numDimensions, 0.0)
-
-    model.trainOn(trainingData)
+//    val model = new StreamingKMeans()
+//      .setK(numClusters)
+//    .setDecayFactor(1.0)
+//      //.setHalfLife(halfLife, timeUnit)
+//      .setRandomCenters(numDimensions, 0.0)
+//
+//    model.trainOn(trainingData)
 //      val WSSSE = clusters.computeCost(trainingData)
 //      println("Within Set Sum of Squared Errors = " + WSSSE)
 
