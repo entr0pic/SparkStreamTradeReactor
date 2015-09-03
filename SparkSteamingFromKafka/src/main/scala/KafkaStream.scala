@@ -153,21 +153,32 @@ def CreateEmptyArray() : Array[Any] = {
 //    messages.flatMap(case (_,line) => line).print()
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
-          rdd.collect().take(10).foreach(a => println(a))
-      }
+          //rdd.collect().take(10).foreach(a => println(a))
+           val cleanData = rdd.collect().map{ line => 
+                { 
+                    JSON.parseFull(line)  match {
+                        case None => CreateEmptyArray()
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateEmptyArray()
+                        }
+                    }
+                }
+          }.filter(_.size>1)
+          cleanData.print()
     }
       
-    val cleanData = messages.map{ case (_,line) => { 
-        JSON.parseFull(line)  match {
-            case None => CreateEmptyArray()
-            case Some( mapAsAny ) => mapAsAny match {
-                case x: Map[ String, Any ] => { CreateDataArray(x) }
-                case _ => CreateEmptyArray()
-            }
-        }
-    }
-  }.filter(_.size>1)
-    
+//    val cleanData = messages.map{ case (_,line) => { 
+//        JSON.parseFull(line)  match {
+//            case None => CreateEmptyArray()
+//            case Some( mapAsAny ) => mapAsAny match {
+//                case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                case _ => CreateEmptyArray()
+//            }
+//        }
+//    }
+//  }.filter(_.size>1)
+//    
 //cleanData.print()
 
 //println(cleanData.size)
