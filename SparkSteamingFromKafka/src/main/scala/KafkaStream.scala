@@ -151,6 +151,11 @@ def CreateEmptyArray() : Array[Any] = {
      val trades = messages.map(_._2)
       
 //    messages.flatMap(case (_,line) => line).print()
+    trades.foreachRDD{rdd =>
+      if (rdd.toLocalIterator.nonEmpty) {
+          rdd.toArray().print()
+      }
+    }
       
     val cleanData = messages.map{ case (_,line) => { 
         JSON.parseFull(line)  match {
@@ -170,7 +175,7 @@ def CreateEmptyArray() : Array[Any] = {
       
       val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
           Vectors.dense(x.map(_.toString.toDouble))
-    }.cache()
+    }
   
   val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
           LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
@@ -182,11 +187,11 @@ def CreateEmptyArray() : Array[Any] = {
 //testingData.print()
       
       
-val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
-      
-println(summary.mean) // a dense vector containing the mean value for each column
-println(summary.variance) // column-wise variance
-println(summary.numNonzeros) // number of nonzeros in each column
+//val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
+//      
+//println(summary.mean) // a dense vector containing the mean value for each column
+//println(summary.variance) // column-wise variance
+//println(summary.numNonzeros) // number of nonzeros in each column
       
       val numClusters = 2
       var numDimensions = 3
