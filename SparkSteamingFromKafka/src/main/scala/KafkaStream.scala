@@ -167,7 +167,7 @@ def CreateEmptyArray() : Array[Any] = {
       
       val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
           Vectors.dense(x.map(_.toString.toDouble))
-    }
+    }.cache()
   
   val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
           LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
@@ -175,6 +175,7 @@ def CreateEmptyArray() : Array[Any] = {
       
 
 trainingData.print()
+testingData.print()
       
       val numClusters = 2
       var numDimensions = 3
