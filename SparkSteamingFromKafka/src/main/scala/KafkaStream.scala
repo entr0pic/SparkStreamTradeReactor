@@ -321,15 +321,14 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
       (p1._1, p1._2 + p2._2)
     }
       
-      println(mergeContribs)
     val dim = numDimensions
       
+      println(closest.aggregateByKey((Vectors.zeros(dim), 0L)))
       
-    val pointStats: Array[(Int, (Vector, Long))] = closest
-      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
-      .collect()
-      
-    println(pointStats)
+//    val pointStats: Array[(Int, (Vector, Long))] = closest
+//      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
+//      .collect()
+//      
       
     data
 
