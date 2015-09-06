@@ -284,6 +284,7 @@ val sModel = new StreamingKMeans()
       println(mergeContribs)
     val dim = clusterCenters(0).size
       println(dim)
+  }
       
 //    val pointStats: Array[(Int, (Vector, Long))] = closest
 //      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
@@ -341,11 +342,10 @@ val sModel = new StreamingKMeans()
 //        j += 1
 //      }
 //    }
-
-    data
-    //this
-  }
-}      
+//
+//    this
+//  }
+//}      
       
       trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
