@@ -154,7 +154,7 @@ def CreateEmptyArray() : Array[Any] = {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
           //rdd.collect().take(10).foreach(a => println(a))
-           val cleanData = rdd.map{ (_,line) => 
+           val cleanData = rdd.map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
