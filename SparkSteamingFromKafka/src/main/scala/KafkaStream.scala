@@ -166,7 +166,7 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           
-          val (left, right) = cleanData.splitAt(round(cleanData.size*0.9))
+          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9))
           
         val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
                 Vectors.dense(x.map(_.toString.toDouble))
