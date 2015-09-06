@@ -299,6 +299,15 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
           s"axpy only supports adding to a dense vector but got type ${y.getClass}.")
     }
   }
+
+      //val random = new XORShiftRandom(seed)
+    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
+      
+    val weights = Array.fill(numClusters)(0.10)
+      
+      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
+
+ 
       
 /** Perform a k-means update on a batch of data. */
   def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
@@ -384,14 +393,7 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
 //  }
 //}      
       
-      //val random = new XORShiftRandom(seed)
-    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
-      
-    val weights = Array.fill(numClusters)(0.10)
-      
-      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
-
-      trainingData.foreachRDD { (rdd, time) => {
+     trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
            //model = model.update(rdd, decayFactor, "batches")
           update(rdd, decayFactor, "batches")
