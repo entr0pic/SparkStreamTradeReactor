@@ -217,27 +217,40 @@ val model = new StreamingKMeans()
 //    }
       
       
-      var values = messages.map{ case (_, line) => line }
-      val cleanData = values.map{ line => 
-            { 
-                JSON.parseFull(line)  match {
-                    case None => CreateEmptyArray()
-                    case Some( mapAsAny ) => mapAsAny match {
-                        case x: Map[ String, Any ] => { CreateDataArray(x) }
-                        case _ => CreateEmptyArray()
+//      var values = messages.map{ case (_, line) => line }
+//      val cleanData = values.map{ line => 
+//            { 
+//                JSON.parseFull(line)  match {
+//                    case None => CreateEmptyArray()
+//                    case Some( mapAsAny ) => mapAsAny match {
+//                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                        case _ => CreateEmptyArray()
+//                    }
+//                }
+//            }
+//      }
+//      
+//      val doubleData = cleanData.map(x => CreateDoubleArray(x,4)).cache()
+//      var trainingData = doubleData.map(Vectors.dense)
+      
+      var trainingData = trades.filter(rdd => rdd.toLocalIterator.nonEmpty).transform{rdd => 
+        {
+            rdd.map{ line => 
+                { 
+                    JSON.parseFull(line)  match {
+                        case None => CreateEmptyArray()
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateEmptyArray()
+                        }
                     }
                 }
-            }
-      }
+            }.map(x => CreateDoubleArray(x,4)).map(Vectors.dense)
+        }
+    }
       
-      val doubleData = cleanData.map(x => CreateDoubleArray(x,4))
-      var trainingData = doubleData.map(Vectors.dense)
-      
-       model.trainOn(trainingData)
-        
-    
+    model.trainOn(trainingData)
               
-      
 //    val cleanData = messages.map{ case (_,line) => { 
 //        JSON.parseFull(line)  match {
 //            case None => CreateEmptyArray()
