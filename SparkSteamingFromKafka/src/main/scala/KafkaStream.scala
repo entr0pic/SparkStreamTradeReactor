@@ -141,7 +141,7 @@ def CreateEmptyArray() : Array[Any] = {
 }
     
       def CreateDoubleArray(a: Array[Any], n: Int) = {
-          val buffer: Array[Double] = new Array[Double][n]
+          val buffer: Array[Double] = Array.fill(n)(0.00)
           for( i <- 0 to n-1) {
               buffer(i) = a(i).toString.toDouble
           }
