@@ -301,119 +301,12 @@ val sModel = new StreamingKMeans()
 //        }
 //    }
       
-//def axpy(a: Double, x: Vector, y: Vector): Unit = {
-//    if (x.size != y.size) {
-//    println(x.size)
-//    println(y.size)
-//    }
-//    require(x.size == y.size)
-//    y match {
-//      case dy: DenseVector =>
-//        x match {
-//          case sx: SparseVector =>
-//            axpy(a, sx, dy)
-//          case dx: DenseVector =>
-//            axpy(a, dx, dy)
-//          case _ =>
-//            throw new UnsupportedOperationException(
-//              s"axpy doesn't support x type ${x.getClass}.")
-//        }
-//      case _ =>
-//        throw new IllegalArgumentException(
-//          s"axpy only supports adding to a dense vector but got type ${y.getClass}.")
-//    }
-//  }
-//
 //      //val random = new XORShiftRandom(seed)
 //    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
 //      
 //    val weights = Array.fill(numClusters)(0.10)
 //      
 //      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
-//
-// 
-//      
-///** Perform a k-means update on a batch of data. */
-//  def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
-//
-//    // find nearest cluster to each point
-//    val closest = data.map(point => (model.predict(point), (point, 1L)))
-//
-//    // get sums and counts for updating each cluster
-//    val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
-//      axpy(1.0, p2._1, p1._1)
-//      (p1._1, p1._2 + p2._2)
-//    }
-//      
-//    val dim = numDimensions
-//      
-//    val pointStats: Array[(Int, (Vector, Long))] = closest
-//      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
-//      .collect()
-//      
-//      
-//    data
-//
-//  }
-//    
-//
-//    val discount = timeUnit match {
-//      case StreamingKMeans.BATCHES => decayFactor
-//      case StreamingKMeans.POINTS =>
-//        val numNewPoints = pointStats.view.map { case (_, (_, n)) =>
-//          n
-//        }.sum
-//        math.pow(decayFactor, numNewPoints)
-//    }
-//
-//    // apply discount to weights
-//    BLAS.scal(discount, Vectors.dense(clusterWeights))
-//
-//    // implement update rule
-//    pointStats.foreach { case (label, (sum, count)) =>
-//      val centroid = clusterCenters(label)
-//
-//      val updatedWeight = clusterWeights(label) + count
-//      val lambda = count / math.max(updatedWeight, 1e-16)
-//
-//      clusterWeights(label) = updatedWeight
-//      BLAS.scal(1.0 - lambda, centroid)
-//      BLAS.axpy(lambda / count, sum, centroid)
-//
-//      // display the updated cluster centers
-//      val display = clusterCenters(label).size match {
-//        case x if x > 100 => centroid.toArray.take(100).mkString("[", ",", "...")
-//        case _ => centroid.toArray.mkString("[", ",", "]")
-//      }
-//
-//      logInfo(s"Cluster $label updated with weight $updatedWeight and centroid: $display")
-//    }
-//
-//    // Check whether the smallest cluster is dying. If so, split the largest cluster.
-//    val weightsWithIndex = clusterWeights.view.zipWithIndex
-//    val (maxWeight, largest) = weightsWithIndex.maxBy(_._1)
-//    val (minWeight, smallest) = weightsWithIndex.minBy(_._1)
-//    if (minWeight < 1e-8 * maxWeight) {
-//      logInfo(s"Cluster $smallest is dying. Split the largest cluster $largest into two.")
-//      val weight = (maxWeight + minWeight) / 2.0
-//      clusterWeights(largest) = weight
-//      clusterWeights(smallest) = weight
-//      val largestClusterCenter = clusterCenters(largest)
-//      val smallestClusterCenter = clusterCenters(smallest)
-//      var j = 0
-//      while (j < dim) {
-//        val x = largestClusterCenter(j)
-//        val p = 1e-14 * math.max(math.abs(x), 1.0)
-//        largestClusterCenter.toBreeze(j) = x + p
-//        smallestClusterCenter.toBreeze(j) = x - p
-//        j += 1
-//      }
-//    }
-//
-//    this
-//  }
-//}      
-      
       
  try {
      sModel.trainOn(trainingData)
