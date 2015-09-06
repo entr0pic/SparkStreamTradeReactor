@@ -267,7 +267,7 @@ val sModel = new StreamingKMeans()
             .map(Vectors.dense)
             
         }
-    }
+    }.cache()
     
       
 //      println(trainingData)
