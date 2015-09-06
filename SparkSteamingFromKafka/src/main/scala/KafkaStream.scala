@@ -132,8 +132,11 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
 }
       
 def CreateEmptyArray() : Array[Any] = {
-    val buffer: Array[Any] = new Array[Any](1)
+    val buffer: Array[Any] = new Array[Any](4)
     buffer(0) = 0.00
+    buffer(1) = 0.00
+    buffer(2) = 0.00
+    buffer(3) = 0.00
     buffer
 }
       
@@ -207,24 +210,23 @@ val model = new StreamingKMeans()
 //    }
       
       
-      var values = messages.map{ case (_, line) => line }.cache()
-           val cleanData = values.map{ line => { 
-            
-                    JSON.parseFull(line)  match {
-                        case None => CreateEmptyArray()
-                        case Some( mapAsAny ) => mapAsAny match {
-                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-                            case _ => CreateEmptyArray()
-                        }
+      var values = messages.map{ case (_, line) => line }
+      val cleanData = values.map{ line => 
+            { 
+                JSON.parseFull(line)  match {
+                    case None => CreateEmptyArray()
+                    case Some( mapAsAny ) => mapAsAny match {
+                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+                        case _ => CreateEmptyArray()
                     }
                 }
-          }.filter(_.size>1).cache()
-                    
-            var trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-                    Vectors.dense(x.map(_.toString.toDouble))
-             }
+            }
+      }
       
-          model.trainOn(trainingData)
+      val doubleData = cleanData.map(_.take(4)).map(x=>x.map(_.toString.toDouble)).cache()
+      var trainingData = doubleData.map(Vectors.parse)
+      
+       model.trainOn(trainingData)
         
     
               
