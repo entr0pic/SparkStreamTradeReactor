@@ -396,9 +396,7 @@ val sModel = new StreamingKMeans()
       
       
  try {
-     trainingData.foreachRDD { (rdd, time) => {
-    sModel.trainOn(trainingData)
-     }
+     sModel.trainOn(trainingData)
     }
   }catch {
   case e: IOException => {
