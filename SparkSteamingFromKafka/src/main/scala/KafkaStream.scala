@@ -1,4 +1,5 @@
 import kafka.serializer.StringDecoder
+import java.io.IOException
 
 import org.apache.spark._
 import org.apache.spark.streaming._
@@ -403,9 +404,15 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
         }     
       //println(model)
     //model.trainOn(trainingData)
-  } catch {
-    case e: ScriptException => e.printStackTrace
+  }catch {
+  case e: IOException => {
+    e.printStackTrace()
+    e.toString()
   }
+} finally {
+      
+  }
+ 
       
               
 //    val cleanData = messages.map{ case (_,line) => { 
