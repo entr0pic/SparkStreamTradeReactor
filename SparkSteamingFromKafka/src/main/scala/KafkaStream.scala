@@ -393,6 +393,8 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
 //  }
 //}      
       
+      
+ try {
      trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
            //model = model.update(rdd, decayFactor, "batches")
@@ -402,6 +404,10 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
         }     
       //println(model)
     //model.trainOn(trainingData)
+  } catch {
+    case e: ScriptException => e.printStackTrace
+  }
+      
               
 //    val cleanData = messages.map{ case (_,line) => { 
 //        JSON.parseFull(line)  match {
