@@ -166,6 +166,12 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           cleanData.print()
+
+        val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+                Vectors.dense(x.map(_.toString.toDouble))
+         }
+          trainingData.print()
+
       }
     }
       
@@ -185,13 +191,10 @@ def CreateEmptyArray() : Array[Any] = {
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
       
-      val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-          Vectors.dense(x.map(_.toString.toDouble))
-    }
   
-  val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-          LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-    }
+//  val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+//          LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+//    }
     
       
 
