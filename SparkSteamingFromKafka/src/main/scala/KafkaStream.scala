@@ -253,7 +253,9 @@ val model = new StreamingKMeans()
         }
     }
       
-    model.trainOn(trainingData)
+    println(trainingData)
+      
+    //model.trainOn(trainingData)
               
 //    val cleanData = messages.map{ case (_,line) => { 
 //        JSON.parseFull(line)  match {
