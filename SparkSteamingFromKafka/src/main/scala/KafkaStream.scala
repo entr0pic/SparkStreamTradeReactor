@@ -150,8 +150,22 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
+      val nTrades = trades.size
+      var i = 0
+
+      val numClusters = 2
+      var numDimensions = 3
+      
+    val model = new StreamingKMeans()
+      .setK(numClusters)
+    .setDecayFactor(1.0)
+      //.setHalfLife(halfLife, timeUnit)
+      .setRandomCenters(numDimensions, 0.0)
+
+      
 //    messages.flatMap(case (_,line) => line).print()
     trades.foreachRDD{rdd =>
+                      i += 1
       if (rdd.toLocalIterator.nonEmpty) {
           //rdd.collect().take(10).foreach(a => println(a))
            val cleanData = rdd.map{ line => 
@@ -166,23 +180,29 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           
-          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
-//          
-//        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
-//                Vectors.dense(x.map(_.toString.toDouble))
-//         }
-//          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
-//              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-//        }
-//    
-         val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-                Vectors.dense(x.map(_.toString.toDouble))
-         }
+          if (i < nTrades-1) {
+              
+            var trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+                    Vectors.dense(x.map(_.toString.toDouble))
+             }
        val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
       
 println(summary.mean) // a dense vector containing the mean value for each column
 println(summary.variance) // column-wise variance
 println(summary.numNonzeros) // number of nonzeros in each column
+
+    model.trainOn(trainingData)
+      val WSSSE = clusters.computeCost(trainingData)
+      println("Within Set Sum of Squared Errors = " + WSSSE)
+
+          } else {
+              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+            }
+    model.predictOnValues(testingData).print()
+
+          }
+//          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
   
       }
     }
@@ -220,20 +240,7 @@ println(summary.numNonzeros) // number of nonzeros in each column
 //println(summary.variance) // column-wise variance
 //println(summary.numNonzeros) // number of nonzeros in each column
       
-      val numClusters = 2
-      var numDimensions = 3
-      
-//    val model = new StreamingKMeans()
-//      .setK(numClusters)
-//    .setDecayFactor(1.0)
-//      //.setHalfLife(halfLife, timeUnit)
-//      .setRandomCenters(numDimensions, 0.0)
-//
-//    model.trainOn(trainingData)
-//      val WSSSE = clusters.computeCost(trainingData)
-//      println("Within Set Sum of Squared Errors = " + WSSSE)
 
-//    model.predictOnValues(testingData).print()
 //     
 
 //    trades.foreachRDD{rdd =>
