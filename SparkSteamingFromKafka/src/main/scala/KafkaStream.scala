@@ -21,7 +21,19 @@ import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
 
 import scala.util.parsing.json._
 
+//--
+import scala.reflect.ClassTag
 
+import org.apache.spark.Logging
+import org.apache.spark.SparkContext._
+import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.mllib.linalg.{BLAS, Vector, Vectors}
+import org.apache.spark.rdd.RDD
+import org.apache.spark.streaming.StreamingContext._
+import org.apache.spark.streaming.dstream.DStream
+import org.apache.spark.util.Utils
+import org.apache.spark.util.random.XORShiftRandom
+//--
 
 //import org.apache.log4j.{Level, Logger}
 
@@ -273,7 +285,7 @@ val sModel = new StreamingKMeans()
   def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
 
     // find nearest cluster to each point
-    val closest = data.map(point => (this.predict(point), (point, 1L)))
+    val closest = data.map(point => (sModel.predict(point), (point, 1L)))
 
     // get sums and counts for updating each cluster
     val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
