@@ -166,6 +166,7 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           cleanData.print()
+      }
     }
       
 //    val cleanData = messages.map{ case (_,line) => { 
