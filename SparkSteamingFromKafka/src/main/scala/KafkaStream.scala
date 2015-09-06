@@ -150,7 +150,7 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
-      val nTrades = trades.count()
+      val nTrades = trades.count().toInt
       var i = 0
 
       val numClusters = 2
