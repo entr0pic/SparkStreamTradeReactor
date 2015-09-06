@@ -253,7 +253,7 @@ val model = new StreamingKMeans()
         }
     }
       
-    trainingData.foreachRDD{rdd => println(rdd.collect().take(10))}
+      trainingData.filter{ case(_,rdd) => rdd.toLocalIterator.nonEmpty }.foreachRDD{rdd => println(rdd.collect().take(10))}
       
     //model.trainOn(trainingData)
               
