@@ -233,7 +233,9 @@ val model = new StreamingKMeans()
 //      val doubleData = cleanData.map(x => CreateDoubleArray(x,4)).cache()
 //      var trainingData = doubleData.map(Vectors.dense)
       
-      var trainingData = trades.filter(rdd => rdd.toLocalIterator.nonEmpty).transform{rdd => 
+      var trainingData = trades
+        //.filter( (_,rdd) => rdd.toLocalIterator.nonEmpty)
+        .transform{rdd => 
         {
             rdd.map{ line => 
                 { 
@@ -245,7 +247,9 @@ val model = new StreamingKMeans()
                         }
                     }
                 }
-            }.map(x => CreateDoubleArray(x,4)).map(Vectors.dense)
+            }
+            .map(x => CreateDoubleArray(x,4))
+            .map(Vectors.dense)
         }
     }
       
