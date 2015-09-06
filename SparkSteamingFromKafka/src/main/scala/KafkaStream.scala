@@ -379,10 +379,10 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
 //  }
 //}      
       
-      val random = new XORShiftRandom(seed)
-    val clusterCenters = Array.fill(k)(Vectors.dense(Array.fill(dim)(random.nextGaussian())))
+      //val random = new XORShiftRandom(seed)
+    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(dim)(0.00)))
       
-    val weights = Array.fill(k)(weight)
+    val weights = Array.fill(numClusters)(weight)
       
       var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
 
