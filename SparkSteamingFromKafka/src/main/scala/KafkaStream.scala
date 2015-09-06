@@ -269,6 +269,26 @@ val sModel = new StreamingKMeans()
         }
     }.cache()
     
+    var testingData = trades
+        .filter(!_.isEmpty)
+        .transform{rdd => 
+        {
+            rdd.map{ line => 
+                { 
+                    JSON.parseFull(line)  match {
+                        case None => CreateEmptyArray()
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateEmptyArray()
+                        }
+                    }
+                }
+            }
+            .filter(_.size==4)
+            .map(x => CreateDoubleArray(x,4))
+            .map{ x => LabeledPoint(x(0), Vectors.dense(x)) }
+        }
+    }.cache()
       
 //      println(trainingData)
       
@@ -397,7 +417,7 @@ val sModel = new StreamingKMeans()
       
  try {
      sModel.trainOn(trainingData)
-    
+    sModel.predictOnValues(testingData)
   }catch {
   case e: IOException => {
     e.printStackTrace()
