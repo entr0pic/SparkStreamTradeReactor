@@ -154,7 +154,7 @@ def CreateEmptyArray() : Array[Any] = {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
           //rdd.collect().take(10).foreach(a => println(a))
-           val cleanData = rdd.collect().map{ line => 
+           val cleanData = rdd.map{ (_,line) => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -165,13 +165,14 @@ def CreateEmptyArray() : Array[Any] = {
                     }
                 }
           }.filter(_.size>1)
-          println(cleanData.deep.mkString("\n"))
+          cleanData.print()
 
         val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                 Vectors.dense(x.map(_.toString.toDouble))
          }
-          println(trainingData.deep.mkString("\n"))
-
+          
+          trainingData.print()
+ 
       }
     }
       
