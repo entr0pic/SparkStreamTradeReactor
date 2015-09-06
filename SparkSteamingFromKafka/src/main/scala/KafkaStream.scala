@@ -285,7 +285,7 @@ val sModel = new StreamingKMeans()
   def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
 
     // find nearest cluster to each point
-    val closest = data.map(point => (sModel.predict(point), (point, 1L)))
+    val closest = data.map(point => (model.predict(point), (point, 1L)))
 
     // get sums and counts for updating each cluster
     val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
