@@ -394,7 +394,7 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
       trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
            //model = model.update(rdd, decayFactor, "batches")
-          model = update(rdd, decayFactor, "batches")
+          update(rdd, decayFactor, "batches")
           
             }
         }     
