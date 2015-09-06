@@ -164,9 +164,11 @@ def CreateEmptyArray() : Array[Any] = {
 
 val numDimensions = 3
 val numClusters = 2
+val decayFactor = 1.0
+      
 val model = new StreamingKMeans()
   .setK(numClusters)
-  .setDecayFactor(1.0)
+  .setDecayFactor(decayFactor)
   .setRandomCenters(numDimensions, 0.0)
       
 //    messages.flatMap(case (_,line) => line).print()
@@ -252,15 +254,25 @@ val model = new StreamingKMeans()
             .map(Vectors.dense)
         }
     }
+    .filter(_.size==4)
       
-    trainingData.foreachRDD{rdd => {
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column        
-        }
-    }
+      println(trainingData)
+      
+//    trainingData.foreachRDD{ (rdd, _) => {
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//
+//            println(summary.mean) // a dense vector containing the mean value for each column
+//            println(summary.variance) // column-wise variance
+//            println(summary.numNonzeros) // number of nonzeros in each column        
+//        }
+//    }
+      
+      trainingData.foreachRDD { (rdd, time) => {
+          println(time, rdd)
+           model = model.update(rdd, decayFactor, StreamingKMeans.BATCHES)
+          
+            }
+        }     
       
     //model.trainOn(trainingData)
               
