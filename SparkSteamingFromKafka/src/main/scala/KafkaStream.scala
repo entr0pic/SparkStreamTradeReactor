@@ -194,7 +194,7 @@ println(summary.numNonzeros) // number of nonzeros in each column
       val WSSSE = clusters.computeCost(trainingData)
       println("Within Set Sum of Squared Errors = " + WSSSE)
 
-          } else { // predit on values in every 10th RDD
+          } else { // predict on values in every 10th RDD
               i = 0
               var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                   LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
