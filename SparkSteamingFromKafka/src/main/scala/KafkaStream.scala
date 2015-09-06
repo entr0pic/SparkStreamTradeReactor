@@ -166,7 +166,7 @@ val numDimensions = 3
 val numClusters = 2
 val decayFactor = 1.0
       
-val model = new StreamingKMeans()
+val sModel = new StreamingKMeans()
   .setK(numClusters)
   .setDecayFactor(decayFactor)
   .setRandomCenters(numDimensions, 0.0)
@@ -235,6 +235,8 @@ val model = new StreamingKMeans()
 //      val doubleData = cleanData.map(x => CreateDoubleArray(x,4)).cache()
 //      var trainingData = doubleData.map(Vectors.dense)
       
+      var model: StreamingKMeansModel = new StreamingKMeansModel(null, null)
+      
       var trainingData = trades
         .filter(!_.isEmpty)
         .transform{rdd => 
@@ -273,7 +275,7 @@ val model = new StreamingKMeans()
           
             }
         }     
-      
+      println(model)
     //model.trainOn(trainingData)
               
 //    val cleanData = messages.map{ case (_,line) => { 
