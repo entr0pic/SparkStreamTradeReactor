@@ -246,8 +246,8 @@ val sModel = new StreamingKMeans()
 //      
 //      val doubleData = cleanData.map(x => CreateDoubleArray(x,4)).cache()
 //      var trainingData = doubleData.map(Vectors.dense)
+  
       
-      var model: StreamingKMeansModel = new StreamingKMeansModel(null, null)
       
       var trainingData = trades
         .filter(!_.isEmpty)
@@ -270,7 +270,7 @@ val sModel = new StreamingKMeans()
     }
     .filter(_.size==4)
       
-      println(trainingData)
+//      println(trainingData)
       
 //    trainingData.foreachRDD{ (rdd, _) => {
 //            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
@@ -359,6 +359,13 @@ val sModel = new StreamingKMeans()
 //  }
 //}      
       
+      val random = new XORShiftRandom(seed)
+    val clusterCenters = Array.fill(k)(Vectors.dense(Array.fill(dim)(random.nextGaussian())))
+      
+    val weights = Array.fill(k)(weight)
+      
+      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
+
       trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
            //model = model.update(rdd, decayFactor, "batches")
