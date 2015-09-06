@@ -150,7 +150,7 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
-      val nTrades = trades.size
+      val nTrades = trades.count()
       var i = 0
 
       val numClusters = 2
@@ -261,7 +261,7 @@ println(summary.numNonzeros) // number of nonzeros in each column
 //      }
 //    }
 //      
-    trades.count().print
+    //trades.count().print
       
     ssc.start()
     ssc.awaitTermination()
