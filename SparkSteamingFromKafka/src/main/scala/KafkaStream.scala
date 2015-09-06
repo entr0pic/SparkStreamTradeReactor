@@ -154,7 +154,7 @@ def CreateEmptyArray() : Array[Any] = {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
           //rdd.collect().take(10).foreach(a => println(a))
-           val cleanData = rdd.collect().map{ line => 
+           val cleanData = rdd.map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -166,16 +166,19 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           
-          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
-          
-        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
+//          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
+//          
+//        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
+//                Vectors.dense(x.map(_.toString.toDouble))
+//         }
+//          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
+//              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+//        }
+//    
+         val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                 Vectors.dense(x.map(_.toString.toDouble))
          }
-          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
-              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-        }
-    
-        val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
+       val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
       
 println(summary.mean) // a dense vector containing the mean value for each column
 println(summary.variance) // column-wise variance
