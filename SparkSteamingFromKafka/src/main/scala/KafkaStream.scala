@@ -313,14 +313,19 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
     }
       
       println(mergeContribs)
-    val dim = clusterCenters(0).size
-      println(dim)
+    val dim = numDimensions
+      
+      
+    val pointStats: Array[(Int, (Vector, Long))] = closest
+      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
+      .collect()
+      
+    println(pointStats)
+      
+    data
+
   }
     
-      
-//    val pointStats: Array[(Int, (Vector, Long))] = closest
-//      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
-//      .collect()
 //
 //    val discount = timeUnit match {
 //      case StreamingKMeans.BATCHES => decayFactor
