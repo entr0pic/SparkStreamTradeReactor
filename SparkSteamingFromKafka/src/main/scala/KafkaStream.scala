@@ -253,7 +253,7 @@ val model = new StreamingKMeans()
         }
     }
       
-    trainingData.foreachRDD{rdd => println(rdd)}
+    trainingData.foreachRDD{rdd => println(rdd.collect().take(10))}
       
     //model.trainOn(trainingData)
               
