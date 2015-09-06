@@ -166,24 +166,21 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           
-          println(cleanData.size*0.9)
-          println(Math.floor(cleanData.size*0.9))
-          println(Math.floor(cleanData.size*0.9).toInt)
-          //val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9))
+          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
           
-//        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
-//                Vectors.dense(x.map(_.toString.toDouble))
-//         }
-//          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
-//              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-//        }
-//    
-//        val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
-//      
-//println(summary.mean) // a dense vector containing the mean value for each column
-//println(summary.variance) // column-wise variance
-//println(summary.numNonzeros) // number of nonzeros in each column
-//  
+        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
+                Vectors.dense(x.map(_.toString.toDouble))
+         }
+          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
+              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+        }
+    
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
+      
+println(summary.mean) // a dense vector containing the mean value for each column
+println(summary.variance) // column-wise variance
+println(summary.numNonzeros) // number of nonzeros in each column
+  
       }
     }
       
