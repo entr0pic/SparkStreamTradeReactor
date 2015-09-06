@@ -150,7 +150,6 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
-      val nTrades = trades.count().toInt
       var i = 0
 
       val numClusters = 2
@@ -180,7 +179,7 @@ def CreateEmptyArray() : Array[Any] = {
                 }
           }.filter(_.size>1)
           
-          if (i < nTrades-1) {
+          if (i < 10) {
               
             var trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                     Vectors.dense(x.map(_.toString.toDouble))
@@ -195,7 +194,8 @@ println(summary.numNonzeros) // number of nonzeros in each column
       val WSSSE = clusters.computeCost(trainingData)
       println("Within Set Sum of Squared Errors = " + WSSSE)
 
-          } else {
+          } else { // predit on values in every 10th RDD
+              i = 0
               var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                   LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
             }
