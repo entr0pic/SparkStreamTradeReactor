@@ -271,7 +271,7 @@ val sModel = new StreamingKMeans()
       
       trainingData.foreachRDD { (rdd, time) => {
           println(time, rdd)
-           model = model.update(rdd, decayFactor, StreamingKMeans.BATCHES)
+           model = model.update(rdd, decayFactor, "batches")
           
             }
         }     
