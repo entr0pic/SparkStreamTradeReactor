@@ -253,9 +253,16 @@ val model = new StreamingKMeans()
         }
     }
       
-    //trainingData.foreachRDD{rdd => println(rdd.collect().take(10))}
+    trainingData.foreachRDD{rdd => {
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column        
+        }
+    }
       
-    model.trainOn(trainingData)
+    //model.trainOn(trainingData)
               
 //    val cleanData = messages.map{ case (_,line) => { 
 //        JSON.parseFull(line)  match {
