@@ -165,12 +165,12 @@ def CreateEmptyArray() : Array[Any] = {
                     }
                 }
           }.filter(_.size>1)
-          cleanData.print()
+          println(cleanData.deep.mkString("\n"))
 
         val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
                 Vectors.dense(x.map(_.toString.toDouble))
          }
-          trainingData.print()
+          println(trainingData.deep.mkString("\n"))
 
       }
     }
