@@ -281,6 +281,25 @@ val sModel = new StreamingKMeans()
 //        }
 //    }
       
+def axpy(a: Double, x: Vector, y: Vector): Unit = {
+    require(x.size == y.size)
+    y match {
+      case dy: DenseVector =>
+        x match {
+          case sx: SparseVector =>
+            axpy(a, sx, dy)
+          case dx: DenseVector =>
+            axpy(a, dx, dy)
+          case _ =>
+            throw new UnsupportedOperationException(
+              s"axpy doesn't support x type ${x.getClass}.")
+        }
+      case _ =>
+        throw new IllegalArgumentException(
+          s"axpy only supports adding to a dense vector but got type ${y.getClass}.")
+    }
+  }
+      
 /** Perform a k-means update on a batch of data. */
   def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
 
@@ -289,7 +308,7 @@ val sModel = new StreamingKMeans()
 
     // get sums and counts for updating each cluster
     val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
-      BLAS.axpy(1.0, p2._1, p1._1)
+      axpy(1.0, p2._1, p1._1)
       (p1._1, p1._2 + p2._2)
     }
       
@@ -297,6 +316,7 @@ val sModel = new StreamingKMeans()
     val dim = clusterCenters(0).size
       println(dim)
   }
+    
       
 //    val pointStats: Array[(Int, (Vector, Long))] = closest
 //      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
