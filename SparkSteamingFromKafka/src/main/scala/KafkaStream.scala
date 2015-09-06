@@ -231,7 +231,7 @@ val model = new StreamingKMeans()
       }
       
       val doubleData = cleanData.map(x => CreateDoubleArray(x,4))
-      var trainingData = doubleData.map(Vectors.parse)
+      var trainingData = doubleData.map(Vectors.dense)
       
        model.trainOn(trainingData)
         
