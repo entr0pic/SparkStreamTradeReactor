@@ -139,7 +139,14 @@ def CreateEmptyArray() : Array[Any] = {
     buffer(3) = 0.00
     buffer
 }
-      
+    
+      def CreateDoubleArray(a: Array[Any], n: Int) = {
+          val buffer: Array[Double] = new Array[Double][n]
+          for( i <- 0 to n-1) {
+              buffer(i) = a(i).toString.toDouble
+          }
+          buffer
+      }
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
     val ssc = new StreamingContext(sparkConf, Seconds(2))
@@ -223,7 +230,7 @@ val model = new StreamingKMeans()
             }
       }
       
-      val doubleData = cleanData.map(_.take(4)).map(x=>x.map(_.toString.toDouble)).cache()
+      val doubleData = cleanData.map(x => CreateDoubleArray(x,4))
       var trainingData = doubleData.map(Vectors.parse)
       
        model.trainOn(trainingData)
