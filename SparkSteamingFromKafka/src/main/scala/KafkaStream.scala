@@ -380,7 +380,7 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
 //}      
       
       //val random = new XORShiftRandom(seed)
-    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(dim)(0.00)))
+    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
       
     val weights = Array.fill(numClusters)(weight)
       
