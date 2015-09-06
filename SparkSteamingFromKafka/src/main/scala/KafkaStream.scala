@@ -154,7 +154,7 @@ def CreateEmptyArray() : Array[Any] = {
     trades.foreachRDD{rdd =>
       if (rdd.toLocalIterator.nonEmpty) {
           //rdd.collect().take(10).foreach(a => println(a))
-           val cleanData = rdd.map{ line => 
+           val cleanData = rdd.collect().map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -165,14 +165,22 @@ def CreateEmptyArray() : Array[Any] = {
                     }
                 }
           }.filter(_.size>1)
-          cleanData.print()
-
-        val trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+          
+          val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
+          
+        val trainingData = left.map(_.take(4)).filter(_.size==4).map{ x => 
                 Vectors.dense(x.map(_.toString.toDouble))
          }
-          
-          trainingData.print()
- 
+          var  testingData = right.map(_.take(4)).filter(_.size==4).map{ x => 
+              LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+        }
+    
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
+      
+println(summary.mean) // a dense vector containing the mean value for each column
+println(summary.variance) // column-wise variance
+println(summary.numNonzeros) // number of nonzeros in each column
+  
       }
     }
       
