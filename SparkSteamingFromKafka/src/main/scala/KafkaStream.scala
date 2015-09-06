@@ -145,12 +145,9 @@ def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
 }
       
 def CreateEmptyArray() : Array[Any] = {
-    val buffer: Array[Any] = new Array[Any](4)
+    val buffer: Array[Any] = new Array[Any](1)
     buffer(0) = 0.00
-    buffer(1) = 0.00
-    buffer(2) = 0.00
-    buffer(3) = 0.00
-    buffer
+     buffer
 }
     
       def CreateDoubleArray(a: Array[Any], n: Int) = {
@@ -265,11 +262,13 @@ val sModel = new StreamingKMeans()
                     }
                 }
             }
+            .filter(_.size==4)
             .map(x => CreateDoubleArray(x,4))
             .map(Vectors.dense)
+            
         }
     }
-    .filter(_.size==4)
+    
       
 //      println(trainingData)
       
@@ -283,6 +282,10 @@ val sModel = new StreamingKMeans()
 //    }
       
 def axpy(a: Double, x: Vector, y: Vector): Unit = {
+    if (x.size != y.size) {
+    println(x.size)
+    println(y.size)
+    }
     require(x.size == y.size)
     y match {
       case dy: DenseVector =>
@@ -324,12 +327,10 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
       
     val dim = numDimensions
       
-      println(closest.aggregateByKey((Vectors.zeros(dim), 0L)))
+    val pointStats: Array[(Int, (Vector, Long))] = closest
+      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
+      .collect()
       
-//    val pointStats: Array[(Int, (Vector, Long))] = closest
-//      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
-//      .collect()
-//      
       
     data
 
