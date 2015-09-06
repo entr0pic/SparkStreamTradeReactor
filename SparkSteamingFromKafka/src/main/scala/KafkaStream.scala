@@ -281,61 +281,61 @@ val sModel = new StreamingKMeans()
 //        }
 //    }
       
-def axpy(a: Double, x: Vector, y: Vector): Unit = {
-    if (x.size != y.size) {
-    println(x.size)
-    println(y.size)
-    }
-    require(x.size == y.size)
-    y match {
-      case dy: DenseVector =>
-        x match {
-          case sx: SparseVector =>
-            axpy(a, sx, dy)
-          case dx: DenseVector =>
-            axpy(a, dx, dy)
-          case _ =>
-            throw new UnsupportedOperationException(
-              s"axpy doesn't support x type ${x.getClass}.")
-        }
-      case _ =>
-        throw new IllegalArgumentException(
-          s"axpy only supports adding to a dense vector but got type ${y.getClass}.")
-    }
-  }
-
-      //val random = new XORShiftRandom(seed)
-    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
-      
-    val weights = Array.fill(numClusters)(0.10)
-      
-      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
-
- 
-      
-/** Perform a k-means update on a batch of data. */
-  def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
-
-    // find nearest cluster to each point
-    val closest = data.map(point => (model.predict(point), (point, 1L)))
-
-    // get sums and counts for updating each cluster
-    val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
-      axpy(1.0, p2._1, p1._1)
-      (p1._1, p1._2 + p2._2)
-    }
-      
-    val dim = numDimensions
-      
-    val pointStats: Array[(Int, (Vector, Long))] = closest
-      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
-      .collect()
-      
-      
-    data
-
-  }
-    
+//def axpy(a: Double, x: Vector, y: Vector): Unit = {
+//    if (x.size != y.size) {
+//    println(x.size)
+//    println(y.size)
+//    }
+//    require(x.size == y.size)
+//    y match {
+//      case dy: DenseVector =>
+//        x match {
+//          case sx: SparseVector =>
+//            axpy(a, sx, dy)
+//          case dx: DenseVector =>
+//            axpy(a, dx, dy)
+//          case _ =>
+//            throw new UnsupportedOperationException(
+//              s"axpy doesn't support x type ${x.getClass}.")
+//        }
+//      case _ =>
+//        throw new IllegalArgumentException(
+//          s"axpy only supports adding to a dense vector but got type ${y.getClass}.")
+//    }
+//  }
+//
+//      //val random = new XORShiftRandom(seed)
+//    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
+//      
+//    val weights = Array.fill(numClusters)(0.10)
+//      
+//      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
+//
+// 
+//      
+///** Perform a k-means update on a batch of data. */
+//  def update(data: RDD[Vector], decayFactor: Double, timeUnit: String): RDD[Vector] = {
+//
+//    // find nearest cluster to each point
+//    val closest = data.map(point => (model.predict(point), (point, 1L)))
+//
+//    // get sums and counts for updating each cluster
+//    val mergeContribs: ((Vector, Long), (Vector, Long)) => (Vector, Long) = (p1, p2) => {
+//      axpy(1.0, p2._1, p1._1)
+//      (p1._1, p1._2 + p2._2)
+//    }
+//      
+//    val dim = numDimensions
+//      
+//    val pointStats: Array[(Int, (Vector, Long))] = closest
+//      .aggregateByKey((Vectors.zeros(dim), 0L))(mergeContribs, mergeContribs)
+//      .collect()
+//      
+//      
+//    data
+//
+//  }
+//    
 //
 //    val discount = timeUnit match {
 //      case StreamingKMeans.BATCHES => decayFactor
@@ -397,14 +397,9 @@ def axpy(a: Double, x: Vector, y: Vector): Unit = {
       
  try {
      trainingData.foreachRDD { (rdd, time) => {
-          println(time, rdd)
-           //model = model.update(rdd, decayFactor, "batches")
-          update(rdd, decayFactor, "batches")
-          
-            }
-        }     
-      //println(model)
-    //model.trainOn(trainingData)
+    sModel.trainOn(trainingData)
+     }
+    }
   }catch {
   case e: IOException => {
     e.printStackTrace()
