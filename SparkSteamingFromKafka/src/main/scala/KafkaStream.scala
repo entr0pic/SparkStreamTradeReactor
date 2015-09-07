@@ -197,13 +197,13 @@ trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-var trainingData = trades
-var testingData = trades
+var trainingData = null
+var testingData = null
       
 try {
       
       var i1 = 0;
-      trainingData = trainingData.map{ x => 
+      trainingData = trades.filter(!_.isEmpty).map{ x => 
             if (i1 < nn) {
                 i1+= 1
                 x
@@ -254,7 +254,7 @@ try {
     
 try{
     var i2 = 0
-    testingData = testingData.map{ x => 
+    testingData = trades.filter(!_.isEmpty).map{ x => 
             if (i2 == nn) {
                 i2+= 1
                 x
