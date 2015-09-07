@@ -1,6 +1,7 @@
 var kafkaLocation = process.env.KAFKA || 'vagrant';
 var topicName = process.env.KAFKA_TOPIC || "trades";
 var kafka = require('kafka-node'),
+    Lightning = require('lightning.js'),
     Consumer = kafka.Consumer,
     client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
     consumer = new Consumer(
@@ -12,6 +13,8 @@ var kafka = require('kafka-node'),
             autoCommit: false
         }
     );
+
+var lightning = new Lightning({host:process.env.LIGHTNING||'lightning'});
 
 var getRepeatingCharacter = function(char,length) {
   return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
@@ -35,12 +38,21 @@ var logJsonNicely = function (jsonArray) {
 };
 
 var messageCount = 0;
+var lineViz;
+
+lightning
+    .lineStreaming([],[])
+    .then(function(viz) {
+        lineViz = viz;
+    });
 
 consumer.on('message', function (message) {
     if (message.value) {
       try {
-        console.log(logJsonNicely([JSON.parse(message.value)]))
+        var jsonValue = JSON.parse(message.value);
+        console.log(logJsonNicely([jsonValue]))
         process.stdout.write("Recieved " + messageCount++ + " messages\r");
+        lineViz.append([jsonValue.price],[jsonValue.volume]);
       } catch (error) {
 //        console.log(error);
 //        console.log(message)
