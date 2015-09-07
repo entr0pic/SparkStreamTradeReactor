@@ -283,7 +283,7 @@ try{
 }
 }
       
-var testingData  = getTestData().map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+//var testingData  = getTestData().map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
 
 try{
     println("train data")
