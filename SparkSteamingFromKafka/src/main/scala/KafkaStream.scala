@@ -252,7 +252,7 @@ try {
 
 }
     
-var trainingData = getTrainData().cache()
+var trainingData = getTrainData().map(Vectors.dense).cache()
     
       
 def getTestData () : DStream[Array[Double]] = {
@@ -283,7 +283,7 @@ try{
 }
 }
       
-var testingData  = getTestData().map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+var testingData  = getTestData().map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
 
 try{
     println("train data")
