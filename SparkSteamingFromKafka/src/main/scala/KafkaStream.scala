@@ -182,69 +182,15 @@ val sModel = new StreamingKMeans()
   .setRandomCenters(numDimensions, 0.0)
       
 //    messages.flatMap(case (_,line) => line).print()
-//    trades.foreachRDD{rdd =>
-//                      i += 1
-//      if (rdd.toLocalIterator.nonEmpty) {
-//          //rdd.collect().take(10).foreach(a => println(a))
-//           val cleanData = rdd.map{ line => 
-//                { 
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateEmptyArray()
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateEmptyArray()
-//                        }
-//                    }
-//                }
-//          }.filter(_.size>1)
-//          
-//          if (i < 10) {
-//              
-//            var trainingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-//                    Vectors.dense(x.map(_.toString.toDouble))
-//             }
-//              
-//               val clusters = KMeans.train(parsedData, numClusters, 20)
-//              println(clusters)
-//              
-////       val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
-////      
-////println(summary.mean) // a dense vector containing the mean value for each column
-////println(summary.variance) // column-wise variance
-////println(summary.numNonzeros) // number of nonzeros in each column
-//
-//    model.trainOn(trainingData)
-//      
-//          } else { // predict on values in every 10th RDD
-//              i = 0
+
 //              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
 //                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
 //            }
 //    model.predictOnValues(testingData).print()
 //
-//          }
-////          val (left, right) = cleanData.splitAt(Math.floor(cleanData.size*0.9).toInt)
-//  
-//      }
-//    }
       
-      
-//      var values = messages.map{ case (_, line) => line }
-//      val cleanData = values.map{ line => 
-//            { 
-//                JSON.parseFull(line)  match {
-//                    case None => CreateEmptyArray()
-//                    case Some( mapAsAny ) => mapAsAny match {
-//                        case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                        case _ => CreateEmptyArray()
-//                    }
-//                }
-//            }
-//      }
-//      
-//      val doubleData = cleanData.map(x => CreateDoubleArray(x,4)).cache()
-//      var trainingData = doubleData.map(Vectors.dense)
   
+ try {
       
       var i1 = 0;
       var nn = 10;
@@ -350,7 +296,6 @@ val sModel = new StreamingKMeans()
 //      
 //      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
       
- try {
      println("train data")
      sModel.trainOn(trainingData)
      println("predict on values")
