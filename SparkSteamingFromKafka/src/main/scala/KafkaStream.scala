@@ -264,7 +264,7 @@ def transformTestingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
 //            println(summary.numNonzeros) // number of nonzeros in each column    
 //                                                                              
 //            rdd1
-        }
+//        }
     }.cache()
     
     var i2 = 0
@@ -304,7 +304,7 @@ def transformTestingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
 //            println(summary.numNonzeros) // number of nonzeros in each column        
 //            
 //            rdd1
-        }
+//        }
     }
       
      testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
