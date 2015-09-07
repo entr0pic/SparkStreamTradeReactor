@@ -166,7 +166,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
       
-def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[Any], msg : String) : RDD[Array[Double]] = {
     var rdd1 = rdd.map{ line => 
         { 
             JSON.parseFull(line)  match {
