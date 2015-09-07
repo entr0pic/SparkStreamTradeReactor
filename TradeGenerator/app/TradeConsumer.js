@@ -38,26 +38,23 @@ var logJsonNicely = function (jsonArray) {
 };
 
 var messageCount = 0;
-var lineViz;
 
 lightning
-    .lineStreaming([],[])
+    .lineStreaming([0],[0])
     .then(function(viz) {
-        lineViz = viz;
-    });
-
-consumer.on('message', function (message) {
-    if (message.value) {
-      try {
-        var jsonValue = JSON.parse(message.value);
-        console.log(logJsonNicely([jsonValue]))
-        process.stdout.write("Recieved " + messageCount++ + " messages\r");
-        lineViz.append([jsonValue.price],[jsonValue.volume]);
-      } catch (error) {
-//        console.log(error);
-//        console.log(message)
-      }
-    }
-}).on("error",function(e) {
-  console.log(e);
-})
+        consumer.on('message', function (message) {
+            if (message.value) {
+              try {
+                var jsonValue = JSON.parse(message.value);
+                console.log(logJsonNicely([jsonValue]))
+                process.stdout.write("Recieved " + messageCount++ + " messages\r");
+                viz.append([jsonValue.price],[jsonValue.volume]);
+              } catch (error) {
+        //        console.log(error);
+        //        console.log(message)
+              }
+            }
+        }).on("error",function(e) {
+          console.log(e);
+        });
+});
