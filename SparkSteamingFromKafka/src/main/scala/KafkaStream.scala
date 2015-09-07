@@ -286,7 +286,7 @@ val sModel = new StreamingKMeans()
             }
             .filter(_.size==4)
             .map(x => CreateDoubleArray(x,4))
-            .map{ x => LabeledPoint(x(0), Vectors.dense(x)) }
+            .map{ x => (x(0), Vectors.dense(x)) }
         }
     }.cache()
       
@@ -311,6 +311,7 @@ val sModel = new StreamingKMeans()
  try {
      sModel.trainOn(trainingData)
     sModel.predictOnValues(testingData).print()
+    // sModel.predictOn(trainingData).print()
   }catch {
   case e: IOException => {
     e.printStackTrace()
