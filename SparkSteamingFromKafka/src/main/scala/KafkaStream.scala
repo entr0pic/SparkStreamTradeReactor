@@ -197,8 +197,8 @@ trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-var trainingData 
-var testingData 
+var trainingData = null
+var testingData = null
       
 try {
       
