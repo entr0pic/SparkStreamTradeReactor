@@ -197,13 +197,10 @@ trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-var trainingData = null
-var testingData = null
       
 try {
-      
-      var i1 = 0;
-      trainingData = trades.filter(!_.isEmpty).map{ x => 
+    var i1 = 0;
+    trainingData = trades.filter(!_.isEmpty).map{ x => 
             if (i1 < nn) {
                 i1+= 1
                 x
@@ -214,8 +211,6 @@ try {
         }
         .filter(_ != null)
         .transform{ (rdd,t) => transformRddForModel(rdd, "training data check stats ("+i1+")") }
-        //.transform{(rdd,t) => transformTrainingRdd(rdd, i1)
-        .cache()
 //        {
 //            var rdd1 = rdd.map{ line => 
 //                { 
