@@ -14,7 +14,7 @@ var kafka = require('kafka-node'),
         }
     );
 
-var lightning = new Lightning({host:process.env.LIGHTNING||'lightning'});
+var lightning = new Lightning({host:'http://' + (process.env.LIGHTNING||'lightning') + ':3000'});
 
 var getRepeatingCharacter = function(char,length) {
   return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
