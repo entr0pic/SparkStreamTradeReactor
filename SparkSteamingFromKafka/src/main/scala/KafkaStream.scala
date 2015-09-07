@@ -246,17 +246,17 @@ val sModel = new StreamingKMeans()
 //      var trainingData = doubleData.map(Vectors.dense)
   
       
-      var i = 0;
+      var i1 = 0;
       var nn = 10;
       
       var trainingData = trades
         .filter(!_.isEmpty)
         .map{ x => 
-            if (i < nn) {
-                i+= 1
+            if (i1 < nn) {
+                i1+= 1
                 x
             } else {
-                i = 0
+                i1 = 0
                 null
             }
         }
