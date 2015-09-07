@@ -263,7 +263,7 @@ val sModel = new StreamingKMeans()
         .filter(_ != null)
         .transform{rdd => 
         {
-            rdd.map{ line => 
+            rdd = rdd.map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -278,6 +278,14 @@ val sModel = new StreamingKMeans()
             .map(x => CreateDoubleArray(x,4))
             .map(Vectors.dense)
             
+            println("training data check stats " + i1)
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column    
+                                                                              
+            rdd
         }
     }.cache()
     
@@ -296,7 +304,7 @@ val sModel = new StreamingKMeans()
         .filter(_ != null)
         .transform{rdd => 
         {
-            rdd.map{ line => 
+            rdd = rdd.map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -309,33 +317,31 @@ val sModel = new StreamingKMeans()
             }
             .filter(_.size==4)
             .map(x => CreateDoubleArray(x,4))
-            .map{ x => (x(0), Vectors.dense(x)) }
+        
+            println("testing data check stats " + i2)
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd.map(Vectors.dense))
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column        
+            
+            rdd.map{ x => (x(0), Vectors.dense(x)) }
         }
     }.cache()
       
       trainingData.print()
       testingData.print()
       
-    println("training data check stats")
-    trainingData.foreachRDD{ (rdd, _) => {
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column        
-        }
-    }
+//    println("training data check stats")
+//    trainingData.foreachRDD{ (rdd, _) => {
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//
+//            println(summary.mean) // a dense vector containing the mean value for each column
+//            println(summary.variance) // column-wise variance
+//            println(summary.numNonzeros) // number of nonzeros in each column        
+//        }
+//    }
       
-      println("testing data check stats")
-      testingData.transform{ rdd => rdd.map{(k,v) => v} }.foreachRDD{ (rdd, _) => {
-        
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column        
-        }
-    }
 
 //      //val random = new XORShiftRandom(seed)
 //    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
