@@ -231,7 +231,7 @@ val sModel = new StreamingKMeans()
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column    
                                                                               
-            (rdd1,t)
+            rdd1
         }
     }.cache()
     
@@ -272,7 +272,7 @@ val sModel = new StreamingKMeans()
             println(summary.numNonzeros) // number of nonzeros in each column        
             
             rdd1 = rdd1.map{ x => (x(0), Vectors.dense(x)) }
-            (rdd1,t)
+            rdd1
         }
     }.cache()
       
