@@ -197,10 +197,12 @@ trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-      
+
+def getTrainData() : DStream[Array[Double]] = {
+
 try {
     var i1 = 0;
-    trainingData = trades.filter(!_.isEmpty).map{ x => 
+    trades.filter(!_.isEmpty).map{ x => 
             if (i1 < nn) {
                 i1+= 1
                 x
@@ -244,12 +246,19 @@ try {
         print(e.toString())
     }
 } finally {
-    println("error generating training data")   
+    println("error generating training data") 
+    null
+}
+
 }
     
+var trainingData = getTrainData().cache()
+    
+      
+def getTestData () : DStream[Array[Double]] = {
 try{
     var i2 = 0
-    testingData = trades.filter(!_.isEmpty).map{ x => 
+    trades.filter(!_.isEmpty).map{ x => 
             if (i2 == nn) {
                 i2+= 1
                 x
@@ -260,40 +269,7 @@ try{
         }
         .filter(_ != null)
         .transform{ (rdd,t) => transformRddForModel(rdd, "testing data check stats ("+i2+")") }
-        //.transform{ (rdd,t) => transformTestingRdd(rdd, i2)
-
-//        {
-//            var rdd1 = rdd.map{ line => 
-//                { 
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateEmptyArray()
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateEmptyArray()
-//                        }
-//                    }
-//                }
-//            }
-//            .filter(_.size==4)
-//            .map(x => CreateDoubleArray(x,4))
-//        
-//            println("testing data check stats " + i2)
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
-//
-//            println(summary.mean) // a dense vector containing the mean value for each column
-//            println(summary.variance) // column-wise variance
-//            println(summary.numNonzeros) // number of nonzeros in each column        
-//            
-//            rdd1
-//        }
-      
-//              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-//                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-//            }
-//              model.predictOnValues(testingData).print()
-//
-  
-    testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+        
      
 }catch {
     case e: IOException => {
@@ -303,8 +279,11 @@ try{
     }
 } finally {
     println("error generating testing data")   
+    null
 }
-
+}
+      
+var testingData  = getTestData().map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
 
 try{
     println("train data")
@@ -320,19 +299,19 @@ try{
     println("error on training data")   
 }
 
-try {
-    println("predict on values")
-    testingData.print()
-    sModel.predictOnValues(testingData).print()
-} catch {
-    case e: IOException => {
-        println("error: ")
-        e.printStackTrace()
-        print(e.toString())
-    }
-} finally {
-    println("error predicting on testing data")   
-}
+//try {
+//    println("predict on values")
+//    testingData.print()
+//    sModel.predictOnValues(testingData).print()
+//} catch {
+//    case e: IOException => {
+//        println("error: ")
+//        e.printStackTrace()
+//        print(e.toString())
+//    }
+//} finally {
+//    println("error predicting on testing data")   
+//}
       
 //try{
 //    println("predict")
