@@ -207,7 +207,7 @@ val sModel = new StreamingKMeans()
             }
         }
         .filter(_ != null)
-        .transform{rdd => 
+        .transform{(rdd,t) => 
         {
             var rdd1 = rdd.map{ line => 
                 { 
@@ -231,7 +231,7 @@ val sModel = new StreamingKMeans()
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column    
                                                                               
-            rdd1
+            (rdd1,t)
         }
     }.cache()
     
@@ -248,7 +248,7 @@ val sModel = new StreamingKMeans()
             }
         }
         .filter(_ != null)
-        .transform{rdd => 
+        .transform{ (rdd,t) => 
         {
             var rdd1 = rdd.map{ line => 
                 { 
@@ -271,7 +271,8 @@ val sModel = new StreamingKMeans()
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column        
             
-            rdd1.map{ x => (x(0), Vectors.dense(x)) }
+            rdd1 = rdd1.map{ x => (x(0), Vectors.dense(x)) }
+            (rdd1,t)
         }
     }.cache()
       
