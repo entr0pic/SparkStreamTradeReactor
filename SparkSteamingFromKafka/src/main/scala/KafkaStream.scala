@@ -310,7 +310,7 @@ val sModel = new StreamingKMeans()
       
  try {
      sModel.trainOn(trainingData)
-    sModel.predictOnValues(testingData).print()
+   // sModel.predictOnValues(testingData).print()
     // sModel.predictOn(trainingData).print()
   }catch {
   case e: IOException => {
@@ -318,7 +318,7 @@ val sModel = new StreamingKMeans()
     e.toString()
   }
 } finally {
-      
+    println("error on training data")   
   }
  
       
