@@ -247,7 +247,7 @@ try {
 //                                                                              
 //            rdd1
 //        }
-    }.cache()
+    }
 }catch {
     case e: IOException => {
         println("error: ")
