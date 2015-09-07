@@ -203,21 +203,32 @@ dockerui:
   ports:
     - 9000:9000
 
+lightning:
+  image: localhost:5000/lightning
+  hostname: lightning
+  links:
+    - kafka
+    - master
+    - tradegen
+  ports:
+    - 3000:3000
+    - 80:3000
 
-#tradecon:
-#  image: localhost:5000/tradegenerator
-#  hostname: tradegen
-#  links:
-#    - kafka
-#    - master
-#    - tradegen
-#  environment:
-#    KAFKA: kafka
-#    KAFKA_PORT: 9092
-#    KAFKA_TOPIC: trades
-#  command: bash -c "sleep 10 && node TradeConsumer.js"
-#  volumes:
-#    - TradeGenerator:/shared
+tradecon:
+  image: localhost:5000/tradegenerator
+  hostname: tradecon
+  links:
+    - kafka
+    - master
+    - tradegen
+    - lightning
+  environment:
+    KAFKA: kafka
+    KAFKA_PORT: 9092
+    KAFKA_TOPIC: trades
+  command: bash -c "sleep 10 && node TradeConsumer.js"
+  volumes:
+    - TradeGenerator:/shared
 
 zeppelin:
   image: localhost:5000/zeppelin
