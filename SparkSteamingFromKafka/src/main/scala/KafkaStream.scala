@@ -309,13 +309,15 @@ val sModel = new StreamingKMeans()
 //      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
       
  try {
+     println("train data")
      sModel.trainOn(trainingData)
-   // sModel.predictOnValues(testingData).print()
+    sModel.predictOnValues(testingData).print()
      sModel.predictOn(trainingData).print()
   }catch {
   case e: IOException => {
+      println("error: ")
     e.printStackTrace()
-    e.toString()
+    print(e.toString())
   }
 } finally {
     println("error on training data")   
