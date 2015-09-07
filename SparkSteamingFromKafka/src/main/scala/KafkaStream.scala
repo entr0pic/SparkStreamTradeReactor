@@ -188,8 +188,40 @@ val sModel = new StreamingKMeans()
 //            }
 //    model.predictOnValues(testingData).print()
 //
-      
   
+def transformRddForModel(rdd : RDD[Vector[Any]], i: Int, msg : String) : RDD[Vector[Double]] = {
+    var rdd1 = rdd.map{ line => 
+        { 
+            JSON.parseFull(line)  match {
+                case None => CreateEmptyArray()
+                case Some( mapAsAny ) => mapAsAny match {
+                    case x: Map[ String, Any ] => { CreateDataArray(x) }
+                    case _ => CreateEmptyArray()
+                }
+            }
+        }
+    }
+    .filter(_.size==4)
+    .map(x => CreateDoubleArray(x,4))
+
+    println(msg + i)
+    val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
+
+    println(summary.mean) // a dense vector containing the mean value for each column
+    println(summary.variance) // column-wise variance
+    println(summary.numNonzeros) // number of nonzeros in each column        
+
+    rdd1
+}  
+
+def transformTrainingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
+    transformRddForModel(rdd, i, "training data check stats ")
+}
+      
+def transformTestingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
+    transformRddForModel(rdd, i, "testing data check stats ")
+}
+      
  try {
       
       var i1 = 0;
@@ -207,31 +239,31 @@ val sModel = new StreamingKMeans()
             }
         }
         .filter(_ != null)
-        .transform{(rdd,t) => 
-        {
-            var rdd1 = rdd.map{ line => 
-                { 
-                    JSON.parseFull(line)  match {
-                        case None => CreateEmptyArray()
-                        case Some( mapAsAny ) => mapAsAny match {
-                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-                            case _ => CreateEmptyArray()
-                        }
-                    }
-                }
-            }
-            .filter(_.size==4)
-            .map(x => CreateDoubleArray(x,4))
-            .map(Vectors.dense)
-            
-            println("training data check stats " + i1)
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1)
-
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column    
-                                                                              
-            rdd1
+        .transform{(rdd,t) => transformTrainingRdd(rdd, i1)
+//        {
+//            var rdd1 = rdd.map{ line => 
+//                { 
+//                    JSON.parseFull(line)  match {
+//                        case None => CreateEmptyArray()
+//                        case Some( mapAsAny ) => mapAsAny match {
+//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                            case _ => CreateEmptyArray()
+//                        }
+//                    }
+//                }
+//            }
+//            .filter(_.size==4)
+//            .map(x => CreateDoubleArray(x,4))
+//            .map(Vectors.dense)
+//            
+//            println("training data check stats " + i1)
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1)
+//
+//            println(summary.mean) // a dense vector containing the mean value for each column
+//            println(summary.variance) // column-wise variance
+//            println(summary.numNonzeros) // number of nonzeros in each column    
+//                                                                              
+//            rdd1
         }
     }.cache()
     
@@ -248,34 +280,35 @@ val sModel = new StreamingKMeans()
             }
         }
         .filter(_ != null)
-        .transform{ (rdd,t) => 
-        {
-            var rdd1 = rdd.map{ line => 
-                { 
-                    JSON.parseFull(line)  match {
-                        case None => CreateEmptyArray()
-                        case Some( mapAsAny ) => mapAsAny match {
-                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-                            case _ => CreateEmptyArray()
-                        }
-                    }
-                }
-            }
-            .filter(_.size==4)
-            .map(x => CreateDoubleArray(x,4))
-        
-            println("testing data check stats " + i2)
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
-
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column        
-            
-            rdd1 = rdd1.map{ x => (x(0), Vectors.dense(x)) }
-            rdd1
+        .transform{ (rdd,t) => transformTestingRdd(rdd, i2)
+//        {
+//            var rdd1 = rdd.map{ line => 
+//                { 
+//                    JSON.parseFull(line)  match {
+//                        case None => CreateEmptyArray()
+//                        case Some( mapAsAny ) => mapAsAny match {
+//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                            case _ => CreateEmptyArray()
+//                        }
+//                    }
+//                }
+//            }
+//            .filter(_.size==4)
+//            .map(x => CreateDoubleArray(x,4))
+//        
+//            println("testing data check stats " + i2)
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
+//
+//            println(summary.mean) // a dense vector containing the mean value for each column
+//            println(summary.variance) // column-wise variance
+//            println(summary.numNonzeros) // number of nonzeros in each column        
+//            
+//            rdd1
         }
-    }.cache()
+    }
       
+     testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+     
       trainingData.print()
       testingData.print()
       
