@@ -1,10 +1,11 @@
-FROM localhost:5000/base
+FROM ubuntu:latest
 
-RUN apt-get -y install git
+RUN apt-get update && apt-get install -qy nodejs npm git && ln -s /usr/bin/nodejs /usr/bin/node
 
-RUN git clone https://github.com/lightning-viz/lightning.git \
-    && cd lightning \
-    && npm install
+RUN git clone https://github.com/lightning-viz/lightning.git /lightning \
+    && cd /lightning \
+    && npm install \
+    && npm run build
 
 EXPOSE 3000
 
