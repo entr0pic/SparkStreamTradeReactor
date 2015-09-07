@@ -104,59 +104,9 @@ object TradeStreamReader {
 //    println(brokers)
 //    println(topics)
 
-/*
-//    def distance(a: Vector, b: Vector) = math.sqrt(a.toArray.zip(b.toArray).map(p => p._1 - p._2).map(d => d * d).sum)
-//
-//    def distToCentroid(datum: Vector, model: KMeansModel) = { 
-//        val cluster = model.predict(datum)
-//        val centroid = model.clusterCenters(cluster) 
-//        distance(centroid, datum)
-//    }
-//
-//def clusteringScore(data: RDD[Vector], k: Int, runs: Int) = { 
-//    val kmeans = new KMeans()
-//    kmeans.setK(k)
-//    kmeans.setRuns(runs)
-//    val model = kmeans.run(data)
-//    data.map(datum => distToCentroid(datum, model))
-//    
-//}
-*/
-      
 
-    def preformatForDouble(src:String):String = {
-        var ret = src.split(":")(1)
-        ret = ret.substring(1, ret.length-2).toString.replace("^[0]+", "")//.replace("^[.]{1}", "0.")
-        if (ret.indexOf(".")==ret.lastIndexOf(".")) ret else ret.substring(0, ret.lastIndexOf(".")-1)
-//        val parts = ret.split(".")
-//        if (parts.length>0) parts(0)+"."+parts(1) else ret
-    }
-
-def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
-        val buffer:Array[Any] = new Array[Any](7)
-        buffer(0) = src("price")
-        buffer(1) = src("party_weight")
-        buffer(2) = src("exchange_weight")
-        buffer(3) = src("currency_weight")
-        buffer(4) = src("party")
-        buffer(5) = src("exchange")
-        buffer(6) = src("currency")
-    buffer
-}
+//------------------------ variables --------------
       
-def CreateEmptyArray() : Array[Any] = {
-    val buffer: Array[Any] = new Array[Any](1)
-    buffer(0) = 0.00
-     buffer
-}
-    
-      def CreateDoubleArray(a: Array[Any], n: Int) = {
-          val buffer: Array[Double] = Array.fill(n)(0.00)
-          for( i <- 0 to n-1) {
-              buffer(i) = a(i).toString.toDouble
-          }
-          buffer
-      }
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
     val ssc = new StreamingContext(sparkConf, Seconds(2))
@@ -170,8 +120,6 @@ def CreateEmptyArray() : Array[Any] = {
     // Get the lines, split them into words, count the words and print
      val trades = messages.map(_._2)
       
-      var i = 0
-
 val numDimensions = 3
 val numClusters = 2
 val decayFactor = 1.0
@@ -180,15 +128,44 @@ val sModel = new StreamingKMeans()
   .setK(numClusters)
   .setDecayFactor(decayFactor)
   .setRandomCenters(numDimensions, 0.0)
-      
-//    messages.flatMap(case (_,line) => line).print()
 
-//              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-//                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-//            }
-//    model.predictOnValues(testingData).print()
-//
-  
+//------------------------ functions --------------
+      
+
+def preformatForDouble(src : String) :String = {
+    var ret = src.split(":")(1)
+    ret = ret.substring(1, ret.length-2).toString.replace("^[0]+", "")//.replace("^[.]{1}", "0.")
+    if (ret.indexOf(".")==ret.lastIndexOf(".")) ret else ret.substring(0, ret.lastIndexOf(".")-1)
+    //        val parts = ret.split(".")
+    //        if (parts.length>0) parts(0)+"."+parts(1) else ret
+}
+
+def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
+    val buffer:Array[Any] = new Array[Any](7)
+    buffer(0) = src("price")
+    buffer(1) = src("party_weight")
+    buffer(2) = src("exchange_weight")
+    buffer(3) = src("currency_weight")
+    buffer(4) = src("party")
+    buffer(5) = src("exchange")
+    buffer(6) = src("currency")
+    buffer
+}
+      
+def CreateEmptyArray() : Array[Any] = {
+    val buffer: Array[Any] = new Array[Any](1)
+    buffer(0) = 0.00
+    buffer
+}
+    
+def CreateDoubleArray(a: Array[Any], n: Int) = {
+    val buffer: Array[Double] = Array.fill(n)(0.00)
+    for( i <- 0 to n-1) {
+        buffer(i) = a(i).toString.toDouble
+    }
+    buffer
+}
+      
 def transformRddForModel(rdd : RDD[String], i: Int, msg : String) : RDD[Array[Double]] = {
     var rdd1 = rdd.map{ line => 
         { 
@@ -221,8 +198,14 @@ def transformTrainingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
 def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
     transformRddForModel(rdd, i, "testing data check stats ")
 }
+
+//------------- start doing something ------------
+
+trades.count().print
+//    messages.flatMap(case (_,line) => line).print()
       
- try {
+      
+try {
       
       var i1 = 0;
       var nn = 10;
@@ -266,7 +249,17 @@ def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
 //            rdd1
 //        }
     }.cache()
+}catch {
+    case e: IOException => {
+        println("error: ")
+        e.printStackTrace()
+        print(e.toString())
+    }
+} finally {
+    println("error generating training data")   
+}
     
+try{
     var i2 = 0
     var testingData = trades
         .filter(!_.isEmpty)
@@ -307,104 +300,92 @@ def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
 //        }
     }
       
-     testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
-     
-      trainingData.print()
-      testingData.print()
-      
-//    println("training data check stats")
-//    trainingData.foreachRDD{ (rdd, _) => {
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
+//                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
+//            }
+//    model.predictOnValues(testingData).print()
 //
-//            println(summary.mean) // a dense vector containing the mean value for each column
-//            println(summary.variance) // column-wise variance
-//            println(summary.numNonzeros) // number of nonzeros in each column        
-//        }
-//    }
-      
+  
+    testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+     
+}catch {
+    case e: IOException => {
+        println("error: ")
+        e.printStackTrace()
+        print(e.toString())
+    }
+} finally {
+    println("error generating testing data")   
+}
 
-//      //val random = new XORShiftRandom(seed)
-//    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
-//      
-//    val weights = Array.fill(numClusters)(0.10)
-//      
-//      var model: StreamingKMeansModel = new StreamingKMeansModel(clusterCenters, weights)
-      
-     println("train data")
-     sModel.trainOn(trainingData)
-     println("predict on values")
-    sModel.predictOnValues(testingData).print()
-     println("predict")
-     sModel.predictOn(trainingData).print()
-  }catch {
-  case e: IOException => {
-      println("error: ")
-    e.printStackTrace()
-    print(e.toString())
-  }
+
+try{
+    println("train data")
+    trainingData.print()
+    sModel.trainOn(trainingData)
+}catch {
+    case e: IOException => {
+        println("error: ")
+        e.printStackTrace()
+        print(e.toString())
+    }
 } finally {
     println("error on training data")   
-  }
+}
+
+try {
+    println("predict on values")
+    testingData.print()
+    sModel.predictOnValues(testingData).print()
+} catch {
+    case e: IOException => {
+        println("error: ")
+        e.printStackTrace()
+        print(e.toString())
+    }
+} finally {
+    println("error predicting on testing data")   
+}
+      
+//try{
+//    println("predict")
+//    sModel.predictOn(trainingData).print()
+//}catch {
+//    case e: IOException => {
+//        println("error: ")
+//        e.printStackTrace()
+//        print(e.toString())
+//    }
+//} finally {
+//    println("error predicting training data")   
+//}
  
       
-              
-//    val cleanData = messages.map{ case (_,line) => { 
-//        JSON.parseFull(line)  match {
-//            case None => CreateEmptyArray()
-//            case Some( mapAsAny ) => mapAsAny match {
-//                case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                case _ => CreateEmptyArray()
-//            }
-//        }
-//    }
-//  }.filter(_.size>1)
-//    
-//cleanData.print()
-
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
-      
-  
-//  val testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
-//          LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
-//    }
-    
-      
+   
+try{
+    trades.foreachRDD{rdd =>
+        if (rdd.toLocalIterator.nonEmpty) {
+            val sqlContext = new SQLContext(rdd.sparkContext)
+            import sqlContext.implicits._
 
-//trainingData.print()
-//testingData.print()
-      
-      
-//val summary: MultivariateStatisticalSummary = Statistics.colStats(trainingData)
-//      
-//println(summary.mean) // a dense vector containing the mean value for each column
-//println(summary.variance) // column-wise variance
-//println(summary.numNonzeros) // number of nonzeros in each column
-      
+            // Convert your data to a DataFrame, depends on the structure of your data
+            val df = sqlContext.jsonRDD(rdd).toDF
+            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+        }
+    }
+}catch {
+    case e: IOException => {
+        println("error: ")
+        e.printStackTrace()
+        print(e.toString())
+    }
+} finally {
+    println("error saving to parquet")   
+}
 
-//     
-
-//    trades.foreachRDD{rdd =>
-//      if (rdd.toLocalIterator.nonEmpty) {
-//        val sqlContext = new SQLContext(rdd.sparkContext)
-//           import sqlContext.implicits._
-//       
-//        // Convert your data to a DataFrame, depends on the structure of your data
-//        val df = sqlContext.jsonRDD(rdd).toDF
-//        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-//          
-//          val clusters = KMeans.train(data, numClusters, numIterations)
-//  val WSSSE = clusters.computeCost(data)
-//println("Within Set Sum of Squared Errors = " + WSSSE)
-//println("clustering results:")        
-//        clusteringScore(data, numClusters, numIterations).foreach(println)
-//          
-//      }
-//    }
-//      
-    //trades.count().print
-      
-    ssc.start()
-    ssc.awaitTermination()
-  }
+        ssc.start()
+        ssc.awaitTermination()
+    }
 }
