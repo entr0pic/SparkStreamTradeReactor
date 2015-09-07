@@ -105,7 +105,7 @@ object TradeStreamReader {
 //    println(topics)
 
 
-//------------------------ variables --------------
+//------------------------ init variables --------------
       
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
@@ -203,16 +203,15 @@ def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
 
 trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
-      
+
+var nn = 10;
+var trainingData = trades.filter(!_.isEmpty)
+var testingData = trades.filter(!_.isEmpty)
       
 try {
       
       var i1 = 0;
-      var nn = 10;
-      
-      var trainingData = trades
-        .filter(!_.isEmpty)
-        .map{ x => 
+      trainingData = trainingData.map{ x => 
             if (i1 < nn) {
                 i1+= 1
                 x
@@ -248,7 +247,7 @@ try {
 //                                                                              
 //            rdd1
 //        }
-    }.cache()
+    }
 }catch {
     case e: IOException => {
         println("error: ")
@@ -261,9 +260,7 @@ try {
     
 try{
     var i2 = 0
-    var testingData = trades
-        .filter(!_.isEmpty)
-        .map{ x => 
+    testingData = testingData.map{ x => 
             if (i2 == nn) {
                 i2+= 1
                 x
