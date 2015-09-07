@@ -245,9 +245,9 @@ try {
         e.printStackTrace()
         print(e.toString())
     }
+    null
 } finally {
     println("error generating training data") 
-    null
 }
 
 }
@@ -277,9 +277,9 @@ try{
         e.printStackTrace()
         print(e.toString())
     }
+    null
 } finally {
     println("error generating testing data")   
-    null
 }
 }
       
