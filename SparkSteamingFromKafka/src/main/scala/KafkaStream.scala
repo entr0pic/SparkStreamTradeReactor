@@ -281,14 +281,15 @@ val sModel = new StreamingKMeans()
         }
     }.cache()
     
+    var i2 = 0
     var testingData = trades
         .filter(!_.isEmpty)
         .map{ x => 
-            if (i == nn) {
-                i+= 1
+            if (i2 == nn) {
+                i2+= 1
                 x
             } else {
-                i = 0
+                i2 = 0
                 null
             }
         }
@@ -325,7 +326,8 @@ val sModel = new StreamingKMeans()
     }
       
     testingData.foreachRDD{ (rdd, _) => {
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+        
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd.map(_ => _._2))
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
