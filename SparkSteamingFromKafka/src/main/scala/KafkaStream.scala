@@ -327,7 +327,7 @@ val sModel = new StreamingKMeans()
     }
       
       println("testing data check stats")
-      testingData.transform{ rdd => rdd.map(case (k,v) => v) }.foreachRDD{ (rdd, _) => {
+      testingData.transform{ rdd => rdd.map((k,v) => v) }.foreachRDD{ (rdd, _) => {
         
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
