@@ -263,7 +263,7 @@ val sModel = new StreamingKMeans()
         .filter(_ != null)
         .transform{rdd => 
         {
-            rdd = rdd.map{ line => 
+            var rdd1 = rdd.map{ line => 
                 { 
                     JSON.parseFull(line)  match {
                         case None => CreateEmptyArray()
@@ -279,13 +279,13 @@ val sModel = new StreamingKMeans()
             .map(Vectors.dense)
             
             println("training data check stats " + i1)
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1)
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column    
                                                                               
-            rdd
+            rdd1
         }
     }.cache()
     
