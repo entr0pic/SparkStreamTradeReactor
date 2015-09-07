@@ -166,7 +166,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
       
-def transformRddForModel(rdd : RDD[Any], msg : String) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] = {
     var rdd1 = rdd.map{ line => 
         { 
             JSON.parseFull(line)  match {
@@ -197,8 +197,8 @@ trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-var trainingData = trades.filter(!_.isEmpty)
-var testingData = trades.filter(!_.isEmpty)
+var trainingData = trades
+var testingData = trades
       
 try {
       
