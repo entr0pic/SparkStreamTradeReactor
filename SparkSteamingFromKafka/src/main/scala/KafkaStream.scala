@@ -189,7 +189,7 @@ val sModel = new StreamingKMeans()
 //    model.predictOnValues(testingData).print()
 //
   
-def transformRddForModel(rdd : RDD[Vector[Any]], i: Int, msg : String) : RDD[Vector[Double]] = {
+def transformRddForModel(rdd : RDD[Any], i: Int, msg : String) : RDD[Array] = {
     var rdd1 = rdd.map{ line => 
         { 
             JSON.parseFull(line)  match {
@@ -214,11 +214,11 @@ def transformRddForModel(rdd : RDD[Vector[Any]], i: Int, msg : String) : RDD[Vec
     rdd1
 }  
 
-def transformTrainingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
+def transformTrainingRdd(rdd: RDD[Array], i: Int) : RDD[Array] = {
     transformRddForModel(rdd, i, "training data check stats ")
 }
       
-def transformTestingRdd(rdd: RDD[Vector[Any]], i: Int) : RDD[Vector[Double]] = {
+def transformTestingRdd(rdd: RDD[Array], i: Int) : RDD[Array] = {
     transformRddForModel(rdd, i, "testing data check stats ")
 }
       
