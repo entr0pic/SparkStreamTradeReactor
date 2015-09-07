@@ -1,6 +1,6 @@
-FROM ubuntu:latest
+FROM localhost:5000/base
 
-RUN apt-get update && apt-get install -qy nodejs npm git && ln -s /usr/bin/nodejs /usr/bin/node
+RUN apt-get install -qy git
 
 RUN git clone https://github.com/lightning-viz/lightning.git /lightning \
     && cd /lightning \
