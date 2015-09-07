@@ -8,4 +8,6 @@ RUN git clone https://github.com/lightning-viz/lightning.git \
 
 EXPOSE 3000
 
+WORKDIR "/lightning"
+
 CMD ["npm","start"]
