@@ -166,7 +166,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
       
-def transformRddForModel(rdd : RDD[String], i: Int, msg : String) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] = {
     var rdd1 = rdd.map{ line => 
         { 
             JSON.parseFull(line)  match {
@@ -181,7 +181,7 @@ def transformRddForModel(rdd : RDD[String], i: Int, msg : String) : RDD[Array[Do
     .filter(_.size==4)
     .map(x => CreateDoubleArray(x,4))
 
-    println(msg + i)
+    println(msg)
     val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
 
     println(summary.mean) // a dense vector containing the mean value for each column
@@ -191,22 +191,14 @@ def transformRddForModel(rdd : RDD[String], i: Int, msg : String) : RDD[Array[Do
     rdd1
 }  
 
-def transformTrainingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
-    transformRddForModel(rdd, i, "training data check stats ")
-}
-      
-def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
-    transformRddForModel(rdd, i, "testing data check stats ")
-}
-
 //------------- start doing something ------------
 
 trades.count().print
 //    messages.flatMap(case (_,line) => line).print()
 
 var nn = 10;
-var trainingData = trades.filter(!_.isEmpty)
-var testingData = trades.filter(!_.isEmpty)
+var trainingData = trades
+var testingData = trades
       
 try {
       
@@ -221,7 +213,9 @@ try {
             }
         }
         .filter(_ != null)
-        .transform{(rdd,t) => transformTrainingRdd(rdd, i1)
+        .transform{ (rdd,t) => transformRddForModel(rdd, "training data check stats ("+i1+")") }
+        //.transform{(rdd,t) => transformTrainingRdd(rdd, i1)
+        .cache()
 //        {
 //            var rdd1 = rdd.map{ line => 
 //                { 
@@ -247,7 +241,7 @@ try {
 //                                                                              
 //            rdd1
 //        }
-    }
+    
 }catch {
     case e: IOException => {
         println("error: ")
@@ -270,7 +264,9 @@ try{
             }
         }
         .filter(_ != null)
-        .transform{ (rdd,t) => transformTestingRdd(rdd, i2)
+        .transform{ (rdd,t) => transformRddForModel(rdd, "testing data check stats ("+i2+")") }
+        //.transform{ (rdd,t) => transformTestingRdd(rdd, i2)
+
 //        {
 //            var rdd1 = rdd.map{ line => 
 //                { 
@@ -295,12 +291,11 @@ try{
 //            
 //            rdd1
 //        }
-    }
       
 //              var  testingData = cleanData.map(_.take(4)).filter(_.size==4).map{ x => 
 //                  LabeledPoint(x(0).toString.toDouble, Vectors.dense(x.map(_.toString.toDouble)))
 //            }
-//    model.predictOnValues(testingData).print()
+//              model.predictOnValues(testingData).print()
 //
   
     testingData = testingData.map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
