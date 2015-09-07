@@ -214,11 +214,11 @@ def transformRddForModel(rdd : RDD[String], i: Int, msg : String) : RDD[Array[Do
     rdd1
 }  
 
-def transformTrainingRdd(rdd: RDD[Array], i: Int) : RDD[Array] = {
+def transformTrainingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
     transformRddForModel(rdd, i, "training data check stats ")
 }
       
-def transformTestingRdd(rdd: RDD[Array], i: Int) : RDD[Array] = {
+def transformTestingRdd(rdd: RDD[String], i: Int) : RDD[Array[Double]] = {
     transformRddForModel(rdd, i, "testing data check stats ")
 }
       
