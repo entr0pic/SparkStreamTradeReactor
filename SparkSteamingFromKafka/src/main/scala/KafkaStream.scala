@@ -246,9 +246,21 @@ val sModel = new StreamingKMeans()
 //      var trainingData = doubleData.map(Vectors.dense)
   
       
+      var i = 0;
+      var nn = 10;
       
       var trainingData = trades
         .filter(!_.isEmpty)
+        .map{ x => 
+            if (i < nn) {
+                i+= 1
+                x
+            } else {
+                i = 0
+                null
+            }
+        }
+        .filter(_ != null)
         .transform{rdd => 
         {
             rdd.map{ line => 
@@ -271,6 +283,16 @@ val sModel = new StreamingKMeans()
     
     var testingData = trades
         .filter(!_.isEmpty)
+        .map{ x => 
+            if (i == nn) {
+                i+= 1
+                x
+            } else {
+                i = 0
+                null
+            }
+        }
+        .filter(_ != null)
         .transform{rdd => 
         {
             rdd.map{ line => 
@@ -290,17 +312,27 @@ val sModel = new StreamingKMeans()
         }
     }.cache()
       
-//      println(trainingData)
+      println(trainingData)
+      println(testingData)
       
-//    trainingData.foreachRDD{ (rdd, _) => {
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//
-//            println(summary.mean) // a dense vector containing the mean value for each column
-//            println(summary.variance) // column-wise variance
-//            println(summary.numNonzeros) // number of nonzeros in each column        
-//        }
-//    }
+    trainingData.foreachRDD{ (rdd, _) => {
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column        
+        }
+    }
       
+    testingData.foreachRDD{ (rdd, _) => {
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column        
+        }
+    }
+
 //      //val random = new XORShiftRandom(seed)
 //    val clusterCenters = Array.fill(numClusters)(Vectors.dense(Array.fill(numDimensions)(0.00)))
 //      
@@ -311,7 +343,9 @@ val sModel = new StreamingKMeans()
  try {
      println("train data")
      sModel.trainOn(trainingData)
+     println("predict on values")
     sModel.predictOnValues(testingData).print()
+     println("predict")
      sModel.predictOn(trainingData).print()
   }catch {
   case e: IOException => {
