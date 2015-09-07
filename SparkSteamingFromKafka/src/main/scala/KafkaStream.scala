@@ -313,9 +313,10 @@ val sModel = new StreamingKMeans()
         }
     }.cache()
       
-      println(trainingData)
-      println(testingData)
+      trainingData.print()
+      testingData.print()
       
+    println("training data check stats")
     trainingData.foreachRDD{ (rdd, _) => {
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
@@ -325,9 +326,10 @@ val sModel = new StreamingKMeans()
         }
     }
       
-    testingData.foreachRDD{ (rdd, _) => {
+      println("testing data check stats")
+      testingData.transform(_ => _._2).foreachRDD{ (rdd, _) => {
         
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd.map(_ => _._2))
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
