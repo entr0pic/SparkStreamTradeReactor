@@ -257,6 +257,7 @@ trades.count().print
 var nn = 10;
 var msgText = "";
 
+      var i = 0;
 trades.filter(!_.isEmpty).transform{ rdd =>
                 i += 1
                 if (i < nn) {
