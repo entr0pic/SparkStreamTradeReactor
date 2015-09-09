@@ -207,17 +207,17 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     try {
         var i = 0;
-        trades/*.filter(!_.isEmpty)*/.map{ x =>
+        trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
                 i += 1
                 if (i < nn) {
-                    x
+                    rdd
                 } else {
                     i = 0
                     null
                 }
             }
             .filter(_ != null)
-            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
+            .transform{ rdd => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
@@ -229,17 +229,17 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
 def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
     try{
         var i = 0
-        trades/*.filter(!_.isEmpty)*/.map{ x =>
+        trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
                 i += 1
                 if (i == nn) {
-                    x
+                    rdd
                 } else {
                     i = 0
                     null
                 }
             }
             .filter(_ != null)
-            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
+            .transform{ rdd => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
