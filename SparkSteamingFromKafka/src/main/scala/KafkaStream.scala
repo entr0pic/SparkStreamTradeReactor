@@ -264,8 +264,9 @@ trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
       
 msgText = "generate test data"
+
+
 var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
-testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
 
 msgText = "train data"
@@ -288,6 +289,7 @@ println(msgText)
       
 try {
     testingData.print()
+    testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
     sModel.predictOnValues(testingData).print()
 } catch {
     case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
@@ -298,19 +300,19 @@ try {
     println(msgText + " check point")   
 }
 
-msgText = "predict"
-println(msgText)
-      
-try{
-    sModel.predictOn(trainingData).print()
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")   
-}
+//msgText = "predict"
+//println(msgText)
+//
+//try{
+//    sModel.predictOn(trainingData).print()
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
  
       
 //println(cleanData.size)
