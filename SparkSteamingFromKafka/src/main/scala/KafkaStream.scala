@@ -261,7 +261,7 @@ println(msgText + " check point")
       
 msgText = "generate test data"
 var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
-testingData.transform{rdd => rdd.map(x => x.2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
+testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
 
 msgText = "train data"
