@@ -177,10 +177,10 @@ def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
 
         (summary.mean.size > 0)
     } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString());  false }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()); false  }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()); false }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()); false }
+        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()); */ false }
+        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString());*/ false  }
+        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString());*/ false }
+        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); println(e.toString());*/ false }
     }
 }
       
