@@ -201,7 +201,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
-    .filter(_.size==4)
+    //.filter(_.size==4)
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
@@ -251,7 +251,7 @@ def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
 //------------- start doing something ------------
 
 println("Input trades n ")
-trades.count().print()
+trades.count().print
 println(" --------------- ")
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 
@@ -260,18 +260,18 @@ var msgText = "";
 
 msgText = "generate train data"
 var trainingData = getTrainData(msgText, nn).map(Vectors.dense).cache()
-trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
       
 msgText = "generate test data"
 var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
 println(msgText + " check point")
 
-msgText = "train data"
-println(msgText)
+//msgText = "train data"
+//println(msgText)
 
 //try{
 //    trainingData.print()
+//trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
 //    sModel.trainOn(trainingData)
 //} catch {
 //    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
