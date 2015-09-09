@@ -248,7 +248,7 @@ var trainingData = getTrainData(msgText).map(Vectors.dense).cache()
 println(msgText + " check point")
       
 msgText = "generate test data"
-var testingData  = getTestData(msgText).map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+var testingData  = getTestData(msgText).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
 println(msgText + " check point")
 
 msgText = "train data"
