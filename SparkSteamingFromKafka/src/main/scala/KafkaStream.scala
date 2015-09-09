@@ -217,7 +217,7 @@ def getStreamData(msgText : String, nn : Int, isTesting : Boolean) : DStream[Vec
     try {
         val ds1 = trades.filter(!_.isEmpty)
         val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, isTesting) }
-        val ds3 = ds2.transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }.filter(!_.isEmpty)
+        val ds3 = ds2.transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }.filter(_!=null)
         ds3
 
     } catch {
