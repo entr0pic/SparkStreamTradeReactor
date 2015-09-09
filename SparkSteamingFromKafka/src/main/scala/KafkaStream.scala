@@ -165,9 +165,25 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     }
     buffer
 }
+
+def showRddStats(rdd: RDD[Vector], msgText : String) = {
+    println(msgText)
+    try{
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+        println(summary.mean) // a dense vector containing the mean value for each column
+        println(summary.variance) // column-wise variance
+        println(summary.numNonzeros) // number of nonzeros in each column
+    } catch {
+        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString());  }
+        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString());  }
+        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString());  }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString());  }
+    }
+}
       
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double]] = {
-    var rdd1 = rdd.map{ line => 
+    rdd.map{ line =>
         { 
             println(line)
             JSON.parseFull(line)  match {
@@ -181,27 +197,9 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
     }
     .map{ x =>
          if (x.size>1)  CreateDoubleArray(x,4)
-         else CreateEmptyArray()
+         else CreateDoubleArray(Array.fill(1)(0.00),1)
     }
-//    .filter(_.size==4)
-
-    try{
-        println(msgText)
-        var rdd2 : RDD[Vector] = rdd1.map(x => Vectors.dense(x))
-        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd2)
-
-        println(summary.mean) // a dense vector containing the mean value for each column
-        println(summary.variance) // column-wise variance
-        println(summary.numNonzeros) // number of nonzeros in each column
-
-        rdd1
-    } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()); rdd1 }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()); rdd1 }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()); rdd1 }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()); rdd1 }
-    }
-    rdd1
+    .filter(_.size==4)
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
@@ -217,7 +215,7 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
                 }
             }
             .filter(_ != null)
-            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i1+")") }
+            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i1+")") }s
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
@@ -258,10 +256,12 @@ var msgText = "";
 
 msgText = "generate train data"
 var trainingData = getTrainData(msgText, nn).map(Vectors.dense).cache()
+trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
       
 msgText = "generate test data"
-var testingData  = getTestData(msgText, nn).map{ x => (x(0), Vectors.dense(x)) }.cache()
+var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
+testingData.transform(rdd => rdd.map(_ => _.2)).foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
 
 msgText = "train data"
