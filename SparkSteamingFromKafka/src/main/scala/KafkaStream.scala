@@ -166,7 +166,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
 
-def showRddStats(rdd: RDD[Vector], msgText : String) = {
+def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
     println(msgText + " check stats")
     try{
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
@@ -174,11 +174,13 @@ def showRddStats(rdd: RDD[Vector], msgText : String) = {
         println(summary.mean) // a dense vector containing the mean value for each column
         println(summary.variance) // column-wise variance
         println(summary.numNonzeros) // number of nonzeros in each column
+
+        true
     } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString());  }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString());  }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString());  }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString());  }
+        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString());  false }
+        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()); false  }
+        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()); false }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()); false }
     }
 }
       
@@ -247,24 +249,21 @@ var nn = 3;
 var msgText = "";
 
 msgText = "generate train data"
-val trainingStream = getTrainData(msgText, nn)
-var trainingData = trainingStream.transform(rdd => rdd.map(Vectors.dense)).cache()
+var trainingData = getTrainData(msgText, nn)
 println(msgText + " check point")
 
 msgText = "generate test data"
-var testingData  = getTestData(msgText, nn)//.transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })
+val testingData = getTestData(msgText, nn)
 println(msgText + " check point")
 
 msgText = "train data"
 println(msgText)
-
 try{
       if (trainingData != null) {
-        trainingData.print()
-        trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
-        sModel.trainOn(trainingData)
+        trainingData.print
+        sModel.trainOn(trainingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).cache())
       } else {
-          println("Null training data")
+          println("Null " + msgText)
       }
 } catch {
     case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
@@ -275,43 +274,44 @@ try{
     println(msgText + " check point")
 }
 
-//msgText = "predict on values"
-//println(msgText)
-//
-//try {
-//    testingData.print()
-//    testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
-//    sModel.predictOnValues(testingData).print()
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//}
+msgText = "predict on values"
+println(msgText)
+try {
+      if (testingData != null) {
+        testingData.print()
+        sModel.predictOnValues(testingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })).print()
+      } else {
+           println("Null " + msgText)
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+}
 
-//msgText = "predict"
-//println(msgText)
-//
-//try{
-//    sModel.predictOn(trainingData).print()
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//}
- 
-      
-//println(cleanData.size)
-//val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
-   
+msgText = "predict"
+println(msgText)
+try{
+      if (trainingData != null) {
+        trainingData.print
+        sModel.predictOn(trainingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).cache())
+      } else {
+          println("Null " + msgText)
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+}
+
 //msgText = "saving to parquet"
 //println(msgText)
-//
 //try{
 //    trades.foreachRDD{rdd =>
 //        if (rdd.toLocalIterator.nonEmpty) {
