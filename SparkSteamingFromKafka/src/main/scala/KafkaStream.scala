@@ -264,7 +264,7 @@ var trainingData = getTrainData(msgText, nn).map(Vectors.dense)
 var i = 0
 trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
                 i += 1
-println("i="=i)
+println("i="+i)
                 if (i < nn) {
                     rdd
                 } else {
