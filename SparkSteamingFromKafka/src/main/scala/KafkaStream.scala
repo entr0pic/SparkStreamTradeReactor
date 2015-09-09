@@ -167,7 +167,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 }
 
 def showRddStats(rdd: RDD[Vector], msgText : String) = {
-    println(msgText)
+    println(msgText + " check stats")
     try{
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
@@ -207,12 +207,13 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
         if (i > nn) i = 1 else i = i+1
         ((isTesting && i == nn) || (!isTesting && i < nn))
     }
+
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     try {
-        var ds1 = trades.filter(!_.isEmpty)
-        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText + " check stats ("+i+")", false) }
+        val ds1 = trades.filter(!_.isEmpty)
+        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, false) }
         ds2
 
     } catch {
@@ -226,7 +227,7 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
 def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
     try{
         var ds1 = trades.filter(!_.isEmpty)
-        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText + " check stats ("+i+")", true) }
+        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, true) }
         ds2
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
@@ -246,7 +247,8 @@ var nn = 3;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getTrainData(msgText, nn)
+val trainingStream = getTrainData(msgText, nn)
+var trainingData = trainingStream.transform(rdd => rdd.map(Vectors.dense)).cache()
 println(msgText + " check point")
 
 msgText = "generate test data"
@@ -258,8 +260,6 @@ println(msgText)
 
 try{
       if (trainingData != null) {
-        trainingData = trainingData.map(Vectors.dense)
-
         trainingData.print()
         trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
         sModel.trainOn(trainingData)
