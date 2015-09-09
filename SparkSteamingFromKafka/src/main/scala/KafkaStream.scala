@@ -196,6 +196,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
         case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); rdd1 }
         case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); rdd1 }
     }
+    rdd1
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
