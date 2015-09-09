@@ -166,7 +166,7 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
       
-def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double]] = {
     var rdd1 = rdd.map{ line => 
         { 
             JSON.parseFull(line)  match {
@@ -182,7 +182,7 @@ def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] =
     .map(x => CreateDoubleArray(x,4))
 
     try{
-        println(msg)
+        println(msgText)
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
 
         println(summary.mean) // a dense vector containing the mean value for each column
