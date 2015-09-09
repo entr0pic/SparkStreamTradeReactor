@@ -186,7 +186,7 @@ def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
       
 def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTesting: Boolean) : RDD[Vector] = {
     var i = 0;
-    rdd.map{ line =>
+    val rdd1 : RDD[Vector] = rdd.map{ line =>
         { 
             println(msgText + " : line debug" + line.toString)
             JSON.parseFull(line)  match {
@@ -199,19 +199,18 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
         }
     }
     .map{ x => {
-        println(msgText + " : x ("+x.size+") debug" + CreateDoubleArray(x,4).toString)
          if (x.size>1)  CreateDoubleArray(x,4)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
-    .filter(_.size==4)
+    .filter(x => x.size==4)
     .filter{ x =>
         if (i > nn) i = 1 else i = i+1
         ((isTesting && i == nn) || (!isTesting && i < nn))
     }
     .map(x => Vectors.dense(x))
 
-
+    rdd1
 }  
 
 def getStreamData(msgText : String, nn : Int, isTesting : Boolean) : DStream[Vector] = {
