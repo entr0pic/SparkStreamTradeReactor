@@ -209,7 +209,7 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
         var i = 0;
         trades/*.filter(!_.isEmpty)*/.map{ x =>
                 i += 1
-                if (i <= nn) {
+                if (i < nn) {
                     x
                 } else {
                     i = 0
