@@ -167,15 +167,15 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 }
 
 def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
-    println(msgText + " check stats")
+    //println(msgText + " check stats")
     try{
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-        println(summary.mean) // a dense vector containing the mean value for each column
-        println(summary.variance) // column-wise variance
-        println(summary.numNonzeros) // number of nonzeros in each column
+//        println(summary.mean) // a dense vector containing the mean value for each column
+//        println(summary.variance) // column-wise variance
+//        println(summary.numNonzeros) // number of nonzeros in each column
 
-        true
+        (summary.mean.size > 0)
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString());  false }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()); false  }
@@ -188,7 +188,7 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
     var i = 0;
     val rdd1 : RDD[Vector] = rdd.map{ line =>
         { 
-            println(msgText + " : line debug" + line.toString)
+       //     println(msgText + " : line debug" + line.toString)
             JSON.parseFull(line)  match {
                 case None => CreateEmptyArray()
                 case Some( mapAsAny ) => mapAsAny match {
@@ -262,7 +262,6 @@ msgText = "train data"
 println(msgText)
 try{
       if (trainingData != null) {
-        trainingData.print
         sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
@@ -274,14 +273,14 @@ try{
     case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 } finally {
     println(msgText + " check point")
+    if (trainingData != null) trainingData.print
 }
 
 msgText = "predict on values"
 println(msgText)
 try {
       if (testingData != null) {
-        testingData.print
-        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => (x.toArray(0), x) })).print()
+        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
       } else {
            println("Null " + msgText)
       }
@@ -292,13 +291,13 @@ try {
     case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 } finally {
     println(msgText + " check point")
+    if (testingData != null)         testingData.print
 }
 
 msgText = "predict"
 println(msgText)
 try{
       if (trainingData != null) {
-        trainingData.print
         sModel.predictOn(trainingData).print()
       } else {
           println("Null " + msgText)
@@ -310,6 +309,7 @@ try{
     case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 } finally {
     println(msgText + " check point")
+    if (trainingData != null) trainingData.print
 }
 
 //msgText = "saving to parquet"
