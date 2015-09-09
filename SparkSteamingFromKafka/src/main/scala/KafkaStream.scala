@@ -188,13 +188,13 @@ def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] =
         println(summary.mean) // a dense vector containing the mean value for each column
         println(summary.variance) // column-wise variance
         println(summary.numNonzeros) // number of nonzeros in each column
-    } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());  }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());  }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString());  }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); }
-    } finally {
+
         rdd1
+    } catch {
+        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); rdd1 }
+        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); rdd1 }
+        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); rdd1 }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); rdd1 }
     }
 }  
 
