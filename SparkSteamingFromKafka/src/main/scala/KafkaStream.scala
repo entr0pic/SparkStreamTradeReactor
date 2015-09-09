@@ -207,7 +207,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     try {
         var i = 0;
-        trades /*.filter(!_.isEmpty)*/.transform{ rdd =>
+        trades.filter(!_.isEmpty).transform{ rdd =>
                 i += 1
                 if (i < nn) {
                     rdd
@@ -257,7 +257,15 @@ trades.count().print
 var nn = 10;
 var msgText = "";
 
-trades.filter(!_.isEmpty).print
+trades.filter(!_.isEmpty).transform{ rdd =>
+                i += 1
+                if (i < nn) {
+                    rdd
+                } else {
+                    i = 0
+                    null
+                }
+            }.print
 
 //msgText = "generate train data"
 //var trainingData = getTrainData(msgText, nn).map(Vectors.dense)
