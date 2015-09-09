@@ -209,7 +209,7 @@ def getTrainData(msgText : String) : DStream[Array[Double]] = {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(_.toString()); null }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
     }
 }
     
@@ -228,14 +228,10 @@ def getTestData (msgText : String) : DStream[Array[Double]] = {
             .filter(_ != null)
             .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i2+")") }
     } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); /*print(e.toString())*/ }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); /*print(e.toString())*/ }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); /*print(e.toString())*/ }
-        case _: Throwable => { println(msgText + " Other error: "); _.printStackTrace(); /*print(_.toString())*/ }
-        
-        null
-    } finally {
-//        println(msgText + " check point")   
+        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
+        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
+        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
     }
 }
 
@@ -253,7 +249,7 @@ println(msgText + " check point")
       
 msgText = "generate test data"
 var testingData  = getTestData().map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
-prinln(msgText + " check point")
+println(msgText + " check point")
 
 msgText = "train data"
 println(msgText)
@@ -262,10 +258,10 @@ try{
     trainingData.print()
     sModel.trainOn(trainingData)
 } catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case _: Throwable => { println(msgText + " Other error: "); _.printStackTrace(); /*print(_.toString())*/ }
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()) }
 } finally {
     println(msgText + " check point")   
 }
@@ -277,10 +273,10 @@ try {
     testingData.print()
     sModel.predictOnValues(testingData).print()
 } catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case _: Throwable => { println(msgText + " Other error: "); _.printStackTrace(); /*print(_.toString())*/ }
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()) }
 } finally {
     println(msgText + " check point")   
 }
@@ -291,10 +287,10 @@ println(msgText)
 try{
     sModel.predictOn(trainingData).print()
 } catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case _: Throwable => { println(msgText + " Other error: "); _.printStackTrace(); /*print(_.toString())*/ }
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()) }
 } finally {
     println(msgText + " check point")   
 }
@@ -318,10 +314,10 @@ try{
         }
     }
 } catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); /*print(e.toString())*/ }
-    case _: Throwable => { println(msgText + " Other error: "); _.printStackTrace(); /*print(_.toString())*/ }
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()) }
 } finally {
     println(msgText + " check point")   
 }
