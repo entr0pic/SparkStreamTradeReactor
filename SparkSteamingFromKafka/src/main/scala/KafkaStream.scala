@@ -248,7 +248,7 @@ var trainingData = getTrainData(msgText).map(Vectors.dense).cache()
 println(msgText + " check point")
       
 msgText = "generate test data"
-var testingData  = getTestData().map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
+var testingData  = getTestData(msgText).map(Vectors.dense).map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
 println(msgText + " check point")
 
 msgText = "train data"
@@ -300,7 +300,7 @@ try{
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
    
 msgText = "saving to parquet"
-println(msgTxt)
+println(msgText)
 
 try{
     trades.foreachRDD{rdd =>
