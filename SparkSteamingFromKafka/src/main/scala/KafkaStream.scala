@@ -182,7 +182,8 @@ def showRddStats(rdd: RDD[Vector], msgText : String) = {
     }
 }
       
-def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTesting: Boolean) : RDD[Array[Double]] = {
+    var i = 0;
     rdd.map{ line =>
         { 
             println(msgText + " : line debug" + line.toString)
@@ -201,23 +202,19 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
-    //.filter(_.size==4)
+    .filter(_.size==4)
+    .filter{ x =>
+        if (i > nn) i = 1 else i = i+1
+        ((isTesting && i == nn) || (!isTesting && i < nn))
+    }
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     try {
-        var i = 0;
-        trades.filter(!_.isEmpty).transform{ rdd =>
-                i += 1
-                if (i < nn) {
-                    rdd
-                } else {
-                    i = 0
-                    null
-                }
-            }
-            .filter(_ != null)
-            .transform{ rdd => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
+        var ds1 = trades.filter(!_.isEmpty)
+        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText + " check stats ("+i+")", false) }
+        ds2
+
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
@@ -228,18 +225,9 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     
 def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
     try{
-        var i = 0
-        trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
-                i += 1
-                if (i == nn) {
-                    rdd
-                } else {
-                    i = 0
-                    null
-                }
-            }
-            .filter(_ != null)
-            .transform{ rdd => transformRddForModel(rdd, msgText + " check stats ("+i+")") }
+        var ds1 = trades.filter(!_.isEmpty)
+        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText + " check stats ("+i+")", true) }
+        ds2
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
@@ -257,40 +245,35 @@ trades.count().print
 var nn = 3;
 var msgText = "";
 
-      var i = 0;
-trades.filter(!_.isEmpty).transform{ rdd =>
-                i += 1
-                if (i < nn) {
-                    rdd
-                } else {
-                    i = 0
-                    null
-                }
-            }.print
+msgText = "generate train data"
+var trainingData = getTrainData(msgText, nn)
+println(msgText + " check point")
 
-//msgText = "generate train data"
-//var trainingData = getTrainData(msgText, nn).map(Vectors.dense)
-//println(msgText + " check point")
-//
-//msgText = "generate test data"
-//var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })
-//println(msgText + " check point")
-//
-//msgText = "train data"
-//println(msgText)
-//
-//try{
-//    trainingData.print()
-////trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
-//    sModel.trainOn(trainingData)
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//}
+msgText = "generate test data"
+var testingData  = getTestData(msgText, nn)//.transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })
+println(msgText + " check point")
+
+msgText = "train data"
+println(msgText)
+
+try{
+      if (trainingData != null) {
+        trainingData = trainingData.map(Vectors.dense)
+
+        trainingData.print()
+        trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
+        sModel.trainOn(trainingData)
+      } else {
+          println("Null training data")
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+}
 
 //msgText = "predict on values"
 //println(msgText)
