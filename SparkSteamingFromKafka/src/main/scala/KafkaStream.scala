@@ -185,8 +185,7 @@ def showRddStats(rdd: RDD[Vector], msgText : String) = {
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double]] = {
     rdd.map{ line =>
         { 
-            println(msgText + " : line debug")
-            println(line)
+            println(msgText + " : line debug" + line.toString)
             JSON.parseFull(line)  match {
                 case None => CreateEmptyArray()
                 case Some( mapAsAny ) => mapAsAny match {
@@ -197,8 +196,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
         }
     }
     .map{ x => {
-            println(msgText + " : x debug")
-            println(CreateDoubleArray(x,4))
+        println(msgText + " : x debug" + CreateDoubleArray(x,4).toString)
          if (x.size>1)  CreateDoubleArray(x,4)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
@@ -266,41 +264,39 @@ trainingData.foreachRDD(rdd => showRddStats(rdd, msgText))
 println(msgText + " check point")
       
 msgText = "generate test data"
-
-
 var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
 println(msgText + " check point")
 
 msgText = "train data"
 println(msgText)
 
-try{
-    trainingData.print()
-    sModel.trainOn(trainingData)
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")   
-}
-
-msgText = "predict on values"
-println(msgText)
-      
-try {
-    testingData.print()
-    testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
-    sModel.predictOnValues(testingData).print()
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")   
-}
+//try{
+//    trainingData.print()
+//    sModel.trainOn(trainingData)
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
+//
+//msgText = "predict on values"
+//println(msgText)
+//
+//try {
+//    testingData.print()
+//    testingData.transform{rdd => rdd.map(x => x._2)}.foreachRDD(rdd => showRddStats(rdd, msgText))
+//    sModel.predictOnValues(testingData).print()
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
 
 //msgText = "predict"
 //println(msgText)
