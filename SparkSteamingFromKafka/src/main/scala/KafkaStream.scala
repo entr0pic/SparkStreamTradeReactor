@@ -184,7 +184,7 @@ def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
     }
 }
       
-def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTesting: Boolean) : RDD[Array[Double]] = {
+def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTesting: Boolean) : RDD[Vector] = {
     var i = 0;
     rdd.map{ line =>
         { 
@@ -209,14 +209,17 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
         if (i > nn) i = 1 else i = i+1
         ((isTesting && i == nn) || (!isTesting && i < nn))
     }
+    .map(x => Vector.dense(x))
+
 
 }  
 
-def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
+def getStreamData(msgText : String, nn : Int, isTesting : Boolean) : DStream[Vector] = {
     try {
         val ds1 = trades.filter(!_.isEmpty)
-        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, false) }
-        ds2
+        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, isTesting) }
+        val ds3 = ds2.filter(rdd => showRddStats(rdd, msgText))
+        ds3
 
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
@@ -226,18 +229,18 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     }
 }
     
-def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
-    try{
-        var ds1 = trades.filter(!_.isEmpty)
-        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, true) }
-        ds2
-    } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
-    }
-}
+//def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
+//    try{
+//        var ds1 = trades.filter(!_.isEmpty)
+//        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, true) }
+//        ds2
+//    } catch {
+//        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
+//        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
+//        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
+//        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
+//    }
+//}
 
 //------------- start doing something ------------
 
@@ -249,11 +252,11 @@ var nn = 3;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getTrainData(msgText, nn)
+var trainingData = getStreamData(msgText, nn, false)
 println(msgText + " check point")
 
 msgText = "generate test data"
-val testingData = getTestData(msgText, nn)
+val testingData = getStreamData(msgText, nn, true)
 println(msgText + " check point")
 
 msgText = "train data"
@@ -261,7 +264,7 @@ println(msgText)
 try{
       if (trainingData != null) {
         trainingData.print
-        sModel.trainOn(trainingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).cache())
+        sModel.trainOn(trainingData).cache())
       } else {
           println("Null " + msgText)
       }
@@ -278,8 +281,8 @@ msgText = "predict on values"
 println(msgText)
 try {
       if (testingData != null) {
-        testingData.print()
-        sModel.predictOnValues(testingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })).print()
+        testingData.print
+        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })).print()
       } else {
            println("Null " + msgText)
       }
@@ -297,7 +300,7 @@ println(msgText)
 try{
       if (trainingData != null) {
         trainingData.print
-        sModel.predictOn(trainingData.transform(rdd => rdd.map(Vectors.dense)).filter(rdd => showRddStats(rdd, msgText)).cache())
+        sModel.predictOn(trainingData).cache())
       } else {
           println("Null " + msgText)
       }
