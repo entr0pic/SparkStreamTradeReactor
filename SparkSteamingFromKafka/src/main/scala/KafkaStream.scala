@@ -215,7 +215,7 @@ def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
                 }
             }
             .filter(_ != null)
-            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i1+")") }s
+            .transform{ (rdd,t) => transformRddForModel(rdd, msgText + " check stats ("+i1+")") }
     } catch {
         case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
         case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
