@@ -181,14 +181,21 @@ def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] =
     .filter(_.size==4)
     .map(x => CreateDoubleArray(x,4))
 
-    println(msg)
-    val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
+    try{
+        println(msg)
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
 
-    println(summary.mean) // a dense vector containing the mean value for each column
-    println(summary.variance) // column-wise variance
-    println(summary.numNonzeros) // number of nonzeros in each column        
-
-    rdd1
+        println(summary.mean) // a dense vector containing the mean value for each column
+        println(summary.variance) // column-wise variance
+        println(summary.numNonzeros) // number of nonzeros in each column
+    } catch {
+        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());  }
+        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());  }
+        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString());  }
+        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); }
+    } finally {
+        rdd1
+    }
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
