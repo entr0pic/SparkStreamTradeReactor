@@ -196,12 +196,12 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
         }
     }
     .map{ x => {
-        println(msgText + " : x debug" + CreateDoubleArray(x,4).toString)
+        println(msgText + " : x ("+x.size+") debug" + CreateDoubleArray(x,4).toString)
          if (x.size>1)  CreateDoubleArray(x,4)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
-//    .filter(_.size==4)
+    .filter(_.size==4)
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
