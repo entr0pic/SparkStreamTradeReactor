@@ -185,6 +185,7 @@ def showRddStats(rdd: RDD[Vector], msgText : String) = {
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double]] = {
     rdd.map{ line =>
         { 
+            println(msgText + " : line debug")
             println(line)
             JSON.parseFull(line)  match {
                 case None => CreateEmptyArray()
@@ -195,11 +196,14 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
             }
         }
     }
-    .map{ x =>
+    .map{ x => {
+            println(msgText + " : x debug")
+            println(CreateDoubleArray(x,4))
          if (x.size>1)  CreateDoubleArray(x,4)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
+        }
     }
-    .filter(_.size==4)
+//    .filter(_.size==4)
 }  
 
 def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
@@ -312,28 +316,28 @@ try{
 //println(cleanData.size)
 //val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
    
-msgText = "saving to parquet"
-println(msgText)
-
-try{
-    trades.foreachRDD{rdd =>
-        if (rdd.toLocalIterator.nonEmpty) {
-            val sqlContext = new SQLContext(rdd.sparkContext)
-            import sqlContext.implicits._
-
-            // Convert your data to a DataFrame, depends on the structure of your data
-            val df = sqlContext.jsonRDD(rdd).toDF
-            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-        }
-    }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")   
-}
+//msgText = "saving to parquet"
+//println(msgText)
+//
+//try{
+//    trades.foreachRDD{rdd =>
+//        if (rdd.toLocalIterator.nonEmpty) {
+//            val sqlContext = new SQLContext(rdd.sparkContext)
+//            import sqlContext.implicits._
+//
+//            // Convert your data to a DataFrame, depends on the structure of your data
+//            val df = sqlContext.jsonRDD(rdd).toDF
+//            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+//        }
+//    }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
 
         ssc.start()
         ssc.awaitTermination()
