@@ -262,7 +262,7 @@ msgText = "train data"
 println(msgText)
 try{
       if (trainingData != null) {
-        sModel.trainOn(trainingData)
+  //      sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
       }
@@ -280,7 +280,7 @@ msgText = "predict on values"
 println(msgText)
 try {
       if (testingData != null) {
-        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
+//        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
       } else {
            println("Null " + msgText)
       }
@@ -294,23 +294,23 @@ try {
     if (testingData != null)         testingData.print
 }
 
-msgText = "predict"
-println(msgText)
-try{
-      if (trainingData != null) {
-        sModel.predictOn(trainingData).print()
-      } else {
-          println("Null " + msgText)
-      }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")
-    if (trainingData != null) trainingData.print
-}
+//msgText = "predict"
+//println(msgText)
+//try{
+//      if (trainingData != null) {
+//        sModel.predictOn(trainingData).print()
+//      } else {
+//          println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//    if (trainingData != null) trainingData.print
+//}
 
 //msgText = "saving to parquet"
 //println(msgText)
