@@ -259,9 +259,12 @@ var nn = 10;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getTrainData(msgText, nn).map(Vectors.dense).cache()
+var trainingData = getTrainData(msgText, nn).map(Vectors.dense)
+
+var i = 0
 trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
                 i += 1
+println("i="=i)
                 if (i < nn) {
                     rdd
                 } else {
@@ -273,7 +276,7 @@ trades/*.filter(!_.isEmpty)*/.transform{ rdd =>
 println(msgText + " check point")
       
 msgText = "generate test data"
-var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) }).cache()
+var testingData  = getTestData(msgText, nn).transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })
 println(msgText + " check point")
 
 msgText = "train data"
