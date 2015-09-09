@@ -262,7 +262,7 @@ msgText = "train data"
 println(msgText)
 try{
       if (trainingData != null) {
-  //      sModel.trainOn(trainingData)
+        sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
       }
