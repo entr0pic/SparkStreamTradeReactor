@@ -187,7 +187,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Array[Double
 
     try{
         println(msgText)
-        var rdd2 : RDD[Vector] = rdd1.map(Vectors.dense)
+        var rdd2 : RDD[Vector] = rdd1.map(x => Vectors.dense(x))
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd2)
 
         println(summary.mean) // a dense vector containing the mean value for each column
