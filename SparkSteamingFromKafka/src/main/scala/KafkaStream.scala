@@ -250,8 +250,8 @@ def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
 
 //------------- start doing something ------------
 
-println("Input trades n ")
-trades.count().print
+//println("Input trades n ")
+//trades.count().print
 println(" --------------- ")
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 
