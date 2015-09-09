@@ -221,10 +221,10 @@ def getStreamData(msgText : String, nn : Int, isTesting : Boolean) : DStream[Vec
         ds3
 
     } catch {
-        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
-        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
+        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); print(e.toString());*/ null }
     }
 }
     
