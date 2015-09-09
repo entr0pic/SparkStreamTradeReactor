@@ -254,7 +254,7 @@ def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
 trades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 
-var nn = 10;
+var nn = 3;
 var msgText = "";
 
       var i = 0;
