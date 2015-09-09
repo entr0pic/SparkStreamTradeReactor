@@ -264,7 +264,7 @@ println(msgText)
 try{
       if (trainingData != null) {
         trainingData.print
-        sModel.trainOn(trainingData).cache())
+        sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
       }
@@ -300,7 +300,7 @@ println(msgText)
 try{
       if (trainingData != null) {
         trainingData.print
-        sModel.predictOn(trainingData).cache())
+        sModel.predictOn(trainingData).print()
       } else {
           println("Null " + msgText)
       }
