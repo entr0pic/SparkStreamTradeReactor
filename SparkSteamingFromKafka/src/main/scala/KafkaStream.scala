@@ -281,7 +281,7 @@ println(msgText)
 try {
       if (testingData != null) {
         testingData.print
-        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => (x(0), Vectors.dense(x)) })).print()
+        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => (x.head, x) })).print()
       } else {
            println("Null " + msgText)
       }
