@@ -209,7 +209,7 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
         if (i > nn) i = 1 else i = i+1
         ((isTesting && i == nn) || (!isTesting && i < nn))
     }
-    .map(x => Vector.dense(x))
+    .map(x => Vectors.dense(x))
 
 
 }  
