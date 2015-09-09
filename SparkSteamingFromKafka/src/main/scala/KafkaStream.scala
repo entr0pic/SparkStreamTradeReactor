@@ -191,7 +191,7 @@ def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] =
     rdd1
 }  
 
-def getTrainData(msgText : String) : DStream[Array[Double]] = {
+def getTrainData(msgText : String, nn : Int) : DStream[Array[Double]] = {
     try {
         var i1 = 0;
         trades.filter(!_.isEmpty).map{ x => 
@@ -213,7 +213,7 @@ def getTrainData(msgText : String) : DStream[Array[Double]] = {
     }
 }
     
-def getTestData (msgText : String) : DStream[Array[Double]] = {
+def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
     try{
         var i2 = 0
         trades.filter(!_.isEmpty).map{ x => 
@@ -244,11 +244,11 @@ var nn = 10;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getTrainData(msgText).map(Vectors.dense).cache()
+var trainingData = getTrainData(msgText, nn).map(Vectors.dense).cache()
 println(msgText + " check point")
       
 msgText = "generate test data"
-var testingData  = getTestData(msgText).map{ x => (x(0), Vectors.dense(x)) }.cache()
+var testingData  = getTestData(msgText, nn).map{ x => (x(0), Vectors.dense(x)) }.cache()
 println(msgText + " check point")
 
 msgText = "train data"
