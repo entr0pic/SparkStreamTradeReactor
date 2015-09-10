@@ -208,7 +208,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     rdd1
 }  
 
-def getStreamData(trades : DStream[Any], msgText : String) : DStream[Vector] = {
+def getStreamData(trades : DStream[String], msgText : String) : DStream[Vector] = {
     try {
         val ds1 = trades//.filter(!_.isEmpty)
         val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, msgText) }
