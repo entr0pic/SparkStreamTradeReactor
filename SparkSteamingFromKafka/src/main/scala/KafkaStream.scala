@@ -250,14 +250,15 @@ var trainingData = getStreamData(trades, msgText)
 println(msgText + " check point")
 
 msgText = "generate test data"
-val testingData = getStreamData(ttrades, msgText)
+//val testingData = getStreamData(ttrades, msgText)
 println(msgText + " check point")
 
 msgText = "train data"
 println(msgText)
 try{
       if (trainingData != null) {
-        sModel.trainOn(trainingData)
+          if (trainingData != null) trainingData.print
+            sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
       }
@@ -268,7 +269,6 @@ try{
     case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 } finally {
     println(msgText + " check point")
-//    if (trainingData != null) trainingData.print
 }
 
 //msgText = "predict on values"
