@@ -203,7 +203,6 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
-    .filter(x => x.size==4)
     .map(x => Vectors.dense(x))
 
     rdd1
@@ -247,48 +246,48 @@ var nn = 3;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getStreamData(trades, msgText, nn, false)
+var trainingData = getStreamData(trades, msgText)
 println(msgText + " check point")
 
 msgText = "generate test data"
-val testingData = getStreamData(ttrades, msgText, nn, true)
+val testingData = getStreamData(ttrades, msgText)
 println(msgText + " check point")
 
-//msgText = "train data"
-//println(msgText)
-//try{
-//      if (trainingData != null) {
-//        sModel.trainOn(trainingData)
-//      } else {
-//          println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//    //if (trainingData != null) trainingData.print
-//}
-//
-//msgText = "predict on values"
-//println(msgText)
-//try {
-//      if (testingData != null) {
-//        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
-//      } else {
-//           println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//    //if (testingData != null)         testingData.print
-//}
+msgText = "train data"
+println(msgText)
+try{
+      if (trainingData != null) {
+        sModel.trainOn(trainingData)
+      } else {
+          println("Null " + msgText)
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+//    if (trainingData != null) trainingData.print
+}
+
+msgText = "predict on values"
+println(msgText)
+try {
+      if (testingData != null) {
+        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
+      } else {
+           println("Null " + msgText)
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+    //if (testingData != null)         testingData.print
+}
 
 //msgText = "predict"
 //println(msgText)
