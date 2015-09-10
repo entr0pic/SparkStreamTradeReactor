@@ -185,8 +185,7 @@ def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
     }
 }
       
-def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTesting: Boolean) : RDD[Vector] = {
-    var i = 0;
+def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val rdd1 : RDD[Vector] = rdd.map{ line =>
         { 
        //     println(msgText + " : line debug" + line.toString)
@@ -205,19 +204,15 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
         }
     }
     .filter(x => x.size==4)
-    .filter{ x =>
-        if (i > nn) i = 1 else i = i+1
-        ((isTesting && i == nn) || (!isTesting && i < nn))
-    }
     .map(x => Vectors.dense(x))
 
     rdd1
 }  
 
-def getStreamData(trades : DStream, msgText : String, nn : Int, isTesting : Boolean) : DStream[Vector] = {
+def getStreamData(trades : DStream[Any], msgText : String) : DStream[Vector] = {
     try {
         val ds1 = trades.filter(!_.isEmpty)
-        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, isTesting) }
+        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, msgText) }
         val ds3 = ds2.transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }.filter(_!=null)
         ds3
 
