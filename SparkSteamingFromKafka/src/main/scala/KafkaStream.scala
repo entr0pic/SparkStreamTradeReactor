@@ -257,8 +257,8 @@ msgText = "train data"
 println(msgText)
 try{
       if (trainingData != null) {
-          if (trainingData != null) trainingData.print
-            sModel.trainOn(trainingData)
+          trainingData.print
+            //sModel.trainOn(trainingData)
       } else {
           println("Null " + msgText)
       }
