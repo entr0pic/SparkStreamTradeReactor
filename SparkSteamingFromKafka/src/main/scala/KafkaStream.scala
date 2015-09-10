@@ -116,9 +116,10 @@ object TradeStreamReader {
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
+    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
-    // Get the lines, split them into words, count the words and print
-     val trades = messages.map(_._2)
+    val trades = messages.map(_._2)
+    val ttrades = tmessages.map(_._2)
       
 val numDimensions = 3
 val numClusters = 2
@@ -213,7 +214,7 @@ def transformRddForModel(rdd : RDD[String], nn : Int, msgText : String, isTestin
     rdd1
 }  
 
-def getStreamData(msgText : String, nn : Int, isTesting : Boolean) : DStream[Vector] = {
+def getStreamData(trades : DStream, msgText : String, nn : Int, isTesting : Boolean) : DStream[Vector] = {
     try {
         val ds1 = trades.filter(!_.isEmpty)
         val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, isTesting) }
@@ -251,48 +252,48 @@ var nn = 3;
 var msgText = "";
 
 msgText = "generate train data"
-var trainingData = getStreamData(msgText, nn, false)
+var trainingData = getStreamData(trades, msgText, nn, false)
 println(msgText + " check point")
 
 msgText = "generate test data"
-val testingData = getStreamData(msgText, nn, true)
+val testingData = getStreamData(ttrades, msgText, nn, true)
 println(msgText + " check point")
 
-msgText = "train data"
-println(msgText)
-try{
-      if (trainingData != null) {
-        sModel.trainOn(trainingData)
-      } else {
-          println("Null " + msgText)
-      }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")
-    if (trainingData != null) trainingData.print
-}
-
-msgText = "predict on values"
-println(msgText)
-try {
-      if (testingData != null) {
+//msgText = "train data"
+//println(msgText)
+//try{
+//      if (trainingData != null) {
+//        sModel.trainOn(trainingData)
+//      } else {
+//          println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//    //if (trainingData != null) trainingData.print
+//}
+//
+//msgText = "predict on values"
+//println(msgText)
+//try {
+//      if (testingData != null) {
 //        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
-      } else {
-           println("Null " + msgText)
-      }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")
-    if (testingData != null)         testingData.print
-}
+//      } else {
+//           println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//    //if (testingData != null)         testingData.print
+//}
 
 //msgText = "predict"
 //println(msgText)
