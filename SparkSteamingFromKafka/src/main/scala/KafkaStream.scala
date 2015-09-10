@@ -210,11 +210,11 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
 
 def getStreamData(trades : DStream[String], msgText : String) : DStream[Vector] = {
     try {
-        val ds1 = trades.filter(!_.isEmpty)
-        val ds2 = ds1.transform{ rdd => transformRddForModel(rdd, msgText) }
-        //val ds3 = ds2.transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }.filter(_!=null)
-        ds2
-
+        trades
+            .filter(!_.isEmpty)
+            .transform{ rdd => transformRddForModel(rdd, msgText) }
+            .transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }
+            .filter(_!=null)
     } catch {
         case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());*/ null }
         case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());*/ null }
