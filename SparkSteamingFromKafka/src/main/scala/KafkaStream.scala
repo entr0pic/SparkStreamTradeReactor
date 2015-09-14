@@ -327,6 +327,7 @@ try {
         }
     }
     .filter(_!=null)
+    .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })
     .print
 
 //      }.foreachRDD{ rdd =>
