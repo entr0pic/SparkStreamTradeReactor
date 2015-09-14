@@ -247,49 +247,49 @@ ttrades.print()
 var nn = 3;
 var msgText = "";
 
-msgText = "generate train data"
-var trainingData = getStreamData(trades, msgText)
-println(msgText + " check point")
-
-msgText = "generate test data"
-val testingData = getStreamData(ttrades, msgText)
-println(msgText + " check point")
-
-msgText = "train data"
-println(msgText)
-try{
-      if (trainingData != null) {
-          trainingData.print
-            //sModel.trainOn(trainingData)
-      } else {
-          println("Null " + msgText)
-      }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")
-}
-
-msgText = "predict on values"
-println(msgText)
-try {
-      if (testingData != null) {
-        testingData.print
-//        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
-      } else {
-           println("Null " + msgText)
-      }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-} finally {
-    println(msgText + " check point")
-}
+//msgText = "generate train data"
+//var trainingData = getStreamData(trades, msgText)
+//println(msgText + " check point")
+//
+//msgText = "generate test data"
+//val testingData = getStreamData(ttrades, msgText)
+//println(msgText + " check point")
+//
+//msgText = "train data"
+//println(msgText)
+//try{
+//      if (trainingData != null) {
+//          trainingData.print
+//            //sModel.trainOn(trainingData)
+//      } else {
+//          println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
+//
+//msgText = "predict on values"
+//println(msgText)
+//try {
+//      if (testingData != null) {
+//        testingData.print
+////        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
+//      } else {
+//           println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
 
 //msgText = "predict"
 //println(msgText)
@@ -309,27 +309,27 @@ try {
 //    if (trainingData != null) trainingData.print
 //}
 
-msgText = "saving to parquet"
-println(msgText)
-try{
-    trades.foreachRDD{rdd =>
-        if (rdd.toLocalIterator.nonEmpty) {
-            val sqlContext = new SQLContext(rdd.sparkContext)
-            import sqlContext.implicits._
-
-            // Convert your data to a DataFrame, depends on the structure of your data
-            val df = sqlContext.jsonRDD(rdd).toDF
-            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-        }
-    }
-} catch {
-    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-}
-
-        ssc.start()
-        ssc.awaitTermination()
-    }
-}
+//msgText = "saving to parquet"
+//println(msgText)
+//try{
+//    trades.foreachRDD{rdd =>
+//        if (rdd.toLocalIterator.nonEmpty) {
+//            val sqlContext = new SQLContext(rdd.sparkContext)
+//            import sqlContext.implicits._
+//
+//            // Convert your data to a DataFrame, depends on the structure of your data
+//            val df = sqlContext.jsonRDD(rdd).toDF
+//            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+//        }
+//    }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//}
+//
+//        ssc.start()
+//        ssc.awaitTermination()
+//    }
+//}
