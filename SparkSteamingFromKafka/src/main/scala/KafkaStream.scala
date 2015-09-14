@@ -239,12 +239,21 @@ var msgText = "";
 msgText = "generate train data"
 println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
-trades.filter(!_.isEmpty).print
-ttrades.filter(!_.isEmpty).print
 
-//msgText = "generate test data"
+try {
+trades.filter(!_.isEmpty).print
+} catch {
+    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
+}
+
+msgText = "generate test data"
 //val testingData = getStreamData(ttrades, msgText)
-//println(msgText + " check point")
+println(msgText + " check point")
+try {
+    ttrades.filter(!_.isEmpty).print
+} catch {
+    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
+}
 //
 //msgText = "train data"
 //println(msgText)
