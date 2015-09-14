@@ -241,7 +241,29 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
-trades.filter(!_.isEmpty).print
+    trades.filter(!_.isEmpty)
+    .transform{ rdd =>
+        val rdd1 : RDD[Vector] = rdd.map{ line =>
+            {
+           //     println(msgText + " : line debug" + line.toString)
+                JSON.parseFull(line)  match {
+                    case None => CreateEmptyArray()
+                    case Some( mapAsAny ) => mapAsAny match {
+                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+                        case _ => CreateEmptyArray()
+                    }
+                }
+            }
+        }
+//        .map{ x => {
+//             if (x.size>1)  CreateDoubleArray(x,4)
+//             else CreateDoubleArray(Array.fill(1)(0.00),1)
+//            }
+//        }
+//        .map(x => Vectors.dense(x))
+
+        rdd1
+    }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
@@ -250,7 +272,29 @@ msgText = "generate test data"
 //val testingData = getStreamData(ttrades, msgText)
 println(msgText + " check point")
 try {
-    ttrades.filter(!_.isEmpty).print
+    ttrades.filter(!_.isEmpty)
+    .transform{ rdd =>
+        val rdd1 : RDD[Vector] = rdd.map{ line =>
+            {
+           //     println(msgText + " : line debug" + line.toString)
+                JSON.parseFull(line)  match {
+                    case None => CreateEmptyArray()
+                    case Some( mapAsAny ) => mapAsAny match {
+                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+                        case _ => CreateEmptyArray()
+                    }
+                }
+            }
+        }
+//        .map{ x => {
+//             if (x.size>1)  CreateDoubleArray(x,4)
+//             else CreateDoubleArray(Array.fill(1)(0.00),1)
+//            }
+//        }
+//        .map(x => Vectors.dense(x))
+
+        rdd1
+    }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
