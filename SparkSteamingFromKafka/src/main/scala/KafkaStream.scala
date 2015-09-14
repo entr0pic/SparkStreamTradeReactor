@@ -256,7 +256,7 @@ try {
         }
         .filter(_.size>1)
         .map{ x => CreateDoubleArray(x,4) }
-//        .map(x => Vectors.dense(x))
+        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
@@ -281,7 +281,7 @@ try {
         }
         .filter(_.size>1)
         .map{ x => CreateDoubleArray(x,4) }
-//        .map(x => Vectors.dense(x))
+        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
