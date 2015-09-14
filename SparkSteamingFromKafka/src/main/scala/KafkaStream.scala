@@ -255,8 +255,15 @@ try {
             }
         }
         .filter(_.size>1)
-        .map{ x => CreateDoubleArray(x,4) }
-        .map(x => Vectors.dense(x))
+        .map{ x =>
+            val n = 4
+            val buffer: Array[Double] = Array.fill(n)(0.00)
+            for( i <- 0 to n-1) {
+                buffer(i) = x(i).toString.toDouble
+            }
+            buffer
+        }
+//        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
@@ -280,8 +287,15 @@ try {
             }
         }
         .filter(_.size>1)
-        .map{ x => CreateDoubleArray(x,4) }
-        .map(x => Vectors.dense(x))
+        .map{ x =>
+            val n = 4
+            val buffer: Array[Double] = Array.fill(n)(0.00)
+            for( i <- 0 to n-1) {
+                buffer(i) = x(i).toString.toDouble
+            }
+            buffer
+        }
+//        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
