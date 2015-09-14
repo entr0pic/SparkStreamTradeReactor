@@ -254,13 +254,8 @@ try {
                 }
             }
         }
-                .map(x => x.size)
-
-//        .map{ x => {
-//             if (x.size>1)  CreateDoubleArray(x,4)
-//             else CreateDoubleArray(Array.fill(1)(0.00),1)
-//            }
-//        }
+        .filter(x.size>1)
+        .map{ x => CreateDoubleArray(x,4) }
 //        .map(x => Vectors.dense(x))
     }.print
 } catch {
@@ -284,13 +279,8 @@ try {
                 }
             }
         }
-        .map(x => x.size)
-
-//        .map{ x => {
-//             if (x.size>1)  CreateDoubleArray(x,4)
-//             else CreateDoubleArray(Array.fill(1)(0.00),1)
-//            }
-//        }
+        .filter(x.size>1)
+        .map{ x => CreateDoubleArray(x,4) }
 //        .map(x => Vectors.dense(x))
     }.print
 } catch {
