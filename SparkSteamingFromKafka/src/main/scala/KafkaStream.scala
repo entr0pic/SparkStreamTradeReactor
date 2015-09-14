@@ -277,13 +277,12 @@ try {
         .filter(_!=null)
         .print
 
-//    .foreachRDD{ rdd =>
+//      }.foreachRDD{ rdd =>
 //        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 //
 //        println(summary.mean) // a dense vector containing the mean value for each column
 //        println(summary.variance) // column-wise variance
 //        println(summary.numNonzeros) // number of nonzeros in each column
-//
 //    }
 
 //    )
@@ -318,14 +317,26 @@ try {
             buffer
         }
         .map(x => Vectors.dense(x))
+    }
+    .transform { rdd =>
+        try{
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+            rdd
+        } catch {
+            case e: Throwable => null
+        }
+    }
+    .filter(_!=null)
+    .print
+
 //      }.foreachRDD{ rdd =>
 //        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 //
 //        println(summary.mean) // a dense vector containing the mean value for each column
 //        println(summary.variance) // column-wise variance
 //        println(summary.numNonzeros) // number of nonzeros in each column
-//
-    }//.print
+//    }
+
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
