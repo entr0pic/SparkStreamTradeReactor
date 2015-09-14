@@ -241,7 +241,7 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
-    //sModel.trainOn(
+    sModel.trainOn(
         trades.filter(!_.isEmpty)
         .transform{ rdd =>
             rdd.map{ line =>
@@ -275,7 +275,7 @@ try {
             }
         }
         .filter(_!=null)
-        .print
+//        .print
 
 //      }.foreachRDD{ rdd =>
 //        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
@@ -285,7 +285,7 @@ try {
 //        println(summary.numNonzeros) // number of nonzeros in each column
 //    }
 
-//    )
+    )
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
