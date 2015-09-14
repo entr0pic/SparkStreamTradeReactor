@@ -265,7 +265,7 @@ try {
         }
         .map(x => Vectors.dense(x))
     }
-    .foreachRdd{ rdd =>
+    .foreachRDD{ rdd =>
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
         println(summary.mean) // a dense vector containing the mean value for each column
@@ -304,7 +304,7 @@ try {
             buffer
         }
         .map(x => Vectors.dense(x))
-      }.foreachRdd{ rdd =>
+      }.foreachRDD{ rdd =>
         val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
         println(summary.mean) // a dense vector containing the mean value for each column
