@@ -250,7 +250,7 @@ var trainingData = getStreamData(trades, msgText)
 println(msgText + " check point")
 
 msgText = "generate test data"
-//val testingData = getStreamData(ttrades, msgText)
+val testingData = getStreamData(ttrades, msgText)
 println(msgText + " check point")
 
 msgText = "train data"
@@ -271,23 +271,23 @@ try{
     println(msgText + " check point")
 }
 
-//msgText = "predict on values"
-//println(msgText)
-//try {
-//      if (testingData != null) {
+msgText = "predict on values"
+println(msgText)
+try {
+      if (testingData != null) {
+        testingData.print
 //        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
-//      } else {
-//           println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//    //if (testingData != null)         testingData.print
-//}
+      } else {
+           println("Null " + msgText)
+      }
+} catch {
+    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+} finally {
+    println(msgText + " check point")
+}
 
 //msgText = "predict"
 //println(msgText)
