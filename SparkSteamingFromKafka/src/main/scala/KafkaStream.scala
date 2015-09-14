@@ -266,15 +266,15 @@ try {
             }
             .map(x => Vectors.dense(x))
         }
-//        .transform { rdd =>
-//            try{
-//                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//                rdd
-//            } catch {
-//                case e: Throwable => null
-//            }
-//        }
-//        .filter(_!=null)
+        .transform { rdd =>
+            try{
+                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+                rdd
+            } catch {
+                case e: Throwable => null
+            }
+        }
+        .filter(_!=null)
 
 //    .foreachRDD{ rdd =>
 //        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
