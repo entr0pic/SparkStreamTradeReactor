@@ -264,7 +264,15 @@ try {
             buffer
         }
         .map(x => Vectors.dense(x))
-    }.print
+    }
+    .foreachRdd{ rdd =>
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+        println(summary.mean) // a dense vector containing the mean value for each column
+        println(summary.variance) // column-wise variance
+        println(summary.numNonzeros) // number of nonzeros in each column
+
+    }//.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
@@ -296,7 +304,14 @@ try {
             buffer
         }
         .map(x => Vectors.dense(x))
-    }.print
+      }.foreachRdd{ rdd =>
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+        println(summary.mean) // a dense vector containing the mean value for each column
+        println(summary.variance) // column-wise variance
+        println(summary.numNonzeros) // number of nonzeros in each column
+
+    }//.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
