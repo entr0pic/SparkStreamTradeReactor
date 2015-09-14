@@ -254,6 +254,8 @@ try {
                 }
             }
         }
+                .map(x => x.size)
+
 //        .map{ x => {
 //             if (x.size>1)  CreateDoubleArray(x,4)
 //             else CreateDoubleArray(Array.fill(1)(0.00),1)
@@ -282,6 +284,8 @@ try {
                 }
             }
         }
+        .map(x => x.size)
+
 //        .map{ x => {
 //             if (x.size>1)  CreateDoubleArray(x,4)
 //             else CreateDoubleArray(Array.fill(1)(0.00),1)
