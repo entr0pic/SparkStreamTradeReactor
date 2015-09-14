@@ -241,7 +241,8 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
-    sModel.trainOn(
+    //sModel.trainOn(
+    sModel.predictOn(
         trades.filter(!_.isEmpty)
         .transform{ rdd =>
             rdd.map{ line =>
@@ -285,62 +286,62 @@ try {
 //        println(summary.numNonzeros) // number of nonzeros in each column
 //    }
 
-    )
+    ).print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
 
-msgText = "generate test data"
-//val testingData = getStreamData(ttrades, msgText)
-println(msgText + " check point")
-try {
-    ttrades.filter(!_.isEmpty)
-    .transform{ rdd =>
-        rdd.map{ line =>
-            {
-                JSON.parseFull(line)  match {
-                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-                    case Some( mapAsAny ) => mapAsAny match {
-                        case x: Map[ String, Any ] => { CreateDataArray(x) }
-                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-                    }
-                }
-            }
-        }
-        .filter(_.size>1)
-        .map{ x =>
-            val n = 4
-            val buffer: Array[Double] = Array.fill(n)(0.00)
-            for( i <- 0 to n-1) {
-                buffer(i) = x(i).toString.toDouble
-            }
-            buffer
-        }
-        .map(x => Vectors.dense(x))
-    }
-    .transform { rdd =>
-        try{
-            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-            rdd
-        } catch {
-            case e: Throwable => null
-        }
-    }
-    .filter(_!=null)
-    .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })
-    .print
-
-//      }.foreachRDD{ rdd =>
-//        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//
-//        println(summary.mean) // a dense vector containing the mean value for each column
-//        println(summary.variance) // column-wise variance
-//        println(summary.numNonzeros) // number of nonzeros in each column
+//msgText = "generate test data"
+////val testingData = getStreamData(ttrades, msgText)
+//println(msgText + " check point")
+//try {
+//    ttrades.filter(!_.isEmpty)
+//    .transform{ rdd =>
+//        rdd.map{ line =>
+//            {
+//                JSON.parseFull(line)  match {
+//                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                    case Some( mapAsAny ) => mapAsAny match {
+//                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                    }
+//                }
+//            }
+//        }
+//        .filter(_.size>1)
+//        .map{ x =>
+//            val n = 4
+//            val buffer: Array[Double] = Array.fill(n)(0.00)
+//            for( i <- 0 to n-1) {
+//                buffer(i) = x(i).toString.toDouble
+//            }
+//            buffer
+//        }
+//        .map(x => Vectors.dense(x))
 //    }
-
-} catch {
-    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
-}
+//    .transform { rdd =>
+//        try{
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//            rdd
+//        } catch {
+//            case e: Throwable => null
+//        }
+//    }
+//    .filter(_!=null)
+//    .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })
+//    .print
+//
+////      }.foreachRDD{ rdd =>
+////        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+////
+////        println(summary.mean) // a dense vector containing the mean value for each column
+////        println(summary.variance) // column-wise variance
+////        println(summary.numNonzeros) // number of nonzeros in each column
+////    }
+//
+//} catch {
+//    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
+//}
 //
 //msgText = "train data"
 //println(msgText)
