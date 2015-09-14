@@ -230,16 +230,18 @@ def getStreamData(srcStream : DStream[String], msgText : String) : DStream[Vecto
 trades.count().print
 ttrades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
-trades.print()
-ttrades.print()
+//trades.print()
+//ttrades.print()
 
 var nn = 3;
 var msgText = "";
 
-//msgText = "generate train data"
+msgText = "generate train data"
+println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
-//println(msgText + " check point")
-//
+trades.filter(!_.isEmpty).print
+ttrades.filter(!_.isEmpty).print
+
 //msgText = "generate test data"
 //val testingData = getStreamData(ttrades, msgText)
 //println(msgText + " check point")
