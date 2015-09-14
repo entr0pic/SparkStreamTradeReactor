@@ -243,14 +243,13 @@ println(msgText + " check point")
 try {
     trades.filter(!_.isEmpty)
     .transform{ rdd =>
-        val rdd1 : RDD[Vector] = rdd.map{ line =>
+        rdd.map{ line =>
             {
-           //     println(msgText + " : line debug" + line.toString)
                 JSON.parseFull(line)  match {
-                    case None => CreateEmptyArray()
+                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
                     case Some( mapAsAny ) => mapAsAny match {
                         case x: Map[ String, Any ] => { CreateDataArray(x) }
-                        case _ => CreateEmptyArray()
+                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
                     }
                 }
             }
@@ -261,8 +260,6 @@ try {
 //            }
 //        }
 //        .map(x => Vectors.dense(x))
-
-        rdd1
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
@@ -274,14 +271,13 @@ println(msgText + " check point")
 try {
     ttrades.filter(!_.isEmpty)
     .transform{ rdd =>
-        val rdd1 : RDD[Vector] = rdd.map{ line =>
+        rdd.map{ line =>
             {
-           //     println(msgText + " : line debug" + line.toString)
                 JSON.parseFull(line)  match {
-                    case None => CreateEmptyArray()
+                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
                     case Some( mapAsAny ) => mapAsAny match {
                         case x: Map[ String, Any ] => { CreateDataArray(x) }
-                        case _ => CreateEmptyArray()
+                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
                     }
                 }
             }
@@ -292,8 +288,6 @@ try {
 //            }
 //        }
 //        .map(x => Vectors.dense(x))
-
-        rdd1
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
