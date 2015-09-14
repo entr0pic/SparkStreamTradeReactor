@@ -222,18 +222,7 @@ def getStreamData(srcStream : DStream[String], msgText : String) : DStream[Vecto
     }
 }
     
-//def getTestData (msgText : String, nn : Int) : DStream[Array[Double]] = {
-//    try{
-//        var ds1 = trades.filter(!_.isEmpty)
-//        var ds2 = ds1.transform{ rdd => transformRddForModel(rdd, nn, msgText, true) }
-//        ds2
-//    } catch {
-//        case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString()); null }
-//        case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString()); null }
-//        case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString()); null }
-//        case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); print(e.toString()); null }
-//    }
-//}
+
 
 //------------- start doing something ------------
 
@@ -329,7 +318,7 @@ var msgText = "";
 //    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 //}
 //
-//        ssc.start()
-//        ssc.awaitTermination()
-//    }
-//}
+        ssc.start()
+        ssc.awaitTermination()
+    }
+}
