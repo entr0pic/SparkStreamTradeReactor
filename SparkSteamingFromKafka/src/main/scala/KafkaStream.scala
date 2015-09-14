@@ -263,7 +263,7 @@ try {
             }
             buffer
         }
-//        .map(x => Vectors.dense(x))
+        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
@@ -295,7 +295,7 @@ try {
             }
             buffer
         }
-//        .map(x => Vectors.dense(x))
+        .map(x => Vectors.dense(x))
     }.print
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
