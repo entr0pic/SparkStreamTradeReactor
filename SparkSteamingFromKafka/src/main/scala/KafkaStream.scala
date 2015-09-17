@@ -233,8 +233,9 @@ ttrades.count().print
 //trades.print()
 //ttrades.print()
 
-var nn = 3;
+val nn = 3;
 var msgText = "";
+val partitionsEachInterval = 10
 
 msgText = "generate train data"
 println(msgText + " check point")
@@ -274,9 +275,13 @@ try {
         if (count > 0) {
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
+            println("------------Rdd stats-------" + count)
+
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
+
+            rdd.take(5).print
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
             outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
