@@ -293,8 +293,9 @@ try {
                 buffer
             }
             .map(x => Vectors.dense(x))
-        }.cache()
-.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
+        }
+        .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
+
     tvectors.count()  // Calls an action to create the cache.
 
     sModel.predictOnValues(tvectors).print()
@@ -308,7 +309,7 @@ try {
 //                case e: Throwable => null
 //            }
 //        }
-      }
+//        }
 //    .foreachRDD{ (rdd,time) =>
 //        val count = rdd.count()
 //        if (count > 0) {
@@ -325,7 +326,7 @@ try {
 //                System.exit(0)
 //            }
 //        }
-    }
+    //}
 //.foreachRDD((rdd, time) => {
 //  val count = rdd.count()
 //  if (count > 0) {
