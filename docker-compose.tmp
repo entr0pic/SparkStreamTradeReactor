@@ -197,6 +197,8 @@ lightning:
   ports:
     - 3000:3000
     - 80:3000
+  volumes:
+    - {root}Spark/shared:/shared/data
 
 tradecon:
   image: localhost:5000/tradegenerator
