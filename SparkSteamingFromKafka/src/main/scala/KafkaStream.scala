@@ -294,7 +294,7 @@ try {
 
             val inputData = ssc.sparkContext.textFile(fileName).map(Vectors.parse).cache()
 
-            inputData.print
+            println(inputData)
 
             if (inputData.count) {
                 sModel.trainOn(inputData)
