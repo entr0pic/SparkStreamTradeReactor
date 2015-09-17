@@ -236,6 +236,7 @@ ttrades.count().print
 val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
+var numCollected = 0L
 
 
 msgText = "generate train data"
