@@ -299,7 +299,7 @@ try {
 //    tvectors.count()  // Calls an action to create the cache.
 //
 //    sModel.predictOnValues(tvectors).print()
-    ssc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
+    //ssc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
 
 //        .transform { rdd =>
 //            try{
