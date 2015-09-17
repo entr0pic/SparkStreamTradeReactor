@@ -49,7 +49,7 @@
       socket.on('trades', function(msg){
           if (msg.trade_time) {
             try {
-              msg.trade_time = Date(msg.trade_time);
+              msg.trade_time = new Date(msg.trade_time);
               if (chart) {
                 chart.flow({
                   json: [msg],
