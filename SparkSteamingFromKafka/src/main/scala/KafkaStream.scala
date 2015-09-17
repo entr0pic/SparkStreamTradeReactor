@@ -237,6 +237,7 @@ val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
 
+
 msgText = "generate train data"
 println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
@@ -269,6 +270,10 @@ try {
         }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
+    ssc.sparkContext().makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
+
+//    val model = KMeans.train(vectors, numClusters, numIterations)
+//    model.clusterCenters
 
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
@@ -281,7 +286,7 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            rdd.take(5).print
+            println(rdd.take(5))
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
             outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
@@ -322,7 +327,7 @@ try {
 //    tvectors.count()  // Calls an action to create the cache.
 //
 //    sModel.predictOnValues(tvectors).print()
-    //ssc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
+    //ssc.sparkContext().makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
 
 //        .transform { rdd =>
 //            try{
