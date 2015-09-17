@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "kafka-node": "0.2.15",
-    "lightning.js": "^1.6.0"
+    "lightning.js": "^1.6.0",
+    "express" :"latest",
+    "socket.io": "latest"
   },
   "engines": {
     "node": ">= 0.10.0"
