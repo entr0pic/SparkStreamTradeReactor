@@ -268,7 +268,8 @@ try {
                 buffer
             }
             .map(x => Vectors.dense(x))
-        }.cache()
+        }
+        .cache()
 
     vectors.count().print  // Calls an action to create the cache.
     //ssc.sparkContext.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
@@ -287,10 +288,18 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            println(rdd.take(5))
-
             val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFile("/shared/traindata_" + time.milliseconds.toString)
+            val fileName = "/shared/traindata_" + time.milliseconds.toString
+            outputRDD.saveAsTextFile(fileName)
+
+            val inputData = ssc.sparkContext.textFile(fileName).map(Vectors.parse).cache()
+            inputData.count().print
+
+            sModel.trainOn(inputData)
+
+//    val model = KMeans.train(inputData, numClusters, numIterations)
+//    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile("/shared/model")
+
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
@@ -300,8 +309,6 @@ try {
 
    // sModel.trainOn(vectors)
 
-    val model = KMeans.train(vectors, numClusters, numIterations)
-    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile("/shared")
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
 //        .transform{ rdd =>
