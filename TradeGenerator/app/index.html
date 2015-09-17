@@ -49,13 +49,13 @@
       socket.on('trades', function(msg){
           if (chart) {
             chart.flow({
-              json: msg,
+              json: [msg],
               duration: 200
             });
           } else {
             chart = c3.generate({
                 data: {
-                    json: msg,
+                    json: [msg],
                     keys: {
                         x: 'trade_time',
                         value: ['price', 'volume'],
