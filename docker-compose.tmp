@@ -218,7 +218,10 @@ tradecon:
     KAFKA_TOPIC: trades
     LIGHTNING_HOST: spark-streaming.ml
     LIGHTNING_PORT: 80
+    HTTP_PORT: 82
   command: bash -c "sleep 10 && node TradeConsumer.js"
+  ports:
+    - 82:82
   volumes:
     - {root}TradeGenerator:/shared
 
