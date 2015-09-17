@@ -197,7 +197,7 @@ producer = new Producer(client);
 //        { topic: 'new-trade', messages: 'hi' },
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
-producer.createTopics([topicName], true, function (err, data) {});
+producer.createTopics([topicName, topicName2], true, function (err, data) {});
 producer.on('ready', function () {
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
