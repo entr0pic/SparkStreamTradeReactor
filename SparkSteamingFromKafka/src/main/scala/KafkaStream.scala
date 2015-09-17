@@ -294,11 +294,8 @@ try {
 
             val inputData = ssc.textFileStream(fileName).map(Vectors.parse).cache()
 
-            println(inputData)
-
-            if (inputData.count > 0) {
-                sModel.trainOn(inputData)
-            }
+            inputData.count().print
+            sModel.trainOn(inputData)
 
 //    val model = KMeans.train(inputData, numClusters, numIterations)
 //    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile("/shared/model")
