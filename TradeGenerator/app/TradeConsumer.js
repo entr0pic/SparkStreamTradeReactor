@@ -1,7 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = process.ENV.PORT || 3030;
+var port = process.env.HTTP_PORT || 3030;
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
 var topicName = process.env.KAFKA_TOPIC || "trades";
