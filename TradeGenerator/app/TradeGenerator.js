@@ -200,8 +200,10 @@ producer = new Producer(client);
 producer.createTopics([topicName], true, function (err, data) {});
 producer.on('ready', function () {
     setInterval(function(){
-        var stream1 = generateTradePairs(getRandomInt(tradesPerSecond)).map(JSON.stringify);
-        var stream2 = generateTradePairs(getRandomInt(tradesPerSecond)).map(JSON.stringify);
+        var i1 = getRandomInt(tradesPerSecond);
+        var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
+        var i2 = getRandomInt(tradesPerSecond);
+        var stream2 = generateTradePairs(1+i2).map(JSON.stringify);
         payloads = [{topic:topicName,messages: stream1},{topic:topicName2,messages: stream2}]
         producer.send( payloads, function (err, data) {
             console.log(err||data);
