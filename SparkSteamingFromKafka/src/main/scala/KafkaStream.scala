@@ -290,14 +290,15 @@ try {
             println(rdd.take(5))
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
+            outputRDD.saveAsTextFile("/shared/traindata_" + time.milliseconds.toString)
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
             }
         }
     }
-    //sModel.trainOn(vectors)
+
+    sModel.trainOn(vectors)
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
 //        .transform{ rdd =>
