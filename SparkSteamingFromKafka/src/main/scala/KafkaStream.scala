@@ -268,7 +268,25 @@ try {
         }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
-    sModel.trainOn(vectors)
+
+    vectors.foreachRDD{ (rdd,time) =>
+        val count = rdd.count()
+        if (count > 0) {
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+            println(summary.mean) // a dense vector containing the mean value for each column
+            println(summary.variance) // column-wise variance
+            println(summary.numNonzeros) // number of nonzeros in each column
+
+            val outputRDD = rdd.repartition(partitionsEachInterval)
+            outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
+            numCollected += count
+            if (numCollected > 10000) {
+                System.exit(0)
+            }
+        }
+    }
+    //sModel.trainOn(vectors)
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
 //        .transform{ rdd =>
