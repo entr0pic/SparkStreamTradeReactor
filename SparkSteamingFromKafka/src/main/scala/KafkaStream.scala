@@ -115,8 +115,8 @@ object TradeStreamReader {
     // Create direct kafka stream with brokers and topics
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
-    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
+    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
+    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
 
     val trades = messages.map(_._2)
     val ttrades = tmessages.map(_._2)
@@ -267,39 +267,39 @@ try {
             .map(x => Vectors.dense(x))
         }.cache()
 
-    vectors.count()  // Calls an action to create the cache.
+    vectors.count().print  // Calls an action to create the cache.
     sModel.trainOn(vectors)
 
-    var tvectors =  ttrades.filter(!_.isEmpty)
-        .transform{ rdd =>
-            rdd.map{ line =>
-                {
-                    JSON.parseFull(line)  match {
-                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-                        case Some( mapAsAny ) => mapAsAny match {
-                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-                        }
-                    }
-                }
-            }
-            .filter(_.size>1)
-            .map{ x =>
-                val n = 4
-                val buffer: Array[Double] = Array.fill(n)(0.00)
-                for( i <- 0 to n-1) {
-                    buffer(i) = x(i).toString.toDouble
-                }
-                buffer
-            }
-            .map(x => Vectors.dense(x))
-        }
-        .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
-
-    tvectors.count()  // Calls an action to create the cache.
-
-    sModel.predictOnValues(tvectors).print()
-    //sc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/")
+//    var tvectors =  ttrades.filter(!_.isEmpty)
+//        .transform{ rdd =>
+//            rdd.map{ line =>
+//                {
+//                    JSON.parseFull(line)  match {
+//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        case Some( mapAsAny ) => mapAsAny match {
+//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        }
+//                    }
+//                }
+//            }
+//            .filter(_.size>1)
+//            .map{ x =>
+//                val n = 4
+//                val buffer: Array[Double] = Array.fill(n)(0.00)
+//                for( i <- 0 to n-1) {
+//                    buffer(i) = x(i).toString.toDouble
+//                }
+//                buffer
+//            }
+//            .map(x => Vectors.dense(x))
+//        }
+//        .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
+//
+//    tvectors.count()  // Calls an action to create the cache.
+//
+//    sModel.predictOnValues(tvectors).print()
+    sc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
 
 //        .transform { rdd =>
 //            try{
