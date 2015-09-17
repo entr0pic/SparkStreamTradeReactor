@@ -241,8 +241,7 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
-    //sModel.trainOn(
-    sModel.predictOn(
+    var vectors =
         trades.filter(!_.isEmpty)
         .transform{ rdd =>
             rdd.map{ line =>
@@ -266,27 +265,79 @@ try {
                 buffer
             }
             .map(x => Vectors.dense(x))
-        }
-        .transform { rdd =>
-            try{
-                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-                rdd
-            } catch {
-                case e: Throwable => null
+        }.cache()
+
+    vectors.count()  // Calls an action to create the cache.
+    sModel.trainOn(vectors)
+
+    var tvectors =  ttrades.filter(!_.isEmpty)
+        .transform{ rdd =>
+            rdd.map{ line =>
+                {
+                    JSON.parseFull(line)  match {
+                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        }
+                    }
+                }
             }
-        }
-        .filter(_!=null)
-//        .print
+            .filter(_.size>1)
+            .map{ x =>
+                val n = 4
+                val buffer: Array[Double] = Array.fill(n)(0.00)
+                for( i <- 0 to n-1) {
+                    buffer(i) = x(i).toString.toDouble
+                }
+                buffer
+            }
+            .map(x => Vectors.dense(x))
+        }.cache()
+.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
+    tvectors.count()  // Calls an action to create the cache.
 
-//      }.foreachRDD{ rdd =>
-//        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+    sModel.predictOnValues(tvectors).print()
+    //sc.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/")
+
+//        .transform { rdd =>
+//            try{
+//                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//                rdd
+//            } catch {
+//                case e: Throwable => null
+//            }
+//        }
+      }
+//    .foreachRDD{ (rdd,time) =>
+//        val count = rdd.count()
+//        if (count > 0) {
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 //
-//        println(summary.mean) // a dense vector containing the mean value for each column
-//        println(summary.variance) // column-wise variance
-//        println(summary.numNonzeros) // number of nonzeros in each column
+//            println(summary.mean) // a dense vector containing the mean value for each column
+//            println(summary.variance) // column-wise variance
+//            println(summary.numNonzeros) // number of nonzeros in each column
+//
+//            val outputRDD = rdd.repartition(partitionsEachInterval)
+//            outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
+//            numCollected += count
+//            if (numCollected > 10000) {
+//                System.exit(0)
+//            }
+//        }
+    }
+//.foreachRDD((rdd, time) => {
+//  val count = rdd.count()
+//  if (count > 0) {
+//    val outputRDD = rdd.repartition(partitionsEachInterval)
+//    outputRDD.saveAsTextFile(
+//      outputDirectory + "/tweets_" + time.milliseconds.toString)
+//    numTweetsCollected += count
+//    if (numTweetsCollected > numTweetsToCollect) {
+//      System.exit(0)
 //    }
-
-    ).print
+//  }
+//})
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
