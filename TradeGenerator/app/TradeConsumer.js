@@ -1,3 +1,8 @@
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var port = process.ENV.PORT || 3030;
+
 var kafkaLocation = process.env.KAFKA || 'vagrant';
 var topicName = process.env.KAFKA_TOPIC || "trades";
 var kafka = require('kafka-node'),
@@ -14,7 +19,14 @@ var kafka = require('kafka-node'),
         }
     );
 
-var lightning = new Lightning({host:'http://' + (process.env.LIGHTNING_HOST||'lightning') + ':'+(process.env.LIGHTNING_PORT||'3000')});
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+
+
+
+
+//var lightning = new Lightning({host:'http://' + (process.env.LIGHTNING_HOST||'lightning') + ':'+(process.env.LIGHTNING_PORT||'3000')});
 
 var getRepeatingCharacter = function(char,length) {
   return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
@@ -39,22 +51,31 @@ var logJsonNicely = function (jsonArray) {
 
 var messageCount = 0;
 
-lightning
-    .lineStreaming([1])
-    .then(function(viz) {
-        consumer.on('message', function (message) {
-            if (message.value) {
-              try {
-                var jsonValue = JSON.parse(message.value);
-                console.log(logJsonNicely([jsonValue]))
-                process.stdout.write("Recieved " + messageCount++ + " messages\r");
-                viz.append([jsonValue.price]);
-              } catch (error) {
-        //        console.log(error);
-        //        console.log(message)
-              }
-            }
-        }).on("error",function(e) {
-          console.log(e);
-        });
+ consumer.on('message', function (message) {
+    if (message.value) {
+      try {
+        var jsonValue = JSON.parse(message.value);
+        console.log(logJsonNicely([jsonValue]));
+        process.stdout.write("Recieved " + messageCount++ + " messages\r");
+        io.emit('trades', jsonValue);
+      } catch (error) {
+
+      }
+    }
+}).on("error",function(e) {
+  console.log(e);
 });
+
+//io.on('connection', function(socket){
+//
+//});
+
+http.listen(port, function(){
+  console.log('listening on *:' + port);
+});
+
+//lightning
+//    .lineStreaming([1])
+//    .then(function(viz) {
+//      viz.append([jsonValue.price]);
+//});

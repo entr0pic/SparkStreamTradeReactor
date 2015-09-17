@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Viz Server</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <script>
+      var socket = io();
+     // | trade_date   | trade_time   | party   | counterparty   | ccp   | exchange   | symbol   | currency   | side   | type   | category   | price   | volume   | unit   | country   | max_bank   | max_symbol   | max_country   | max_currency   | max_exchange   | party_weight   | counterparty_weight   | exchange_weight   | country_weight   | symbol_weight   | currency_weight   |
+
+      var chart = null;
+      /*
+      var chart = c3.generate({
+          data: {
+              x: 'x',
+              columns: [
+                  ['trade_time', '2012-12-29', '2012-12-30', '2012-12-31'],
+                  ['data1', 230, 300, 330],
+                  ['data2', 190, 230, 200],
+                  ['data3', 90, 130, 180],
+              ]
+          },
+          axis: {
+              x: {
+                  type: 'timeseries',
+                  tick: {
+                      format: '%m/%d',
+                  }
+              }
+          }
+      });
+
+      chart.flow({
+        columns: [
+            ['x', '2013-01-11', '2013-01-21'],
+            ['data1', 500, 200],
+            ['data2', 100, 300],
+            ['data3', 200, 120],
+        ],
+        duration: 200
+      });
+      */
+      socket.on('trades', function(msg){
+          if (chart) {
+            chart.flow({
+              json: msg,
+              duration: 200
+            });
+          } else {
+            chart = c3.generate({
+                data: {
+                    json: msg,
+                    keys: {
+                        x: 'trade_time',
+                        value: ['price', 'volume'],
+                    }
+                },
+                axis: {
+                    x: {
+                        type: 'timeseries'
+                    }
+                }
+            });
+          }
+      });
+    </script>
+  </body>
+</html>
