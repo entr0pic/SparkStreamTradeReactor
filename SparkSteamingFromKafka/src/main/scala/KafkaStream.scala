@@ -116,9 +116,10 @@ object TradeStreamReader {
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
+    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
-    // Get the lines, split them into words, count the words and print
-     val trades = messages.map(_._2)
+    val trades = messages.map(_._2)
+    val ttrades = tmessages.map(_._2)
       
 val numDimensions = 3
 val numClusters = 2
@@ -165,10 +166,29 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     }
     buffer
 }
+
+def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
+    //println(msgText + " check stats")
+    try{
+        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+//        println(summary.mean) // a dense vector containing the mean value for each column
+//        println(summary.variance) // column-wise variance
+//        println(summary.numNonzeros) // number of nonzeros in each column
+
+        (summary.mean.size > 0)
+    } catch {
+        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()); */ false }
+        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString());*/ false  }
+        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString());*/ false }
+        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); println(e.toString());*/ false }
+    }
+}
       
-def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] = {
-    var rdd1 = rdd.map{ line => 
+def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
+    val rdd1 : RDD[Vector] = rdd.map{ line =>
         { 
+       //     println(msgText + " : line debug" + line.toString)
             JSON.parseFull(line)  match {
                 case None => CreateEmptyArray()
                 case Some( mapAsAny ) => mapAsAny match {
@@ -178,179 +198,225 @@ def transformRddForModel(rdd : RDD[String], msg : String) : RDD[Array[Double]] =
             }
         }
     }
-    .filter(_.size==4)
-    .map(x => CreateDoubleArray(x,4))
-
-    println(msg)
-    val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1.map(Vectors.dense))
-
-    println(summary.mean) // a dense vector containing the mean value for each column
-    println(summary.variance) // column-wise variance
-    println(summary.numNonzeros) // number of nonzeros in each column        
+    .map{ x => {
+         if (x.size>1)  CreateDoubleArray(x,4)
+         else CreateDoubleArray(Array.fill(1)(0.00),1)
+        }
+    }
+    .map(x => Vectors.dense(x))
 
     rdd1
 }  
 
+def getStreamData(srcStream : DStream[String], msgText : String) : DStream[Vector] = {
+    try {
+            srcStream.filter(!_.isEmpty)
+            .transform{ rdd => transformRddForModel(rdd, msgText) }
+            .transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }
+            .filter(_!=null)
+    } catch {
+        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString());*/ null }
+        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); print(e.toString());*/ null }
+    }
+}
+    
+
+
 //------------- start doing something ------------
 
+//println("Input trades n ")
 trades.count().print
-//    messages.flatMap(case (_,line) => line).print()
+ttrades.count().print
+//messages.flatMap{case (_,line) => line}.foreach(a => println(a))
+//trades.print()
+//ttrades.print()
 
-var nn = 10;
+var nn = 3;
+var msgText = "";
 
-def getTrainData() : DStream[Array[Double]] = {
+msgText = "generate train data"
+println(msgText + " check point")
+//var trainingData = getStreamData(trades, msgText)
 
 try {
-    var i1 = 0;
-    trades.filter(!_.isEmpty).map{ x => 
-            if (i1 < nn) {
-                i1+= 1
-                x
-            } else {
-                i1 = 0
-                null
+    //sModel.trainOn(
+    sModel.predictOn(
+        trades.filter(!_.isEmpty)
+        .transform{ rdd =>
+            rdd.map{ line =>
+                {
+                    JSON.parseFull(line)  match {
+                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        }
+                    }
+                }
+            }
+            .filter(_.size>1)
+            .map{ x =>
+                val n = 4
+                val buffer: Array[Double] = Array.fill(n)(0.00)
+                for( i <- 0 to n-1) {
+                    buffer(i) = x(i).toString.toDouble
+                }
+                buffer
+            }
+            .map(x => Vectors.dense(x))
+        }
+        .transform { rdd =>
+            try{
+                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+                rdd
+            } catch {
+                case e: Throwable => null
             }
         }
-        .filter(_ != null)
-        .transform{ (rdd,t) => transformRddForModel(rdd, "training data check stats ("+i1+")") }
-//        {
-//            var rdd1 = rdd.map{ line => 
-//                { 
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateEmptyArray()
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateEmptyArray()
-//                        }
+        .filter(_!=null)
+//        .print
+
+//      }.foreachRDD{ rdd =>
+//        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//
+//        println(summary.mean) // a dense vector containing the mean value for each column
+//        println(summary.variance) // column-wise variance
+//        println(summary.numNonzeros) // number of nonzeros in each column
+//    }
+
+    ).print
+} catch {
+    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
+}
+
+//msgText = "generate test data"
+////val testingData = getStreamData(ttrades, msgText)
+//println(msgText + " check point")
+//try {
+//    ttrades.filter(!_.isEmpty)
+//    .transform{ rdd =>
+//        rdd.map{ line =>
+//            {
+//                JSON.parseFull(line)  match {
+//                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                    case Some( mapAsAny ) => mapAsAny match {
+//                        case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
 //                    }
 //                }
 //            }
-//            .filter(_.size==4)
-//            .map(x => CreateDoubleArray(x,4))
-//            .map(Vectors.dense)
-//            
-//            println("training data check stats " + i1)
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd1)
-//
-//            println(summary.mean) // a dense vector containing the mean value for each column
-//            println(summary.variance) // column-wise variance
-//            println(summary.numNonzeros) // number of nonzeros in each column    
-//                                                                              
-//            rdd1
 //        }
-    
-}catch {
-    case e: IOException => {
-        println("error: ")
-        e.printStackTrace()
-        print(e.toString())
-    }
-    null
-} finally {
-    println("error generating training data") 
-}
-
-}
-    
-var trainingData = getTrainData().cache()
-    
-      
-def getTestData () : DStream[Array[Double]] = {
-try{
-    var i2 = 0
-    trades.filter(!_.isEmpty).map{ x => 
-            if (i2 == nn) {
-                i2+= 1
-                x
-            } else {
-                i2 = 0
-                null
-            }
-        }
-        .filter(_ != null)
-        .transform{ (rdd,t) => transformRddForModel(rdd, "testing data check stats ("+i2+")") }
-        
-     
-}catch {
-    case e: IOException => {
-        println("error: ")
-        e.printStackTrace()
-        print(e.toString())
-    }
-    null
-} finally {
-    println("error generating testing data")   
-}
-}
-      
-var testingData  = getTestData().map{ x => LabeledPoint(x(0), Vectors.dense(x)) }.cache()
-
-try{
-    println("train data")
-    trainingData.print()
-    sModel.trainOn(trainingData)
-}catch {
-    case e: IOException => {
-        println("error: ")
-        e.printStackTrace()
-        print(e.toString())
-    }
-} finally {
-    println("error on training data")   
-}
-
-//try {
-//    println("predict on values")
-//    testingData.print()
-//    sModel.predictOnValues(testingData).print()
+//        .filter(_.size>1)
+//        .map{ x =>
+//            val n = 4
+//            val buffer: Array[Double] = Array.fill(n)(0.00)
+//            for( i <- 0 to n-1) {
+//                buffer(i) = x(i).toString.toDouble
+//            }
+//            buffer
+//        }
+//        .map(x => Vectors.dense(x))
+//    }
+//    .transform { rdd =>
+//        try{
+//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+//            rdd
+//        } catch {
+//            case e: Throwable => null
+//        }
+//    }
+//    .filter(_!=null)
+//    .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })
+//    .print
+//
+////      }.foreachRDD{ rdd =>
+////        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+////
+////        println(summary.mean) // a dense vector containing the mean value for each column
+////        println(summary.variance) // column-wise variance
+////        println(summary.numNonzeros) // number of nonzeros in each column
+////    }
+//
 //} catch {
-//    case e: IOException => {
-//        println("error: ")
-//        e.printStackTrace()
-//        print(e.toString())
-//    }
-//} finally {
-//    println("error predicting on testing data")   
+//    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 //}
-      
+//
+//msgText = "train data"
+//println(msgText)
 //try{
-//    println("predict")
-//    sModel.predictOn(trainingData).print()
-//}catch {
-//    case e: IOException => {
-//        println("error: ")
-//        e.printStackTrace()
-//        print(e.toString())
-//    }
+//      if (trainingData != null) {
+//          trainingData.print
+//            //sModel.trainOn(trainingData)
+//      } else {
+//          println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 //} finally {
-//    println("error predicting training data")   
+//    println(msgText + " check point")
 //}
- 
-      
-//println(cleanData.size)
-//val (left, right) = cleanData.splitAt(round(cleanData/size*0.9))
-   
-try{
-    trades.foreachRDD{rdd =>
-        if (rdd.toLocalIterator.nonEmpty) {
-            val sqlContext = new SQLContext(rdd.sparkContext)
-            import sqlContext.implicits._
+//
+//msgText = "predict on values"
+//println(msgText)
+//try {
+//      if (testingData != null) {
+//        testingData.print
+////        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
+//      } else {
+//           println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//}
 
-            // Convert your data to a DataFrame, depends on the structure of your data
-            val df = sqlContext.jsonRDD(rdd).toDF
-            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-        }
-    }
-}catch {
-    case e: IOException => {
-        println("error: ")
-        e.printStackTrace()
-        print(e.toString())
-    }
-} finally {
-    println("error saving to parquet")   
-}
+//msgText = "predict"
+//println(msgText)
+//try{
+//      if (trainingData != null) {
+//        sModel.predictOn(trainingData).print()
+//      } else {
+//          println("Null " + msgText)
+//      }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//} finally {
+//    println(msgText + " check point")
+//    if (trainingData != null) trainingData.print
+//}
 
+//msgText = "saving to parquet"
+//println(msgText)
+//try{
+//    trades.foreachRDD{rdd =>
+//        if (rdd.toLocalIterator.nonEmpty) {
+//            val sqlContext = new SQLContext(rdd.sparkContext)
+//            import sqlContext.implicits._
+//
+//            // Convert your data to a DataFrame, depends on the structure of your data
+//            val df = sqlContext.jsonRDD(rdd).toDF
+//            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+//        }
+//    }
+//} catch {
+//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//}
+//
         ssc.start()
         ssc.awaitTermination()
     }

@@ -139,6 +139,10 @@ submitter:
     - master
     - namenode
     - kafka
+    - tradegen
+    - lightning
+    - zeppelin
+    - dockerui
   volumes:
     - {root}Spark/jars:/jars
     - {root}Spark/shared:/shared/data
