@@ -40,7 +40,7 @@ var logJsonNicely = function (jsonArray) {
 var messageCount = 0;
 
 lightning
-    .lineStreaming([0],[0])
+    .lineStreaming([1])
     .then(function(viz) {
         consumer.on('message', function (message) {
             if (message.value) {
@@ -48,7 +48,7 @@ lightning
                 var jsonValue = JSON.parse(message.value);
                 console.log(logJsonNicely([jsonValue]))
                 process.stdout.write("Recieved " + messageCount++ + " messages\r");
-                viz.append([jsonValue.price],[jsonValue.volume]);
+                viz.append([jsonValue.price]);
               } catch (error) {
         //        console.log(error);
         //        console.log(message)
