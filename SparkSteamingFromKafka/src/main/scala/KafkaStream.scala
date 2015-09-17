@@ -296,7 +296,7 @@ try {
 
             println(inputData)
 
-            if (inputData.count) {
+            if (inputData.count > 0) {
                 sModel.trainOn(inputData)
             }
 
