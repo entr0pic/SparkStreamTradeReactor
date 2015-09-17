@@ -47,27 +47,34 @@
       });
       */
       socket.on('trades', function(msg){
-          if (chart) {
-            chart.flow({
-              json: [msg],
-              duration: 200
-            });
-          } else {
-            chart = c3.generate({
-                data: {
-                    json: [msg],
-                    keys: {
-                        x: 'trade_time',
-                        value: ['price', 'volume'],
-                    }
-                },
-                axis: {
-                    x: {
-                        type: 'timeseries'
-                    }
-                },
-              bindto: "#chart"
-            });
+          if (msg.trade_time) {
+            try {
+              msg.trade_time = Date(msg.trade_time);
+              if (chart) {
+                chart.flow({
+                  json: [msg],
+                  duration: 200
+                });
+              } else {
+                chart = c3.generate({
+                    data: {
+                        json: [msg],
+                        keys: {
+                            x: 'trade_time',
+                            value: ['price', 'volume'],
+                        }
+                    },
+                    axis: {
+                        x: {
+                            type: 'timeseries'
+                        }
+                    },
+                  bindto: "#chart"
+                });
+              }
+            } catch (e) {
+              console.warn(e);
+            }
           }
       });
     </script>
