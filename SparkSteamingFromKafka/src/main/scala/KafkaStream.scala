@@ -118,7 +118,7 @@ object TradeStreamReader {
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
     val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topicsSet)
 
-    val trades = messages..map(_._2)
+    val trades = messages.map(_._2)
     val ttrades = tmessages.map(_._2)
       
 val numDimensions = 3
