@@ -271,7 +271,7 @@ try {
         }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
-    ssc.sparkContext.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
+    //ssc.sparkContext.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
 
 //    val model = KMeans.train(vectors, numClusters, numIterations)
 //    model.clusterCenters
