@@ -298,7 +298,10 @@ try {
         }
     }
 
-    sModel.trainOn(vectors)
+   // sModel.trainOn(vectors)
+
+    val model = KMeans.train(vectors, numClusters, numIterations)
+    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile("/shared")
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
 //        .transform{ rdd =>
