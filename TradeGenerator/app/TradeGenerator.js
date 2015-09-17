@@ -26,7 +26,7 @@ var mapCSVtoJSON = function(csvString) {
 }
 
 function getRandomInt(range) {
-    return Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
+    return 1+Math.floor(Math.random() * (range[1] - range[0] + 1)) + range[0];
 }
 
 var getRepeatingCharacter = function(char,length) {
