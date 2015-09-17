@@ -292,7 +292,7 @@ try {
             val fileName = "/shared/traindata_" + time.milliseconds.toString
             outputRDD.saveAsTextFile(fileName)
 
-            val inputData = ssc.sparkContext.textFile(fileName).map(Vectors.parse).cache()
+            val inputData = ssc.sparkContext.textFileStream(fileName).map(Vectors.parse).cache()
 
             println(inputData)
 
