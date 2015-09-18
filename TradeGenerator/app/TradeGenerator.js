@@ -206,14 +206,14 @@ producer.on('ready', function () {
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
         payloads = [{topic:topicName,messages:stream1}]
         producer.send( payloads, function (err, data) {
-            console.log("trades : ", err||data);
+            console.log(topicName+": ", err||data);
         });
 
         var i2 = getRandomInt(tradesPerSecond);
         var stream2 = generateTradePairs(1+i2).map(JSON.stringify);
         payloads = [{topic:topicName2,messages:stream2}]
         producer.send( payloads, function (err, data) {
-            console.log("trades2: ", err||data);
+            console.log(topicName2+": ", err||data);
         });
 
     },1000)
