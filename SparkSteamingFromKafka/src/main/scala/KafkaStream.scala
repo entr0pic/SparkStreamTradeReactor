@@ -280,9 +280,9 @@ try {
                     line += x(i).toString
                 }
 
-                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+line+"}")
-                producer.send(message)
-
+//                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+line+"}")
+//                producer.send(message)
+//
                 buffer
             }
             .map(x => Vectors.dense(x))
