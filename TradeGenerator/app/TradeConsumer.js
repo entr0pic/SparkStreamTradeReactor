@@ -4,11 +4,13 @@ var io = require('socket.io')(http);
 var port = process.env.HTTP_PORT || 3030;
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
-var topicName = process.env.KAFKA_TOPIC || "trades";
+//var topicName = process.env.KAFKA_TOPIC || "trades";
+var topicName = "kmstats";
+
 var kafka = require('kafka-node'),
     Lightning = require('lightning.js'),
     Consumer = kafka.Consumer,
-    client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
+    client = new kafka.Client(kafkaLocation+':2181','trade-consumer'),
     consumer = new Consumer(
         client,
         [
