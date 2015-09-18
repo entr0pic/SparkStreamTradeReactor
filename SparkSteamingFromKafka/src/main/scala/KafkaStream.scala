@@ -136,7 +136,7 @@ object TradeStreamReader {
     props.put("topic.metadata.refresh.interval.ms", "0")
     //props.put("client.id", "SparkIntegrationTests-KafkaProducer")
 
-    val producer = new Producer[String, String](props)
+    val producer = new KafkaProducer[String, String](props)
 
 //      val props = new HashMap[String, Object]()
 //props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
