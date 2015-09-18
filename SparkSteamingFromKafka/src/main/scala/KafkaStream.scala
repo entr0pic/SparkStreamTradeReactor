@@ -284,7 +284,7 @@ try {
         if (count > 0) {
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-            println("------------Rdd stats-------" + count)
+            println("------------Rdd stats (" + count + ") -------")
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
@@ -301,8 +301,9 @@ try {
     }
 
     val inputData = textStream.map(Vectors.parse).cache()
-
+    println("------------Input data count -------")
     inputData.count().print
+
     sModel.trainOn(inputData)
 
 
