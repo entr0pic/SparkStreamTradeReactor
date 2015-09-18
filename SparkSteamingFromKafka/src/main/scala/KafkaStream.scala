@@ -129,7 +129,7 @@ object TradeStreamReader {
 
       val props = new HashMap[String, Object]()
     props.put("metadata.broker.list", brokers)
-    //props.put("serializer.class", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("serializer.class", "org.apache.kafka.common.serialization.StringSerializer")
     // Workaround for https://issues.apache.org/jira/browse/KAFKA-899:
     props.put("retry.backoff.ms", "1000")
     props.put("message.send.max.retries", "10")
