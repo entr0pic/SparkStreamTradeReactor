@@ -37,6 +37,7 @@ import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord, KeyedMessage}
+import org.apache.kafka.producer.KeyedMessage
 //--
 
 //import org.apache.log4j.{Level, Logger}
