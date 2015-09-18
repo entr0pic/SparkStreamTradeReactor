@@ -240,6 +240,11 @@ var numCollected = 0L
 val fileName = "/shared/data/traindata" //  + time.milliseconds.toString
 var textStream = ssc.textFileStream(fileName);
 
+val props = new HashMap[String, Object]()
+props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+val producer = new KafkaProducer[String,String](props)
 
 msgText = "generate train data"
 println(msgText + " check point")
@@ -290,21 +295,33 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFile(fileName/* + time.milliseconds.toString*/)
+           rdd.foreachPartition{ p =>
+                p.foreach{
+                    case _ => { println(x) }
+//                    case x:String => {
+//                        val message=new ProducerRecord[String, String]("kmstats",null,x)
+//                        producer.send(message)
+//                    }
+                }
+           }
+
+
+//            val outputRDD = rdd.repartition(partitionsEachInterval)
+//            outputRDD.saveAsTextFile(fileName/* + time.milliseconds.toString*/)
 
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
             }
         }
+
     }
 
-    val inputData = textStream.map(Vectors.parse).cache()
-    println("------------Input data count -------")
-    inputData.count().print
-
-    sModel.trainOn(inputData)
+//    val inputData = textStream.map(Vectors.parse).cache()
+//    println("------------Input data count -------")
+//    inputData.count().print
+//
+//    sModel.trainOn(inputData)
 
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
