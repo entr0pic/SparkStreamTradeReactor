@@ -304,7 +304,7 @@ try {
             println(summary.numNonzeros) // number of nonzeros in each column
 
                 //val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance.toString+"}")
-            KeyedMessage<String, String> message = new KeyedMessage<String, String>("page_visits", time, summary.mean);
+            KeyedMessage<String, String> message = new KeyedMessage<String, String>("kmstats", time, summary.mean);
             producer.send(message)
 
 
