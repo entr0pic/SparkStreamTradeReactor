@@ -240,7 +240,7 @@ var numCollected = 0L
 val fileName = "/shared/data/traindata" //  + time.milliseconds.toString
 var textStream = ssc.textFileStream(fileName);
 
-val props = new HashMap[String, Object]()
+val props = new Map[String, Object]()
 props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
 props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
 props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
