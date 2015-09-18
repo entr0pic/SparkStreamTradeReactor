@@ -291,7 +291,7 @@ try {
             println(summary.numNonzeros) // number of nonzeros in each column
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFile(fileName + time.milliseconds.toString)
+            outputRDD.saveAsTextFile(fileName/* + time.milliseconds.toString*/)
 
             numCollected += count
             if (numCollected > 10000) {
