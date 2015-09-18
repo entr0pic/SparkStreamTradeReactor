@@ -36,9 +36,10 @@ import org.apache.spark.util.Utils
 import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
+import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
 import org.apache.spark.streaming._
-import org.apache.spark.streaming.kafka._
+import org.apache.spark.streaming.kafka.producer
 
 //--
 
