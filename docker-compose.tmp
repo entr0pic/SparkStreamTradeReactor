@@ -134,7 +134,7 @@ submitter:
   hostname: sumbitter
   environment:
     KAFKA_PORT: 9092
-    KAFKA_TOPIC: trades
+    KAFKA_TOPIC: trades,ttrades
   links:
     - master
     - namenode
