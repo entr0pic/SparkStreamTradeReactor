@@ -280,9 +280,6 @@ try {
                     line += x(i).toString
                 }
 
-//                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+line+"}")
-//                producer.send(message)
-//
                 buffer
             }
             .map(x => Vectors.dense(x))
@@ -305,6 +302,10 @@ try {
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
+
+                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance+"}")
+                producer.send(message)
+
 
 //            val outputRDD = rdd.repartition(partitionsEachInterval)
 //            outputRDD.saveAsTextFile(fileName/* + time.milliseconds.toString*/)
