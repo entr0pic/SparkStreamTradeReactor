@@ -197,17 +197,25 @@ producer = new Producer(client);
 //        { topic: 'new-trade', messages: 'hi' },
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
-producer.createTopics([topicName, topicName2], true, function (err, data) {});
+producer.createTopics([topicName, topicName2], true, function (err, data) {
+     console.log(err||data);
+});
 producer.on('ready', function () {
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
+        payloads = [{topic:topicName,messages:stream1}]
+        producer.send( payloads, function (err, data) {
+            console.log("trades : ", err||data);
+        });
+
         var i2 = getRandomInt(tradesPerSecond);
         var stream2 = generateTradePairs(1+i2).map(JSON.stringify);
-        payloads = [{topic:topicName,messages: stream1},{topic:topicName2,messages: stream2}]
+        payloads = [{topic:topicName2,messages:stream2}]
         producer.send( payloads, function (err, data) {
-            console.log(err||data);
+            console.log("trades2: ", err||data);
         });
+
     },1000)
 }).on('error',function(error){
   console.log(error)
