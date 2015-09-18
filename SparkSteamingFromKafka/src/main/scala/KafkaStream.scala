@@ -36,10 +36,11 @@ import org.apache.spark.util.Utils
 import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
+import org.apache.kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
 import org.apache.spark.streaming._
-import org.apache.spark.streaming.kafka.producer
+import org.apache.spark.streaming.kafka._
 
 //--
 
@@ -124,8 +125,19 @@ object TradeStreamReader {
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
     val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
-    val config = new ProducerConfig(kafkaParams)
-    val producer = new Producer[String, String, StringDecoder, StringDecoder](config)
+
+
+      val props = new Properties()
+    props.put("metadata.broker.list", brokers)
+    props.put("serializer.class", "org.apache.kafka.common.serialization.StringSerializer")
+    // Workaround for https://issues.apache.org/jira/browse/KAFKA-899:
+    props.put("retry.backoff.ms", "1000")
+    props.put("message.send.max.retries", "10")
+    props.put("topic.metadata.refresh.interval.ms", "0")
+    //props.put("client.id", "SparkIntegrationTests-KafkaProducer")
+
+    val config = new ProducerConfig(props)
+    val producer = new Producer[String, String](config)
 
 //      val props = new HashMap[String, Object]()
 //props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
