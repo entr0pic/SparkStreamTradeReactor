@@ -299,14 +299,14 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-           rdd.foreachPartition{ p =>
-                p.foreach{
-                    case x:Any => { println(x) }
+           rdd.foreachPartition{ p => p.print
+//                p.foreach{
+//                    case x:Any => { println(x) }
 //                    case x:String => {
 //                        val message=new ProducerRecord[String, String]("kmstats",null,x)
 //                        producer.send(message)
 //                    }
-                }
+//                }
            }
 
 
