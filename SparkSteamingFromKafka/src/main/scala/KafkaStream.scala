@@ -127,7 +127,7 @@ object TradeStreamReader {
     val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
 
 
-      val props = new Properties()
+      val props = new HashMap[String, Object]()
     props.put("metadata.broker.list", brokers)
     props.put("serializer.class", "org.apache.kafka.common.serialization.StringSerializer")
     // Workaround for https://issues.apache.org/jira/browse/KAFKA-899:
