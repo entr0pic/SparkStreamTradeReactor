@@ -127,23 +127,18 @@ object TradeStreamReader {
     val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
 
 
-      val props = new HashMap[String, Object]()
-    props.put("metadata.broker.list", brokers)
-    props.put("serializer.class", "org.apache.kafka.common.serialization.StringSerializer")
+    val props = new HashMap[String, Object]()
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
     // Workaround for https://issues.apache.org/jira/browse/KAFKA-899:
-    props.put("retry.backoff.ms", "1000")
-    props.put("message.send.max.retries", "10")
-    props.put("topic.metadata.refresh.interval.ms", "0")
-    //props.put("client.id", "SparkIntegrationTests-KafkaProducer")
+//    props.put("retry.backoff.ms", "1000")
+//    props.put("message.send.max.retries", "10")
+//    props.put("topic.metadata.refresh.interval.ms", "0")
+
+    props.put("client.id", "SparkHackathon-KafkaProducer")
 
     val producer = new KafkaProducer[String, String](props)
-
-//      val props = new HashMap[String, Object]()
-//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-//props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-//props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-//val producer = new KafkaProducer[String,String](props)
-
 
     val trades = messages.map(_._2)
     val ttrades = tmessages.map(_._2)
