@@ -187,6 +187,7 @@ tradegen:
     KAFKA: kafka
     KAFKA_PORT: 9092
     KAFKA_TOPIC: trades
+    KAFKA_TTOPIC: ttrades
   command: node TradeGenerator.js
   volumes:
     - {root}TradeGenerator:/shared

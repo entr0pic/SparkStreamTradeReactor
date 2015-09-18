@@ -6,7 +6,7 @@ var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
 var topicName = process.env.KAFKA_TOPIC || "trades";
-var topicName2 = process.env.KAFKA_TOPIC || "ttrades";
+var topicName2 = process.env.KAFKA_TTOPIC || "ttrades";
 
 var mapCSVtoJSON = function(csvString) {
   var trimQuotes = function(input) {
