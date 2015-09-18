@@ -237,6 +237,8 @@ val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
 var numCollected = 0L
+val fileName = "/shared/traindata" //  + time.milliseconds.toString
+var textStream = ssc.textFileStream(fileName);
 
 
 msgText = "generate train data"
@@ -289,16 +291,7 @@ try {
             println(summary.numNonzeros) // number of nonzeros in each column
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
-            val fileName = "/shared/traindata_" + time.milliseconds.toString
             outputRDD.saveAsTextFile(fileName)
-
-            val inputData = ssc.textFileStream(fileName).map(Vectors.parse).cache()
-
-            inputData.count().print
-            sModel.trainOn(inputData)
-
-//    val model = KMeans.train(inputData, numClusters, numIterations)
-//    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile("/shared/model")
 
             numCollected += count
             if (numCollected > 10000) {
@@ -307,7 +300,10 @@ try {
         }
     }
 
-   // sModel.trainOn(vectors)
+    val inputData = textStream.map(Vectors.parse).cache()
+
+    inputData.count().print
+    sModel.trainOn(inputData)
 
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
