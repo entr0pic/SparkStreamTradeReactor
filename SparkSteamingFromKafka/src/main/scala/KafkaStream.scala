@@ -260,9 +260,6 @@ try {
         .transform{ rdd =>
             rdd.map{ line =>
                 {
-                    val message = new ProducerRecord[String, String]("kmstats",null,line)
-                    producer.send(message)
-
                     JSON.parseFull(line)  match {
                         case None => CreateDoubleArray(Array.fill(1)(0.00),1)
                         case Some( mapAsAny ) => mapAsAny match {
@@ -275,10 +272,17 @@ try {
             .filter(_.size>1)
             .map{ x =>
                 val n = 4
-                val buffer: Array[Double] = Array.fill(n)(0.00)
+                var buffer: Array[Double] = Array.fill(n)(0.00)
+                var line = ""
                 for( i <- 0 to n-1) {
                     buffer(i) = x(i).toString.toDouble
+                    if (i > 0) line += "|"
+                    line += x(i).toString
                 }
+
+                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+line+"}")
+                producer.send(message)
+
                 buffer
             }
             .map(x => Vectors.dense(x))

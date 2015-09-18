@@ -59,7 +59,7 @@ var messageCount = 0;
         var jsonValue = JSON.parse(message.value);
         console.log(logJsonNicely([jsonValue]));
         process.stdout.write("Recieved " + messageCount++ + " messages\r");
-        io.emit('trades', jsonValue);
+        io.emit('kmstats', jsonValue);
       } catch (error) {
 
       }
