@@ -260,6 +260,9 @@ try {
         .transform{ rdd =>
             rdd.map{ line =>
                 {
+                    val message = new ProducerRecord[String, String]("kmstats",null,line)
+                    producer.send(message)
+
                     JSON.parseFull(line)  match {
                         case None => CreateDoubleArray(Array.fill(1)(0.00),1)
                         case Some( mapAsAny ) => mapAsAny match {
@@ -303,7 +306,7 @@ try {
 //                p.foreach{
 //                    case x:Any => { println(x) }
 //                    case x:String => {
-//                        val message=new ProducerRecord[String, String]("kmstats",null,x)
+//                        val message = new ProducerRecord[String, String]("kmstats",null,x)
 //                        producer.send(message)
 //                    }
 //                }
