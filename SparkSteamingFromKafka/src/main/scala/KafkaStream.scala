@@ -297,7 +297,7 @@ try {
 
            rdd.foreachPartition{ p =>
                 p.foreach{
-                    case _ => { println(x) }
+                    case x:Any => { println(x) }
 //                    case x:String => {
 //                        val message=new ProducerRecord[String, String]("kmstats",null,x)
 //                        producer.send(message)
