@@ -37,7 +37,8 @@ import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
-
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
 //--
 
 //import org.apache.log4j.{Level, Logger}
@@ -304,7 +305,7 @@ try {
             println(summary.numNonzeros) // number of nonzeros in each column
 
                 //val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance.toString+"}")
-            val message = new KeyedMessage[String, String]("kmstats", time.toString, summary.mean.toString);
+            val message = new KeyedMessage[String, String]("kmstats", summary.mean.toString);
             producer.send(message)
 
 
