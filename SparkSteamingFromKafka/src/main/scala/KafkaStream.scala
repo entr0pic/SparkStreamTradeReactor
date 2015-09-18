@@ -303,7 +303,7 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance+"}")
+                val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance.toString+"}")
                 producer.send(message)
 
 
