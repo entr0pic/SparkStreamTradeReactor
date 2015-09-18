@@ -37,7 +37,9 @@ import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
-import org.apache.kafka.producer.KeyedMessage
+import org.apache.spark.streaming._
+import org.apache.spark.streaming.kafka._
+
 //--
 
 //import org.apache.log4j.{Level, Logger}
@@ -121,6 +123,15 @@ object TradeStreamReader {
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
     val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
+    val config = new ProducerConfig(kafkaParams)
+    val producer = new Producer[String, String, StringDecoder, StringDecoder](config)
+
+//      val props = new HashMap[String, Object]()
+//props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+//props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+//props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+//val producer = new KafkaProducer[String,String](props)
+
 
     val trades = messages.map(_._2)
     val ttrades = tmessages.map(_._2)
@@ -244,11 +255,6 @@ var numCollected = 0L
 val fileName = "/shared/data/traindata" //  + time.milliseconds.toString
 var textStream = ssc.textFileStream(fileName);
 
-val props = new HashMap[String, Object]()
-props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-val producer = new KafkaProducer[String,String](props)
 
 msgText = "generate train data"
 println(msgText + " check point")
@@ -304,7 +310,7 @@ try {
             println(summary.numNonzeros) // number of nonzeros in each column
 
                 //val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance.toString+"}")
-            val message = new KeyedMessage[String, String]("kmstats", summary.mean.toString);
+            val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
 
