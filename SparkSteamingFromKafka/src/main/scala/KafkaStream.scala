@@ -34,6 +34,10 @@ import org.apache.spark.streaming.StreamingContext._
 import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.util.Utils
 import org.apache.spark.util.random.XORShiftRandom
+
+import java.util.HashMap
+import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
+
 //--
 
 //import org.apache.log4j.{Level, Logger}
@@ -240,7 +244,7 @@ var numCollected = 0L
 val fileName = "/shared/data/traindata" //  + time.milliseconds.toString
 var textStream = ssc.textFileStream(fileName);
 
-val props = new Map[String, Object]()
+val props = new HashMap[String, Object]()
 props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
 props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
 props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
