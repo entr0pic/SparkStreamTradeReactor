@@ -321,9 +321,6 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
-            val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFiles(fileName)
-
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
@@ -331,6 +328,8 @@ try {
         }
 
     }
+
+    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 
     val inputData = textStream.map(Vectors.parse).cache()
     println("------------Input data count -------")
