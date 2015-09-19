@@ -259,8 +259,10 @@ val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
 var numCollected = 0L
-val fileName = "/shared/data/traindata" //  + time.milliseconds.toString
-var textStream = ssc.textFileStream(fileName);
+
+val dirName = "/shared/data/traindata/"
+val fileName =  dirName + "train" //  + time.milliseconds.toString
+var textStream = ssc.textFileStream(dirName);
 
 
 msgText = "generate train data"
@@ -316,13 +318,11 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-                //val message = new ProducerRecord[String, String]("kmstats",null,"{value:"+summary.variance.toString+"}")
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
-
-//            val outputRDD = rdd.repartition(partitionsEachInterval)
-//            outputRDD.saveAsTextFile(fileName/* + time.milliseconds.toString*/)
+            val outputRDD = rdd.repartition(partitionsEachInterval)
+            outputRDD.saveAsTextFile(fileName + time.milliseconds.toString)
 
             numCollected += count
             if (numCollected > 10000) {
