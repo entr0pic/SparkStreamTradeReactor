@@ -260,7 +260,7 @@ var msgText = "";
 val partitionsEachInterval = 10
 var numCollected = 0L
 
-val dirName = "/shared/data/traindata/"
+val dirName = "file:///shared/data/traindata/"
 val fileName =  dirName + "train" //  + time.milliseconds.toString
 var textStream = ssc.textFileStream(dirName);
 
