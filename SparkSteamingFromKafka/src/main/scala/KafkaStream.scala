@@ -322,7 +322,7 @@ try {
             producer.send(message)
 
             val outputRDD = rdd.repartition(partitionsEachInterval)
-            outputRDD.saveAsTextFile(fileName + time.milliseconds.toString)
+            outputRDD.saveAsTextFiles(dirName)
 
             numCollected += count
             if (numCollected > 10000) {
