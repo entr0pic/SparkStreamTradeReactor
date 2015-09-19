@@ -332,9 +332,9 @@ try {
 
     }
 
-//    val inputData = textStream.map(Vectors.parse).cache()
-//    println("------------Input data count -------")
-//    inputData.count().print
+    val inputData = textStream.map(Vectors.parse).cache()
+    println("------------Input data count -------")
+    inputData.count().print
 //
 //    sModel.trainOn(inputData)
 
