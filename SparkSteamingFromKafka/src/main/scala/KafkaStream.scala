@@ -368,7 +368,7 @@ try {
 
             println(s"------------Model predict ($numClusters) -------")
             val tdata = rdd.take(10).foreach{ a =>
-                val cluster = model2.predict(tdata)
+                val cluster = model2.predict(a)
                 println(s"Predicted cluster = $cluster")
 //                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
 //                    producer.send(message3)
