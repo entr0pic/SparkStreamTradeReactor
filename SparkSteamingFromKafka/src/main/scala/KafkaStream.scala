@@ -390,6 +390,8 @@ try {
                    println(t)
                    val cluster = model2.predict(t)
                    println(s"Predicted cluster = $cluster")
+                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
+                    producer.send(message3)
                 }
 
             numCollected += count
