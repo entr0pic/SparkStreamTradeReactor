@@ -337,7 +337,7 @@ try {
             .map(x => Vectors.dense(x))
         }.cache()
 
-    val tdata = ttrades.map(_=>_.take(10)).cache()
+    val tdata = ttrades.map(_.take(10)).cache()
 
 //            println(s"------------Model predict ($numClusters) -------")
 //            tvectors.foreachRDD{ trdd =>
