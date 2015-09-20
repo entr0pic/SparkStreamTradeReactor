@@ -320,9 +320,9 @@ try {
 
             var model = KMeans.train(rdd, numClusters, numIterations)
             println("------------Model training (" + numClusters + ") -------")
-            println(model.clusterCenter)
+            println(model.clusterCenters)
 
-            val message = new ProducerRecord[String, String]("kmstats", null, model.clusterCenter.toString);
+            val message = new ProducerRecord[String, String]("kmstats", null, model.clusterCenters.toString);
             producer.send(message)
 
             numCollected += count
