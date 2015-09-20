@@ -322,6 +322,9 @@ try {
             println("------------Model training (" + numClusters + ") -------")
             println(model.clusterCenter)
 
+            val message = new ProducerRecord[String, String]("kmstats", null, model.clusterCenter.toString);
+            producer.send(message)
+
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
