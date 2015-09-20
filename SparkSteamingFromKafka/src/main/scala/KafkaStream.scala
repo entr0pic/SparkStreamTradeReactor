@@ -367,8 +367,8 @@ try {
             }
 
             println(s"------------Model predict ($numClusters) -------")
-            tvectors.foreachRDD{ rdd =>
-                val tdata = rdd.take(10)
+            tvectors.foreachRDD{ trdd =>
+                val tdata = trdd.take(10)
                 for (i <- 0 until numClusters) {
                     println(s"\nCLUSTER $i:")
                     tdata.foreach { t =>
