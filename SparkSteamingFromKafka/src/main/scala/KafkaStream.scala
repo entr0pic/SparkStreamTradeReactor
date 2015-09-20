@@ -362,7 +362,7 @@ try {
             model2.clusterCenters.foreach{ t =>
                 println(t)
                 println(t.toArray.mkString(";"))
-                val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:"+t.toArray.toString+"}");
+                val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:["+t.toArray.mkString(";")+"]}");
                 producer.send(message2)
             }
 
