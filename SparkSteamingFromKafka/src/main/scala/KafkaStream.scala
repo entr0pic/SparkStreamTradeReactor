@@ -367,12 +367,14 @@ try {
             }
 
             println(s"------------Model predict ($numClusters) -------")
-            val tdata = tvectors.take(10)
-            for (i <- 0 until numClusters) {
-                println(s"\nCLUSTER $i:")
-                tdata.foreach { t =>
-                    if (model2.predict(t) == i) {
-                        println(t)
+            tvectors.foreachRDD{ rdd =>
+                val tdata = rdd.take(10)
+                for (i <- 0 until numClusters) {
+                    println(s"\nCLUSTER $i:")
+                    tdata.foreach { t =>
+                        if (model2.predict(t) == i) {
+                            println(t)
+                        }
                     }
                 }
             }
