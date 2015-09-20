@@ -333,7 +333,7 @@ try {
 
 //    sModel.trainOn(inputData)
 
-    var model = KMeans.train(vectors, numClusters, numIterations)
+    var model = KMeans.train(inputData, numClusters, numIterations)
     println(model.clusterCenters.toString)
 //    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile(dirName + "model")
 //    val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
