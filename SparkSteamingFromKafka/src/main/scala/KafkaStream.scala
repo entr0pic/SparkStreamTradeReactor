@@ -146,11 +146,16 @@ object TradeStreamReader {
 val numDimensions = 3
 val numClusters = 2
 val decayFactor = 1.0
+val numIterations = 100
       
 val sModel = new StreamingKMeans()
   .setK(numClusters)
   .setDecayFactor(decayFactor)
   .setRandomCenters(numDimensions, 0.0)
+
+val model = new KMeans()
+      .setK(numClusters)
+      .setMaxIterations(numIterations)
 
 //------------------------ functions --------------
       
@@ -259,7 +264,6 @@ val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
 var numCollected = 0L
-val numIterations = 100
 
 val dirName = "file:///shared/data/traindata/"
 val fileName =  dirName + "train" //  + time.milliseconds.toString
@@ -309,7 +313,7 @@ try {
         if (count > 0) {
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-            println("------------Rdd stats (" + count + ") -------")
+            println(s"------------Rdd stats ($count) -------")
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
@@ -318,11 +322,17 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
-            var model = KMeans.train(rdd, numClusters, numIterations)
-            println("------------Model training (" + numClusters + ") -------")
-            println(model.clusterCenters)
+            model.train(rdd, numClusters, numIterations)
 
-            val message2 = new ProducerRecord[String, String]("kmstats", null, model.clusterCenters.toString);
+//            val cost = model.computeCost(examples)
+//            println(s"------------Model cost = $cost -------")
+
+            println(s"------------Model training ($numClusters) -------")
+            println(model.clusterCenters.values)
+
+
+
+            val message2 = new ProducerRecord[String, String]("kmstats", null, model.clusterCenters.values.toString);
             producer.send(message2)
 
             numCollected += count
