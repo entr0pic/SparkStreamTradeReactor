@@ -322,15 +322,10 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
-            model.train(rdd, numClusters, numIterations)
-
-//            val cost = model.computeCost(examples)
-//            println(s"------------Model cost = $cost -------")
+            val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model training ($numClusters) -------")
-            println(model.clusterCenters.values)
-
-
+            model2.clusterCenters.print
 
             val message2 = new ProducerRecord[String, String]("kmstats", null, model.clusterCenters.values.toString);
             producer.send(message2)
@@ -342,6 +337,12 @@ try {
         }
 
     }
+
+    model.run(vectors)
+
+    val cost = model.computeCost(vectors)
+    println(s"------------Model cost = $cost -------")
+
 
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
