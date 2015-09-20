@@ -339,24 +339,6 @@ try {
 
     val tdata = ttrades.map(_.take(10)).cache()
 
-//            println(s"------------Model predict ($numClusters) -------")
-//            tvectors.foreachRDD{ trdd =>
-//                val model3 = KMeans.train(trdd, numClusters, numIterations)
-//                val tdata = trdd.take(10)
-//                tdata.foreach { t =>
-//                   println(t)
-//                    println("Predicted cluster = "+model3.predict(t).toString)
-//                }
-////                for (i <- 0 until numClusters) {
-////                    println(s"\nCLUSTER $i:")
-////                    tdata.foreach { t =>
-////                        if (model2.predict(t) == i) {
-////                            println(t)
-////                        }
-////                    }
-////                }
-//            }
-
     vectors.count().print  // Calls an action to create the cache.
 
     vectors.foreachRDD{ (rdd,time) =>
@@ -385,15 +367,19 @@ try {
                 producer.send(message2)
             }
 
-//            println(s"------------Model predict ($numClusters) -------")
-//                tdata.foreach { t =>
-//                   println(t)
-//                   val cluster = model2.predict(t.map(_.toDouble))
-//                   println(s"Predicted cluster = $cluster")
-//                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
-//                    producer.send(message3)
-//                }
-//
+            println(s"------------Model predict ($numClusters) -------")
+            tvectors.map{ d =>
+                val tdata = d.take(10)
+                tdata.foreach { t =>
+                   println(t)
+                   val cluster = model2.predict(t)
+                   println(s"Predicted cluster = $cluster")
+                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
+                    producer.send(message3)
+                }
+                tdata
+            }
+
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
