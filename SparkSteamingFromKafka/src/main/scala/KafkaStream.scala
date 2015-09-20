@@ -275,6 +275,38 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
+//    val tvectors = ttrades.filter(!_.isEmpty)
+//        .transform{ rdd =>
+//            rdd.map{ line =>
+//                {
+//                    JSON.parseFull(line)  match {
+//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        case Some( mapAsAny ) => mapAsAny match {
+//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        }
+//                    }
+//                }
+//            }
+//            .filter(_.size>1)
+//            .map{ x =>
+//                val n = 4
+//                var buffer: Array[Double] = Array.fill(n)(0.00)
+//                var line = ""
+//                for( i <- 0 to n-1) {
+//                    buffer(i) = x(i).toString.toDouble
+//                    if (i > 0) line += "|"
+//                    line += x(i).toString
+//                }
+//
+//                buffer
+//            }
+//            .map(x => Vectors.dense(x))
+//        }
+//        .cache()
+//
+//    tvectors.count().print  // Calls an action to create the cache.
+
     var vectors =
         trades.filter(!_.isEmpty)
         .transform{ rdd =>
@@ -319,20 +351,30 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-            producer.send(message)
-
-            model.run(rdd)
-
-//            val cost = model.computeCost(rdd)
-//            println(s"------------Model cost = $cost -------")
-//            val message1 = new ProducerRecord[String, String]("kmstats", null, cost.toString);
+//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
 //            producer.send(message1)
+
+//            model.run(rdd)
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model training ($numClusters) -------")
-            model2.clusterCenters.foreach(println)
+            model2.clusterCenters.foreach{ t =>
+                println(t)
+                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toArray.toString);
+                producer.send(message2)
+            }
+
+//            println(s"------------Model predict ($numClusters) -------")
+//            val tdata = tvectors.take(10)
+//            for (i <- 0 until numClusters) {
+//                println(s"\nCLUSTER $i:")
+//                tdata.foreach { t =>
+//                    if (model2.predict(t) == i) {
+//                        println(t)
+//                    }
+//                }
+//            }
 
             numCollected += count
             if (numCollected > 10000) {
@@ -341,7 +383,6 @@ try {
         }
 
     }
-
 
 
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)

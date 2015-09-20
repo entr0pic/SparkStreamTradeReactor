@@ -58,14 +58,14 @@ var messageCount = 0;
       try {
         var jsonValue = JSON.parse(message.value);
         console.log(logJsonNicely([jsonValue]));
-        process.stdout.write("Recieved " + messageCount++ + " messages\r");
+        process.stdout.write("Received " + messageCount++ + " messages\r");
         io.emit('kmstats', jsonValue);
       } catch (error) {
-
+          console.log("Err: ", error)
       }
     }
 }).on("error",function(e) {
-  console.log(e);
+  console.log("Err: ", e);
 });
 
 //io.on('connection', function(socket){
