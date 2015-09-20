@@ -361,7 +361,8 @@ try {
             println(s"------------Model training ($numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println(t)
-                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toArray.toString);
+                println(t.values.toString)
+                val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:"+t.values.toString+"}");
                 producer.send(message2)
             }
 
