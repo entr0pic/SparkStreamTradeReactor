@@ -375,9 +375,10 @@ try {
     }
 
 
-            val model3 = KMeans.train(rdd, numClusters, numIterations)
+
             println(s"------------Model predict ($numClusters) -------")
             tvectors.foreachRDD{ trdd =>
+                val model3 = KMeans.train(trdd, numClusters, numIterations)
                 val tdata = trdd.take(10)
                 println(t)
                 peinrln("Predicted cluster = "+model3.predict(t).toString)s
