@@ -275,37 +275,37 @@ println(msgText + " check point")
 //var trainingData = getStreamData(trades, msgText)
 
 try {
-//    val tvectors = ttrades.filter(!_.isEmpty)
-//        .transform{ rdd =>
-//            rdd.map{ line =>
-//                {
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        }
-//                    }
-//                }
-//            }
-//            .filter(_.size>1)
-//            .map{ x =>
-//                val n = 4
-//                var buffer: Array[Double] = Array.fill(n)(0.00)
-//                var line = ""
-//                for( i <- 0 to n-1) {
-//                    buffer(i) = x(i).toString.toDouble
-//                    if (i > 0) line += "|"
-//                    line += x(i).toString
-//                }
-//
-//                buffer
-//            }
-//            .map(x => Vectors.dense(x))
-//        }
-//        .cache()
-//
-//    tvectors.count().print  // Calls an action to create the cache.
+    val tvectors = ttrades.filter(!_.isEmpty)
+        .transform{ rdd =>
+            rdd.map{ line =>
+                {
+                    JSON.parseFull(line)  match {
+                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        }
+                    }
+                }
+            }
+            .filter(_.size>1)
+            .map{ x =>
+                val n = 4
+                var buffer: Array[Double] = Array.fill(n)(0.00)
+                var line = ""
+                for( i <- 0 to n-1) {
+                    buffer(i) = x(i).toString.toDouble
+                    if (i > 0) line += "|"
+                    line += x(i).toString
+                }
+
+                buffer
+            }
+            .map(x => Vectors.dense(x))
+        }
+        .cache()
+
+    tvectors.count().print  // Calls an action to create the cache.
 
     var vectors =
         trades.filter(!_.isEmpty)
@@ -361,21 +361,21 @@ try {
             println(s"------------Model training ($numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println(t)
-                println(t.values.toString)
-                val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:"+t.values.toString+"}");
+                println(t.toArray.toString)
+                val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:"+t.toArray.toString+"}");
                 producer.send(message2)
             }
 
-//            println(s"------------Model predict ($numClusters) -------")
-//            val tdata = tvectors.take(10)
-//            for (i <- 0 until numClusters) {
-//                println(s"\nCLUSTER $i:")
-//                tdata.foreach { t =>
-//                    if (model2.predict(t) == i) {
-//                        println(t)
-//                    }
-//                }
-//            }
+            println(s"------------Model predict ($numClusters) -------")
+            val tdata = tvectors.take(10)
+            for (i <- 0 until numClusters) {
+                println(s"\nCLUSTER $i:")
+                tdata.foreach { t =>
+                    if (model2.predict(t) == i) {
+                        println(t)
+                    }
+                }
+            }
 
             numCollected += count
             if (numCollected > 10000) {
