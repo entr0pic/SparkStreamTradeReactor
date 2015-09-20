@@ -370,8 +370,8 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-//            producer.send(message1)
+            val message1 = new ProducerRecord[String, String]("kmstats", null, "Summary mean="+summary.mean.toString);
+            producer.send(message1)
 
 //            model.run(rdd)
 
