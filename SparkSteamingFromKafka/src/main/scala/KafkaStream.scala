@@ -385,15 +385,15 @@ try {
                 producer.send(message2)
             }
 
-            println(s"------------Model predict ($numClusters) -------")
-                tdata.foreach { t =>
-                   println(t)
-                   val cluster = model2.predict(t)
-                   println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
-                    producer.send(message3)
-                }
-
+//            println(s"------------Model predict ($numClusters) -------")
+//                tdata.foreach { t =>
+//                   println(t)
+//                   val cluster = model2.predict(t.map(_.toDouble))
+//                   println(s"Predicted cluster = $cluster")
+//                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
+//                    producer.send(message3)
+//                }
+//
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
