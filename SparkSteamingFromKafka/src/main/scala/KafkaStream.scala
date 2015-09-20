@@ -329,11 +329,11 @@ try {
 
     }
 
-    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
-
-    val inputData = textStream.map(Vectors.parse).cache()
-    println("------------Input data count -------")
-    inputData.count().print
+//    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
+//
+//    val inputData = textStream.map(Vectors.parse).cache()
+//    println("------------Input data count -------")
+//    inputData.count().print
 
 //    sModel.trainOn(inputData)
 
