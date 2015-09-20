@@ -335,7 +335,7 @@ try {
                 buffer
             }
             .map(x => Vectors.dense(x))
-        }
+        }.cache()
 
     val tdata = ttrades.map(_=>_.take(10)).cache()
 
@@ -381,7 +381,7 @@ try {
             model2.clusterCenters.foreach{ t =>
                 println(t)
                 //println(t.toArray.mkString(";"))
-                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
+                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toArray.mkString(","));
                 producer.send(message2)
             }
 
