@@ -337,7 +337,7 @@ try {
             .map(x => Vectors.dense(x))
         }
 
-//    val tdata = ttrades.head.cache()
+    val tdata = ttrades.map(_=>_.take(10)).cache()
 
 //            println(s"------------Model predict ($numClusters) -------")
 //            tvectors.foreachRDD{ trdd =>
@@ -385,11 +385,12 @@ try {
                 producer.send(message2)
             }
 
-//            println(s"------------Model predict ($numClusters) -------")
-//                tdata.foreach { t =>
-//                   println(t)
-//                    println("Predicted cluster = "+model2.predict(t).toString)
-//                }
+            println(s"------------Model predict ($numClusters) -------")
+                tdata.foreach { t =>
+                   println(t)
+                   val cluster = model2.predict(t)
+                   println(s"Predicted cluster = $cluster")
+                }
 
             numCollected += count
             if (numCollected > 10000) {
