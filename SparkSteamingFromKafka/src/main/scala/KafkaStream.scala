@@ -259,6 +259,7 @@ val nn = 3;
 var msgText = "";
 val partitionsEachInterval = 10
 var numCollected = 0L
+val numIterations = 100
 
 val dirName = "file:///shared/data/traindata/"
 val fileName =  dirName + "train" //  + time.milliseconds.toString
