@@ -337,8 +337,6 @@ try {
             .map(x => Vectors.dense(x))
         }.cache()
 
-    val tdata = ttrades.map(_.take(10)).cache()
-
     vectors.count().print  // Calls an action to create the cache.
 
     vectors.foreachRDD{ (rdd,time) =>
