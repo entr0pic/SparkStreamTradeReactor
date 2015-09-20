@@ -366,19 +366,6 @@ try {
                 producer.send(message2)
             }
 
-            println(s"------------Model predict ($numClusters) -------")
-            tvectors.foreachRDD{ trdd =>
-                val tdata = trdd.take(10)
-                for (i <- 0 until numClusters) {
-                    println(s"\nCLUSTER $i:")
-                    tdata.foreach { t =>
-                        if (model2.predict(t) == i) {
-                            println(t)
-                        }
-                    }
-                }
-            }
-
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
@@ -387,6 +374,22 @@ try {
 
     }
 
+
+            val model3 = KMeans.train(rdd, numClusters, numIterations)
+            println(s"------------Model predict ($numClusters) -------")
+            tvectors.foreachRDD{ trdd =>
+                val tdata = trdd.take(10)
+                println(t)
+                peinrln("Predicted cluster = "+model3.predict(t).toString)s
+//                for (i <- 0 until numClusters) {
+//                    println(s"\nCLUSTER $i:")
+//                    tdata.foreach { t =>
+//                        if (model2.predict(t) == i) {
+//                            println(t)
+//                        }
+//                    }
+//                }
+            }
 
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
