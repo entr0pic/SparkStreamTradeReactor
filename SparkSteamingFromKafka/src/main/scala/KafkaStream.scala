@@ -324,19 +324,15 @@ try {
 
             model.run(rdd)
 
-            val cost = model.computeCost(rdd)
-            println(s"------------Model cost = $cost -------")
-            val message1 = new ProducerRecord[String, String]("kmstats", null, cost.toString);
-            producer.send(message1)
+//            val cost = model.computeCost(rdd)
+//            println(s"------------Model cost = $cost -------")
+//            val message1 = new ProducerRecord[String, String]("kmstats", null, cost.toString);
+//            producer.send(message1)
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model training ($numClusters) -------")
-            model2.clusterCenters.foreach{a =>
-                println(a.values)
-//                val message2 = new ProducerRecord[String, String]("kmstats", null, a.values.toString);
-//                producer.send(message2)
-            }
+            model2.clusterCenters.foreach(println)
 
             numCollected += count
             if (numCollected > 10000) {
