@@ -334,8 +334,8 @@ try {
     val inputData = textStream.map(Vectors.parse).cache()
     println("------------Input data count -------")
     inputData.count().print
-//
-//    sModel.trainOn(inputData)
+
+    sModel.trainOn(inputData)
 
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
