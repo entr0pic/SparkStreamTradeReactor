@@ -387,11 +387,11 @@ try {
                 producer.send(message2)
             }
 
-//            println(s"------------Model predict ($numClusters) -------")
-//                tdata.foreach { t =>
-//                   println(t)
-//                    println("Predicted cluster = "+model2.predict(t).toString)
-//                }
+            println(s"------------Model predict ($numClusters) -------")
+                tdata.foreach { t =>
+                   println(t)
+                    println("Predicted cluster = "+model2.predict(t).toString)
+                }
 
             numCollected += count
             if (numCollected > 10000) {
