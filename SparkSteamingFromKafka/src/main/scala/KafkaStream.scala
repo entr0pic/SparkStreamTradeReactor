@@ -317,6 +317,10 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
+            var model = KMeans.train(rdd, numClusters, numIterations)
+            println("------------Model training (" + numClusters + ") -------")
+            println(model.clusterCenters.toString)
+
             numCollected += count
             if (numCollected > 10000) {
                 System.exit(0)
@@ -333,8 +337,6 @@ try {
 
 //    sModel.trainOn(inputData)
 
-    var model = KMeans.train(inputData, numClusters, numIterations)
-    println(model.clusterCenters.toString)
 //    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile(dirName + "model")
 //    val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
 //            producer.send(message)
