@@ -54,15 +54,17 @@ var logJsonNicely = function (jsonArray) {
 var messageCount = 0;
 
  consumer.on('message', function (message) {
-    if (message.value) {
-      try {
-        var jsonValue = JSON.parse(message.value);
-        console.log(logJsonNicely([jsonValue]));
-        process.stdout.write("Received " + messageCount++ + " messages\r");
-        io.emit('kmstats', jsonValue);
-      } catch (error) {
-          console.log("Err: ", error)
-      }
+     try {
+        if (message.value) {
+            var jsonValue = JSON.parse(message.value);
+            console.log(logJsonNicely([jsonValue]));
+            process.stdout.write("Received " + messageCount++ + " messages\r");
+            io.emit('kmstats', jsonValue);
+        } else {
+            process.stdout.write("Message " + message);
+        }
+    } catch (error) {
+        process.stderr.write("Err: ", error)
     }
 }).on("error",function(e) {
   console.log("Err: ", e);
