@@ -350,8 +350,8 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            val message = new ProducerRecord[String, String]("kmstats", null, "Summary mean");
-            producer.send(message)
+//            val message = new ProducerRecord[String, String]("kmstats", null, "Summary mean");
+//            producer.send(message)
             val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message1)
 
@@ -363,16 +363,16 @@ try {
             model2.clusterCenters.foreach{ t =>
                 println(t)
                 //println(t.toArray.mkString(";"))
-                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toArray.mkString(","));
-                producer.send(message2)
+//                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toArray.mkString(","));
+//                producer.send(message2)
             }
 
             println(s"------------Model predict ($numClusters) -------")
             tvectors.map{ tdata =>
                    val cluster = model2.predict(tdata)
                    println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
-                    producer.send(message3)
+//                    val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
+//                    producer.send(message3)
 
                 cluster
             }
