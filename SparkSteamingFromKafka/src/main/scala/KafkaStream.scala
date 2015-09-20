@@ -362,20 +362,25 @@ try {
             println(s"------------Model training ($numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println(t)
-                //println(t.toArray.mkString(";"))
                 val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
                 producer.send(message2)
             }
 
             println(s"------------Model predict ($numClusters) -------")
-            tvectors.map{ tdata =>
-                   val cluster = model2.predict(tdata)
-                   println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
-                    producer.send(message3)
-
-                cluster
-            }.print
+            val tdata = rdd.take(10).foreach{ a =>
+                val cluster = model2.predict(tdata)
+                println(s"Predicted cluster = $cluster")
+//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
+//                    producer.send(message3)
+            }
+//            tvectors.map{ tdata =>
+//                   val cluster = model2.predict(tdata)
+//                   println(s"Predicted cluster = $cluster")
+//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
+//                    producer.send(message3)
+//
+//                cluster
+//            }
 
             numCollected += count
             if (numCollected > 10000) {
