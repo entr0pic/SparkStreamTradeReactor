@@ -336,7 +336,28 @@ try {
             }
             .map(x => Vectors.dense(x))
         }
+
+    val tdata = ttrades
+        .map(_.take(10))
         .cache()
+
+//            println(s"------------Model predict ($numClusters) -------")
+//            tvectors.foreachRDD{ trdd =>
+//                val model3 = KMeans.train(trdd, numClusters, numIterations)
+//                val tdata = trdd.take(10)
+//                tdata.foreach { t =>
+//                   println(t)
+//                    println("Predicted cluster = "+model3.predict(t).toString)
+//                }
+////                for (i <- 0 until numClusters) {
+////                    println(s"\nCLUSTER $i:")
+////                    tdata.foreach { t =>
+////                        if (model2.predict(t) == i) {
+////                            println(t)
+////                        }
+////                    }
+////                }
+//            }
 
     vectors.count().print  // Calls an action to create the cache.
 
@@ -361,10 +382,16 @@ try {
             println(s"------------Model training ($numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println(t)
-                println(t.toArray.mkString(";"))
+                //println(t.toArray.mkString(";"))
                 val message2 = new ProducerRecord[String, String]("kmstats", null, "{value:["+t.toArray.mkString(",")+"]}");
                 producer.send(message2)
             }
+
+//            println(s"------------Model predict ($numClusters) -------")
+//                tdata.foreach { t =>
+//                   println(t)
+//                    println("Predicted cluster = "+model2.predict(t).toString)
+//                }
 
             numCollected += count
             if (numCollected > 10000) {
@@ -376,23 +403,6 @@ try {
 
 
 
-            println(s"------------Model predict ($numClusters) -------")
-            tvectors.foreachRDD{ trdd =>
-                val model3 = KMeans.train(trdd, numClusters, numIterations)
-                val tdata = trdd.take(10)
-                tdata.foreach { t =>
-                   println(t)
-                    println("Predicted cluster = "+model3.predict(t).toString)
-                }
-//                for (i <- 0 until numClusters) {
-//                    println(s"\nCLUSTER $i:")
-//                    tdata.foreach { t =>
-//                        if (model2.predict(t) == i) {
-//                            println(t)
-//                        }
-//                    }
-//                }
-            }
 
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
