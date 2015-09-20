@@ -352,7 +352,7 @@ try {
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-            val message1 = new ProducerRecord[String, String]("kmstats", null, "Summary mean="+summary.mean.toString);
+            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message1)
 
 //            model.run(rdd)
@@ -368,16 +368,13 @@ try {
             }
 
             println(s"------------Model predict ($numClusters) -------")
-            tvectors.map{ d =>
-                val tdata = d.take(10)
-                tdata.foreach { t =>
-                   println(t)
-                   val cluster = model2.predict(t)
+            tvectors.map{ tdata =>
+                   val cluster = model2.predict(tdata)
                    println(s"Predicted cluster = $cluster")
                     val message3 = new ProducerRecord[String, String]("kmstats", null, "Predicted cluster = "+cluster);
                     producer.send(message3)
-                }
-                tdata
+
+                cluster
             }
 
             numCollected += count
