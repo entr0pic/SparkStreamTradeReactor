@@ -320,7 +320,7 @@ try {
 
             var model = KMeans.train(rdd, numClusters, numIterations)
             println("------------Model training (" + numClusters + ") -------")
-            println(model.clusterCenters.toString)
+            println(model.clusterCenter)
 
             numCollected += count
             if (numCollected > 10000) {
