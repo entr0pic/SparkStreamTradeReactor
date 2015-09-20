@@ -322,13 +322,21 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message)
 
+            model.run(rdd)
+
+            val cost = model.computeCost(rdd)
+            println(s"------------Model cost = $cost -------")
+            val message1 = new ProducerRecord[String, String]("kmstats", null, cost.toString);
+            producer.send(message1)
+
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model training ($numClusters) -------")
-            model2.clusterCenters.print
-
-            val message2 = new ProducerRecord[String, String]("kmstats", null, model.clusterCenters.values.toString);
-            producer.send(message2)
+            model2.clusterCenters.foreach{a =>
+                println(a.values)
+//                val message2 = new ProducerRecord[String, String]("kmstats", null, a.values.toString);
+//                producer.send(message2)
+            }
 
             numCollected += count
             if (numCollected > 10000) {
@@ -338,10 +346,6 @@ try {
 
     }
 
-    model.run(vectors)
-
-    val cost = model.computeCost(vectors)
-    println(s"------------Model cost = $cost -------")
 
 
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
