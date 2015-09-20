@@ -302,10 +302,6 @@ try {
         .cache()
 
     vectors.count().print  // Calls an action to create the cache.
-    //ssc.sparkContext.makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
-
-//    val model = KMeans.train(vectors, numClusters, numIterations)
-//    model.clusterCenters
 
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
@@ -335,8 +331,13 @@ try {
     println("------------Input data count -------")
     inputData.count().print
 
-    sModel.trainOn(inputData)
+//    sModel.trainOn(inputData)
 
+    var model = KMeans.train(vectors, numClusters, numIterations)
+    println(model.clusterCenters.toString)
+//    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile(dirName + "model")
+//    val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
+//            producer.send(message)
 
 //    var tvectors =  ttrades.filter(!_.isEmpty)
 //        .transform{ rdd =>
