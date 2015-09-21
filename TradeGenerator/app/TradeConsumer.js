@@ -27,7 +27,7 @@ var kafka = require('kafka-node'),
         {
             autoCommit: false
         }
-    );;
+    );
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -91,9 +91,10 @@ var statsMsgCnt = 0;
      try {
         if (message.value) {
             var jsonValue = JSON.parse(message.value);
-            console.log(logJsonNicely([jsonValue]));
-            process.stdout.write("Received " + messageCount++ + "(" + tradesMsgCnt++ + ")" + " ["+topicName+"] messages\r");
             io.emit(topicName, jsonValue);
+            console.log(logJsonNicely([jsonValue]));
+            process.stdout.write("Received " + (messageCount++) + "(" + (tradesMsgCnt++) + ")" + " ["+topicName+"] messages\r");
+
         } else {
             process.stdout.write("Message ["+topicName+"] " + message);
         }

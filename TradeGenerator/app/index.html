@@ -5,6 +5,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" rel="stylesheet">
+    <style>
+      div.dc-chart {
+        float: none !important;
+      }
+    </style>
   </head>
   <body>
      <nav class="navbar navbar-light bg-faded">
@@ -139,7 +144,10 @@
 
         this.initCharts = function() {
           var self = this;
-          var projection = d3.geo.mercator();
+          var projection = d3.geo.mercator()
+              .scale((width + 1) / 2 / Math.PI)
+              .translate([width / 2, height / 2])
+              .precision(.1);
 //              .center([133,-28]) //this is aus
 //              .scale(700) //fills about 500px high for aus
 //              .rotate([-12,0]);
