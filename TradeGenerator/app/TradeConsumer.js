@@ -80,7 +80,8 @@ var messageCount = 0;
 
  statsConsumer.on('message', function (message) {
      try {
-        process.stdout.write("Message " + message);
+       process.stdout.write("Message " + message);
+       io.emit(statsTopic,message);
     } catch (error) {
         process.stderr.write("Err: ", error);
     }
