@@ -195,6 +195,16 @@
               }
             }
           });
+          socket.on('kmstats', function(msg){
+            if (msg.value) {
+              try {
+                //chartManager.addData('kmstats',msg.value)
+                var one = 1;
+              } catch (e) {
+                console.warn(e);
+              }
+            }
+          });
       });
 
      // | trade_date   | trade_time   | party   | counterparty   | ccp   | exchange   | symbol   | currency   | side   | type   | category   | price   | volume   | unit   | country   | max_bank   | max_symbol   | max_country   | max_currency   | max_exchange   | party_weight   | counterparty_weight   | exchange_weight   | country_weight   | symbol_weight   | currency_weight   |
@@ -259,11 +269,11 @@
 //                  bindto: "#chart"
 //                });
 //              }
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-      });
+//            } catch (e) {
+//              console.warn(e);
+//            }
+//          }
+//      });
     </script>
   </body>
 </html>
