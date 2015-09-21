@@ -38,6 +38,23 @@ app.get('/', function(req, res){
 
 //var lightning = new Lightning({host:'http://' + (process.env.LIGHTNING_HOST||'lightning') + ':'+(process.env.LIGHTNING_PORT||'3000')});
 
+var mapCSVtoJSON = function(csvString) {
+  var trimQuotes = function(input) {
+    if (input.slice(0,1) == '"' && input.slice(-1) == '"')
+      return input.slice(1,input.length-1);
+    return input;
+  };
+  var spliter = csvString.length == trimQuotes(csvString).length ? ',' : '","';
+  var lines = csvString.split("\n").map(trimQuotes);
+  var headers = lines.shift().split(spliter).map(trimQuotes);
+  return lines.map(function(line){
+    return line.split(spliter).map(trimQuotes).reduce(function(json,cell,index){
+      json[headers[index]] = cell;
+      return json;
+    },{});
+  })
+}
+
 var getRepeatingCharacter = function(char,length) {
   return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
 }
@@ -59,34 +76,45 @@ var logJsonNicely = function (jsonArray) {
   }
 };
 
+//var fs = require('fs');
+//
+//var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
+//var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
+//var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
+//var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
+
 var messageCount = 0;
+var tradesMsgCnt = 0;
+var statsMsgCnt = 0;
 
  tradeConsumer.on('message', function (message) {
      try {
         if (message.value) {
             var jsonValue = JSON.parse(message.value);
             console.log(logJsonNicely([jsonValue]));
-            process.stdout.write("Received " + messageCount++ + " messages\r");
+            process.stdout.write("Received " + messageCount++ + "(" tradesMsgCnt++ + ")" + " ["+topicName+"] messages\r");
             io.emit(topicName, jsonValue);
         } else {
-            process.stdout.write("Message " + message);
+            process.stdout.write("Message ["+topicName+"] " + message);
         }
     } catch (error) {
-        process.stderr.write("Err: ", error)
+        process.stderr.write("Err ["+topicName+"]: ", error)
     }
 }).on("error",function(e) {
   console.log("Err: ", e);
 });
 
  statsConsumer.on('message', function (message) {
-     try {
-       process.stdout.write("Message " + message);
-       io.emit(statsTopic,message);
+    try {
+        process.stdout.write("Message ["+statsTopic+"] " + message);
+        process.stdout.write("Received " + messageCount++ + "(" statsMsgCnt++ + ")" + " ["+statsTopic+"] messages\r");
+        var jsonValue = JSON.parse(message);
+        io.emit(statsTopic,message);
     } catch (error) {
-        process.stderr.write("Err: ", error);
+        process.stderr.write("Err ["+statsTopic+"]: ", error);
     }
 }).on("error",function(e) {
-  console.log("Err: ", e);
+     console.log("Err ["+statsTopic+"]: ", e);
 });
 
 
