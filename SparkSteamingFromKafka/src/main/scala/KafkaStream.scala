@@ -60,10 +60,34 @@ object TradeStreamReader {
 
     StreamingExamples.setStreamingLogLevels()
 
+//------------------------ base init --------------
     val Array(brokers, topics, path) = args
 //    println(brokers)
 //    println(topics)
 
+    // Create context with 2 second batch interval
+    val sparkConf = new SparkConf().setAppName("TradeStreamReader")
+    val ssc = new StreamingContext(sparkConf, Seconds(5))
+    //val sqlContext = new SQLContext(sc)
+
+    // Create direct kafka stream with brokers and topics
+    val topicsSet = topics.split(",").toSet
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
+    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
+    //val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
+
+    // create kafka message producer
+    val props = new HashMap[String, Object]()
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    //props.put("client.id", "SparkHackathon-KafkaProducer")
+
+    val producer = new KafkaProducer[String, String](props)
+
+    // initialise streams from input messages
+    val trades = messages.map(_._2)
+    //val ttrades = tmessages.map(_._2)
 
 //------------------------ functions --------------
 
@@ -118,30 +142,6 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
 */
 
 //------------------------ init variables --------------
-
-    // Create context with 2 second batch interval
-    val sparkConf = new SparkConf().setAppName("TradeStreamReader")
-    val ssc = new StreamingContext(sparkConf, Seconds(5))
-    //val sqlContext = new SQLContext(sc)
-
-    // Create direct kafka stream with brokers and topics
-    val topicsSet = topics.split(",").toSet
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
-    //val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
-
-    // create kafka message producer
-    val props = new HashMap[String, Object]()
-    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    props.put("client.id", "SparkHackathon-KafkaProducer")
-
-    val producer = new KafkaProducer[String, String](props)
-
-    // initialise streams from input messages
-    val trades = messages.map(_._2)
-    //val ttrades = tmessages.map(_._2)
 
     // k-means related inits
     val numDimensions = 3
