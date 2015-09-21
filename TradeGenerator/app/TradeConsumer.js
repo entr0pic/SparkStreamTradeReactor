@@ -92,7 +92,7 @@ var statsMsgCnt = 0;
         if (message.value) {
             var jsonValue = JSON.parse(message.value);
             console.log(logJsonNicely([jsonValue]));
-            process.stdout.write("Received " + messageCount++ + "(" tradesMsgCnt++ + ")" + " ["+topicName+"] messages\r");
+            process.stdout.write("Received " + messageCount++ + "(" + tradesMsgCnt++ + ")" + " ["+topicName+"] messages\r");
             io.emit(topicName, jsonValue);
         } else {
             process.stdout.write("Message ["+topicName+"] " + message);
@@ -107,7 +107,7 @@ var statsMsgCnt = 0;
  statsConsumer.on('message', function (message) {
     try {
         process.stdout.write("Message ["+statsTopic+"] " + message);
-        process.stdout.write("Received " + messageCount++ + "(" statsMsgCnt++ + ")" + " ["+statsTopic+"] messages\r");
+        process.stdout.write("Received " + messageCount++ + "(" + statsMsgCnt++ + ")" + " ["+statsTopic+"] messages\r");
         var jsonValue = JSON.parse(message);
         io.emit(statsTopic,message);
     } catch (error) {
