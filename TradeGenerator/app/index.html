@@ -3,18 +3,203 @@
   <head>
     <title>Viz Server</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" rel="stylesheet">
   </head>
   <body>
-    <div id="chart"></div>
+     <nav class="navbar navbar-light bg-faded">
+      <a class="navbar-brand" href="#">SparkStreaming ML</a>
+      <ul class="nav navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+        </li>
+      </ul>
+      <form class="form-inline navbar-form pull-right">
+        <input class="form-control" type="text" placeholder="Search">
+        <button class="btn btn-success-outline" type="submit">Filter</button>
+      </form>
+    </nav>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Main Chart
+            </div>
+            <div class="card-block">
+              <div id="main-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Secondary Chart
+            </div>
+            <div class="card-block">
+              <div id="second-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Minor Chart
+            </div>
+            <div class="card-block">
+              <div id="minor-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Secondary Minor Chart
+            </div>
+            <div class="card-block">
+              <div id="second-minor-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.min.js"></script>
+
     <script>
       var socket = io();
+      var ChartViz = function() {
+        this.charts = {
+            country:{},
+            cluster:{},
+            commodity:{},
+            time:{}
+          };
+
+        this.data = {
+          trades:{},
+          tradeStats:{}
+        };
+
+        this.geoJson = {};
+
+        this.setGeoJson(json) {
+          this.geoJson = json;
+          return this;
+        }
+
+        this.addData = function(dataName, data) {
+          if (Object.prototype.toString.call( data ) != '[object Array]' ) {
+              data = [data];
+            }
+          if (this.data[dataName] && this.data[dataName].cf) {
+            this.data[dataName].cf.add(data);
+          } else {
+            this.data[dataName].cf = new crossfilter(data);
+            this.data[dataName].rendered = false;
+          }
+
+          if (this.data.cf.size() > 2) {
+            if (!this.data[dataName].rendered) {
+              dc.renderAll(dataName);
+              this.data[dataName].rendered = true;
+            } else {
+              dc.redrawAll(dataName);
+            }
+          }
+          return this;
+        };
+
+        this.addDimension = function(dataName, dimensionName, dimension, grouping) {
+          if (typeof dimension == 'string') {
+            dimension = function(d) {return d[dimension];};
+          }
+          this.addData(dataName,[]);
+          this.data[dataName].dimensions = this.data[dataName].dimensions || {};
+          this.data[dataName].groups = this.data[dataName].groups || {};
+          this.data[dataName].dimensions[dimensionName] = this.data[dataName].cf.dimension(dimension);
+
+          if (grouping) {
+            if (typeof grouping == 'string') {
+              this.data[dataName].groups[dimensionName] = this.data[dataName].dimensions[dimensionName].group().reduceSum(function (d) {
+                  return d[grouping];
+              });
+            } else {
+              this.data[dataName].groups[dimensionName] = this.data[dataName].dimensions[dimensionName].group().reduce(grouping.sum,grouping.sub,grouping.init);
+            }
+          } else {
+            this.data[dataName].groups[dimensionName] = this.data[dataName].dimensions[dimensionName].group();
+          }
+
+          return this;
+        };
+
+        this.initCharts = function() {
+          var self = this;
+          /*Init charts */
+          this.charts.country = dc.geoChoroplethChart('#main-chart').chartGroup('trades');
+          this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades');
+          this.charts.commodity = dc.rowChart("#minor-chart").chartGroup('trades');
+          this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades');
+
+          Object.keys(this.charts).forEach(function(k){
+            self.charts[k].width($(self.charts[k].root).width())
+          });
+
+          var projection = d3.geo.mercator()
+              .center([133,-28]) //this is aus
+              .scale(700) //fills about 500px high for aus
+              .rotate([-12,0]);
+
+          this.charts.country//.width(990)
+                .height(500)
+                .dimension(this.data.dimensions.country)
+                .group(this.data.groups.country)
+                .colors(d3.scale.category10())
+                .colorDomain([0, 4000])
+                .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
+                .overlayGeoJson(statesJson.features, "country", function (d) {
+                    return d.properties.name;
+                })
+                .projection(projection)
+                .title(function (d) {
+                    return  d.key + "\nTotal Trades: " + (d.value ? d.value : 0);
+                });
+
+          return this;
+        };
+      };
+
+      var chartManager = new ChartViz();
+
+      $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
+          chartManager.setGeoJson(world)
+                      .addDimension('trades','country','country')
+                      .initCharts();
+          socket.on('trades', function(msg){
+            if (msg.trade_time) {
+              try {
+                chartManager.addData('trades',msg)
+              } catch (e) {
+                console.warn(e);
+              }
+            }
+          });
+      });
+
      // | trade_date   | trade_time   | party   | counterparty   | ccp   | exchange   | symbol   | currency   | side   | type   | category   | price   | volume   | unit   | country   | max_bank   | max_symbol   | max_country   | max_currency   | max_exchange   | party_weight   | counterparty_weight   | exchange_weight   | country_weight   | symbol_weight   | currency_weight   |
 
-      var chart = null;
+//      var chart = null;
       /*
       var chart = c3.generate({
           data: {
@@ -46,32 +231,34 @@
         duration: 200
       });
       */
-      socket.on('trades', function(msg){
-          if (msg.trade_time) {
-            try {
-              msg.trade_time = new Date(msg.trade_time);
-              if (chart) {
-                chart.flow({
-                  json: [msg],
-                  duration: 200
-                });
-              } else {
-                chart = c3.generate({
-                    data: {
-                        json: [msg],
-                        keys: {
-                            x: 'trade_time',
-                            value: ['price', 'volume'],
-                        }
-                    },
-                    axis: {
-                        x: {
-                            type: 'timeseries'
-                        }
-                    },
-                  bindto: "#chart"
-                });
-              }
+//      socket.on('trades', function(msg){
+//          if (msg.trade_time) {
+//            allTrades.add([msg]);
+//            dc.redrawAll();
+//            try {
+//              msg.trade_time = new Date(msg.trade_time);
+//              if (chart) {
+//                chart.flow({
+//                  json: [msg],
+//                  duration: 200
+//                });
+//              } else {
+//                chart = c3.generate({
+//                    data: {
+//                        json: [msg],
+//                        keys: {
+//                            x: 'trade_time',
+//                            value: ['price', 'volume'],
+//                        }
+//                    },
+//                    axis: {
+//                        x: {
+//                            type: 'timeseries'
+//                        }
+//                    },
+//                  bindto: "#chart"
+//                });
+//              }
             } catch (e) {
               console.warn(e);
             }
