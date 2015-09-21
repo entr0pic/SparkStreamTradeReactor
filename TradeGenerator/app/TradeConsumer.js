@@ -108,7 +108,7 @@ var statsMsgCnt = 0;
     try {
         process.stdout.write("Message ["+statsTopic+"] " + message);
         process.stdout.write("Received " + messageCount++ + "(" + statsMsgCnt++ + ")" + " ["+statsTopic+"] messages\r");
-        var jsonValue = JSON.parse(message);
+        //var jsonValue = JSON.parse(message);
         io.emit(statsTopic,message);
     } catch (error) {
         process.stderr.write("Err ["+statsTopic+"]: ", error);
