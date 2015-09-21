@@ -146,36 +146,55 @@
 
         this.initCharts = function() {
           var self = this;
-          /*Init charts */
-          this.charts.country = dc.geoChoroplethChart('#main-chart').chartGroup('trades');
-          this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades');
-          this.charts.commodity = dc.rowChart("#minor-chart").chartGroup('trades');
-          this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades');
-
-          Object.keys(this.charts).forEach(function(k){
-            self.charts[k].width($(self.charts[k].root).width())
-          });
-
           var projection = d3.geo.mercator();
 //              .center([133,-28]) //this is aus
 //              .scale(700) //fills about 500px high for aus
 //              .rotate([-12,0]);
 
-          this.charts.country//.width(990)
-                .height(500)
-                .dimension(this.data.trades.dimensions.country)
-                .group(this.data.trades.groups.country)
-                .colors(d3.scale.category10())
-                .colorDomain([0, 4000])
-                .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
-                .overlayGeoJson(this.geoJson.features, "country", function (d) {
-                    return d.properties.name;
-                })
-                .projection(projection)
-                .title(function (d) {
-                    return  d.key + "\nTotal Trades: " + (d.value ? d.value : 0);
-                });
+          /*Init charts */
+          this.charts.country = dc.geoChoroplethChart('#main-chart')
+                                  .chartGroup('trades')
+                                  .height(500)
+                                  .dimension(this.data.trades.dimensions.country)
+                                  .group(this.data.trades.groups.country)
+                                  .colors(d3.scale.category10())
+                                  .colorDomain([0, 4000])
+                                  .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
+                                  .overlayGeoJson(this.geoJson.features, "country", function (d) {
+                                      return d.properties.name;
+                                  })
+                                  .projection(projection)
+                                  .title(function (d) {
+                                      return  d.key + "\nTotal Trades: " + (d.value ? d.value : 0);
+                                  });
+          //this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades_test');
+          this.charts.category = dc.rowChart("#minor-chart")
+                                    .chartGroup('trades')
+                                    .height(500)
+                                    .margins({top: 20, left: 10, right: 10, bottom: 80})
+                                    .dimension(this.data.trades.dimensions.category)
+                                    .group(this.data.trades.groups.category)
+                                    .ordering(function(d){ return -d.value })
+                                    // assign colors to each value in the x scale domain
+                                    .ordinalColors(d3.scale.category10())
+                                    .label(function (d) {
+                                        return d.key + ': ' + d.value;//key.split(".")[1];
+                                    })
+                                    // title sets the row text
+                                    .title(function (d) {
+                                        return d.key;
+                                    })
+                                    .data(function (group) {
+                                        return group.top(20);
+                                    })
+                                    .elasticX(true)
+                                    .xAxis().ticks(5);
 
+          //this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades_test');
+
+          Object.keys(this.charts).forEach(function(k){
+            self.charts[k].width($(self.charts[k].root).width())
+          });
           return this;
         };
       };
@@ -185,6 +204,7 @@
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
           chartManager.setGeoJson(world)
                       .addDimension('trades','country','country')
+                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
           socket.on('trades', function(msg){
             if (msg.trade_time) {
