@@ -1,7 +1,7 @@
 var fs = require('fs');
 var kafka = require('kafka-node');
 
-var tradesPerSecond = [0,20];
+var tradesPerSecond = [1,20];
 var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
