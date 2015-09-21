@@ -184,7 +184,7 @@
           //this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades_test');
 
           Object.keys(this.charts).forEach(function(k){
-            self.charts[k].width($(self.charts[k].root).width())
+            self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
           return this;
         };
