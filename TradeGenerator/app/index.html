@@ -109,7 +109,7 @@
             this.data[dataName].rendered = false;
           }
 
-          if (this.data.cf.size() > 2) {
+          if (this.data[dataName].cf.size() > 2) {
             if (!this.data[dataName].rendered) {
               dc.renderAll(dataName);
               this.data[dataName].rendered = true;
