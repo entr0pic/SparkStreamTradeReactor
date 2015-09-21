@@ -372,8 +372,8 @@ try {
                 val cluster = model2.predict(a) +1 // adding 1 for readability
                 println(a)
                 println(s"Predicted cluster = $cluster")
-//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
-//                    producer.send(message3)
+                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
+                    producer.send(message3)
             }
 //            tvectors.map{ tdata =>
 //                   val cluster = model2.predict(tdata)
