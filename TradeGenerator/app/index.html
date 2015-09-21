@@ -79,17 +79,9 @@
     <script>
       var socket = io();
       var ChartViz = function() {
-        this.charts = {
-            country:{},
-            cluster:{},
-            commodity:{},
-            time:{}
-          };
+        this.charts = {};
 
-        this.data = {
-          trades:{},
-          tradeStats:{}
-        };
+        this.data = { };
 
         this.geoJson = {};
 
@@ -105,6 +97,7 @@
           if (this.data[dataName] && this.data[dataName].cf) {
             this.data[dataName].cf.add(data);
           } else {
+            this.data[dataName] = {};
             this.data[dataName].cf = new crossfilter(data);
             this.data[dataName].rendered = false;
           }
