@@ -163,8 +163,8 @@
 
           this.charts.country//.width(990)
                 .height(500)
-                .dimension(this.data.dimensions.country)
-                .group(this.data.groups.country)
+                .dimension(this.data.trades.dimensions.country)
+                .group(this.data.trades.groups.country)
                 .colors(d3.scale.category10())
                 .colorDomain([0, 4000])
                 .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
