@@ -156,10 +156,10 @@
             self.charts[k].width($(self.charts[k].root).width())
           });
 
-          var projection = d3.geo.mercator()
-              .center([133,-28]) //this is aus
-              .scale(700) //fills about 500px high for aus
-              .rotate([-12,0]);
+          var projection = d3.geo.mercator();
+//              .center([133,-28]) //this is aus
+//              .scale(700) //fills about 500px high for aus
+//              .rotate([-12,0]);
 
           this.charts.country//.width(990)
                 .height(500)
@@ -168,7 +168,7 @@
                 .colors(d3.scale.category10())
                 .colorDomain([0, 4000])
                 .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
-                .overlayGeoJson(statesJson.features, "country", function (d) {
+                .overlayGeoJson(this.geoJson.features, "country", function (d) {
                     return d.properties.name;
                 })
                 .projection(projection)
