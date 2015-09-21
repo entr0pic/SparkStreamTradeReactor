@@ -4,14 +4,13 @@ var io = require('socket.io')(http);
 var port = process.env.HTTP_PORT || 3030;
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
-//var topicName = process.env.KAFKA_TOPIC || "trades";
-var topicName = "kmstats";
+var topicName = process.env.KAFKA_TOPIC || "trades";
+var statsTopic = "kmstats";
 
 var kafka = require('kafka-node'),
-    Lightning = require('lightning.js'),
     Consumer = kafka.Consumer,
     client = new kafka.Client(kafkaLocation+':2181','trade-consumer'),
-    consumer = new Consumer(
+    tradeConsumer = new Consumer(
         client,
         [
             { topic: topicName}
@@ -19,7 +18,16 @@ var kafka = require('kafka-node'),
         {
             autoCommit: false
         }
-    );
+    ),
+    statsConsumer = new Consumer(
+        client,
+        [
+            { topic: statsTopic}
+        ],
+        {
+            autoCommit: false
+        }
+    );;
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -53,13 +61,13 @@ var logJsonNicely = function (jsonArray) {
 
 var messageCount = 0;
 
- consumer.on('message', function (message) {
+ tradeConsumer.on('message', function (message) {
      try {
         if (message.value) {
             var jsonValue = JSON.parse(message.value);
             console.log(logJsonNicely([jsonValue]));
             process.stdout.write("Received " + messageCount++ + " messages\r");
-            io.emit('kmstats', jsonValue);
+            io.emit(topicName, jsonValue);
         } else {
             process.stdout.write("Message " + message);
         }
@@ -70,9 +78,16 @@ var messageCount = 0;
   console.log("Err: ", e);
 });
 
-//io.on('connection', function(socket){
-//
-//});
+ statsConsumer.on('message', function (message) {
+     try {
+        process.stdout.write("Message " + message);
+    } catch (error) {
+        process.stderr.write("Err: ", error);
+    }
+}).on("error",function(e) {
+  console.log("Err: ", e);
+});
+
 
 http.listen(port, function(){
   console.log('listening on *:' + port);
