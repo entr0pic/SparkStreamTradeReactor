@@ -346,14 +346,12 @@ try {
 
             println(s"------------Rdd stats (messages # in RDD = $count) -------")
 
-            println(summary.mean) // a dense vector containing the mean value for each column
-            println(summary.variance) // column-wise variance
-            println(summary.numNonzeros) // number of nonzeros in each column
-
-            println(s"------------Rdd stats == mean == (messages # in RDD = $count) -------")
+            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
             println(summary.mean)
-            println(s"------------Rdd stats == variance == (messages # in RDD = $count) -------")
+            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
             println(summary.variance)
+            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
+            println(summary.numNonzeros)
 
             val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message1)
