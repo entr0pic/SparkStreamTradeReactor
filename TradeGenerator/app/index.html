@@ -176,7 +176,7 @@
                                     .group(this.data.trades.groups.category)
                                     .ordering(function(d){ return -d.value })
                                     // assign colors to each value in the x scale domain
-                                    .ordinalColors(d3.scale.category10())
+                                    //.ordinalColors(d3.scale.category10())
                                     .label(function (d) {
                                         return d.key + ': ' + d.value;//key.split(".")[1];
                                     })
@@ -184,12 +184,11 @@
                                     .title(function (d) {
                                         return d.key;
                                     })
-                                    .data(function (group) {
-                                        return group.top(20);
-                                    })
                                     .elasticX(true)
                                     .xAxis().ticks(5);
-
+          this.charts.category.data(function (group) {
+                                        return group.top(20);
+                                    });
           //this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades_test');
 
           Object.keys(this.charts).forEach(function(k){
