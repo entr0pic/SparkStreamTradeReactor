@@ -270,8 +270,8 @@ try {
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println("["+t.toArray.mkString(",")+"]")
-                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
-                producer.send(message2)
+//                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
+//                producer.send(message2)
             }
 
             println(s"------------Model predict (clusters # $numClusters) -------")
@@ -279,7 +279,7 @@ try {
                 val cluster = model2.predict(a) +1 // adding 1 for readability
                 println(a)
                 println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, "["+cluster.toString+"]");
+                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
                     producer.send(message3)
             }
 
