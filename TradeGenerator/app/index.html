@@ -202,7 +202,9 @@
       var chartManager = new ChartViz();
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
-          chartManager.setGeoJson(world)
+        //bermuda is buggered for some reason so skip it
+        world.features = world.features.features.filter(function(d) {return d.properties.name != 'Bermuda';})
+        chartManager.setGeoJson(world)
                       .addDimension('trades','country','country')
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
