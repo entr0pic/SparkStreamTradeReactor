@@ -144,7 +144,7 @@ object TradeStreamReader {
     val ttrades = tmessages.map(_._2)
       
 val numDimensions = 3
-val numClusters = 2
+val numClusters = 10
 val decayFactor = 1.0
 val numIterations = 100
       
