@@ -145,8 +145,8 @@
         this.initCharts = function() {
           var self = this;
           var projection = d3.geo.mercator()
-              .scale((width + 1) / 2 / Math.PI)
-              .translate([width / 2, height / 2])
+              .scale(($('#main-chart').parent().width() + 1) / 2 / Math.PI)
+              .translate([$('#main-chart').parent().width() / 2, 500 / 2])
               .precision(.1);
 //              .center([133,-28]) //this is aus
 //              .scale(700) //fills about 500px high for aus
