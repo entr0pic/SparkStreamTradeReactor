@@ -344,14 +344,17 @@ try {
         if (count > 0) {
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-            println(s"------------Rdd stats ($count) -------")
+            println(s"------------Rdd stats (messages # in RDD = $count) -------")
 
             println(summary.mean) // a dense vector containing the mean value for each column
             println(summary.variance) // column-wise variance
             println(summary.numNonzeros) // number of nonzeros in each column
 
-//            val message = new ProducerRecord[String, String]("kmstats", null, "Summary mean");
-//            producer.send(message)
+            println(s"------------Rdd stats == mean == (messages # in RDD = $count) -------")
+            println(summary.mean)
+            println(s"------------Rdd stats == variance == (messages # in RDD = $count) -------")
+            println(summary.variance)
+
             val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
             producer.send(message1)
 
@@ -359,16 +362,17 @@ try {
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
-            println(s"------------Model training ($numClusters) -------")
+            println(s"------------Model training (clusters # $numClusters) -------")
             model2.clusterCenters.foreach{ t =>
                 println(t)
                 val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
                 producer.send(message2)
             }
 
-            println(s"------------Model predict ($numClusters) -------")
+            println(s"------------Model predict (clusters # $numClusters) -------")
             val tdata = rdd.take(10).foreach{ a =>
-                val cluster = model2.predict(a)
+                val cluster = model2.predict(a) +1 // adding 1 for readability
+                println(a)
                 println(s"Predicted cluster = $cluster")
 //                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
 //                    producer.send(message3)
