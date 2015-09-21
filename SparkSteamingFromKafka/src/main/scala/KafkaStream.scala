@@ -128,7 +128,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val topicsSet = topics.split(",").toSet
     val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
-    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
+    //val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
 
     // create kafka message producer
     val props = new HashMap[String, Object]()
@@ -141,7 +141,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
 
     // initialise streams from input messages
     val trades = messages.map(_._2)
-    val ttrades = tmessages.map(_._2)
+    //val ttrades = tmessages.map(_._2)
 
     // k-means related inits
     val numDimensions = 3
@@ -174,7 +174,7 @@ var numCollected = 0L
 
 println("Input messages")
 trades.count().print
-ttrades.count().print
+//ttrades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 //trades.print()
 //ttrades.print()
@@ -251,6 +251,7 @@ try {
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
         if (count > 0) {
+            var strMsg : String = ""
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
             println(s"------------Rdd stats (messages # in RDD = $count) -------")
@@ -262,26 +263,34 @@ try {
             println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
             println(summary.numNonzeros)
 
+            strMsg += "[0],["+summary.mean.toArray.mkString(",")+"],["+summary.variance.toArray.mkString(",")+"]"
 //            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
 //            producer.send(message1)
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
+            strMsg += ",[1]"
             model2.clusterCenters.foreach{ t =>
                 println("["+t.toArray.mkString(",")+"]")
+                strMsg += ",["+t.toArray.mkString(",")+"]"
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
 //                producer.send(message2)
             }
 
             println(s"------------Model predict (clusters # $numClusters) -------")
+            strMsg += ",[2]"
             val tdata = rdd.takeSample(true, 10, 1).foreach{ a =>
                 val cluster = model2.predict(a) +1 // adding 1 for readability
                 println(a)
                 println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
-                    producer.send(message3)
+                strMsg += ",["+cluster+","+a.toArray.mkString(",")+"]"
+//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
+//                    producer.send(message3)
             }
+
+            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
+            producer.send(message)
 
             numCollected += count
             if (numCollected > 10000) {
