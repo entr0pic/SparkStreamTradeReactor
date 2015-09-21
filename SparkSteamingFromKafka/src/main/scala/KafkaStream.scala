@@ -46,54 +46,6 @@ import org.apache.spark.streaming.kafka._
 
 //import org.apache.log4j.{Level, Logger}
 
-/*
-//object KafkaStream extends Logging{
-//  def main(args: Array[String]) {
-//    val conf = new SparkConf().setAppName("trade-reader")
-//    val ssc = new StreamingContext(conf, Seconds(10))
-//    ssc.checkpoint("hdfs://namenode:8020/checkpoint")
-//
-//    setStreamingLogLevels()
-//
-//    val Array(brokers, topic) = args
-//
-//    println(brokers)
-//
-//    val kafkaStream = KafkaUtils.createStream(ssc, brokers, "trade-generator", Map("trade-stream" -> 1))
-//    kafkaStream.print()
-//    val trades = kafkaStream.map(_._2)
-//
-//    val words = trades.flatMap(_.split(","))
-//    words.saveAsTextFiles("hdfs://namenode:8020/store")
-////    words.print()
-//    val pairs = words.map(word => (word, 1))
-//    val wordCounts = pairs.reduceByKey(_ + _)
-//    wordCounts.print()
-//    println("TEST")
-//    println(trades)
-//    println(words)
-////    val wordCounts = words.map(x => (x, 1L))
-////      .reduceByKeyAndWindow(_ + _, _ - _, Minutes(1), Seconds(10), 2)
-////    wordCounts.print()
-//
-//    ssc.start()
-//    ssc.awaitTermination()
-//  }
-//
-//  /** Set reasonable logging levels for streaming if the user has not configured log4j. */
-//    def setStreamingLogLevels() {
-//      val log4jInitialized = Logger.getRootLogger.getAllAppenders.hasMoreElements
-//      if (!log4jInitialized) {
-//        // We first log something to initialize Spark's default logging, then we override the
-//        // logging level.
-//        logInfo("Setting log level to [WARN] for streaming example." +
-//          " To override add a custom log4j.properties to the classpath.")
-//        Logger.getRootLogger.setLevel(Level.WARN)
-//      }
-//  }
-//}
-*/
-
 object TradeStreamReader {
   def main(args: Array[String]) {
     if (args.length < 2) {
@@ -113,60 +65,7 @@ object TradeStreamReader {
 //    println(topics)
 
 
-//------------------------ init variables --------------
-      
-    // Create context with 2 second batch interval
-    val sparkConf = new SparkConf().setAppName("TradeStreamReader")
-    val ssc = new StreamingContext(sparkConf, Seconds(2))
-    //val sqlContext = new SQLContext(sc)
-
-    // Create direct kafka stream with brokers and topics
-    val topicsSet = topics.split(",").toSet
-    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
-    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
-    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
-
-
-    val props = new HashMap[String, Object]()
-    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
-    // Workaround for https://issues.apache.org/jira/browse/KAFKA-899:
-//    props.put("retry.backoff.ms", "1000")
-//    props.put("message.send.max.retries", "10")
-//    props.put("topic.metadata.refresh.interval.ms", "0")
-
-    props.put("client.id", "SparkHackathon-KafkaProducer")
-
-    val producer = new KafkaProducer[String, String](props)
-
-    val trades = messages.map(_._2)
-    val ttrades = tmessages.map(_._2)
-      
-val numDimensions = 3
-val numClusters = 5
-val decayFactor = 1.0
-val numIterations = 100
-      
-val sModel = new StreamingKMeans()
-  .setK(numClusters)
-  .setDecayFactor(decayFactor)
-  .setRandomCenters(numDimensions, 0.0)
-
-val model = new KMeans()
-      .setK(numClusters)
-      .setMaxIterations(numIterations)
-
 //------------------------ functions --------------
-      
-
-def preformatForDouble(src : String) :String = {
-    var ret = src.split(":")(1)
-    ret = ret.substring(1, ret.length-2).toString.replace("^[0]+", "")//.replace("^[.]{1}", "0.")
-    if (ret.indexOf(".")==ret.lastIndexOf(".")) ret else ret.substring(0, ret.lastIndexOf(".")-1)
-    //        val parts = ret.split(".")
-    //        if (parts.length>0) parts(0)+"."+parts(1) else ret
-}
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
     val buffer:Array[Any] = new Array[Any](7)
@@ -194,28 +93,10 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
 
-def showRddStats(rdd: RDD[Vector], msgText : String) : Boolean = {
-    //println(msgText + " check stats")
-    try{
-        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-
-//        println(summary.mean) // a dense vector containing the mean value for each column
-//        println(summary.variance) // column-wise variance
-//        println(summary.numNonzeros) // number of nonzeros in each column
-
-        (summary.mean.size > 0)
-    } catch {
-        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()); */ false }
-        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString());*/ false  }
-        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString());*/ false }
-        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); println(e.toString());*/ false }
-    }
-}
-      
+/*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val rdd1 : RDD[Vector] = rdd.map{ line =>
-        { 
-       //     println(msgText + " : line debug" + line.toString)
+        {
             JSON.parseFull(line)  match {
                 case None => CreateEmptyArray()
                 case Some( mapAsAny ) => mapAsAny match {
@@ -233,48 +114,73 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     .map(x => Vectors.dense(x))
 
     rdd1
-}  
-
-def getStreamData(srcStream : DStream[String], msgText : String) : DStream[Vector] = {
-    try {
-            srcStream.filter(!_.isEmpty)
-            .transform{ rdd => transformRddForModel(rdd, msgText) }
-            .transform{ rdd => if (showRddStats(rdd, msgText)) rdd else null }
-            .filter(_!=null)
-    } catch {
-        case e: IllegalArgumentException => { /*println(msgText + " Illegal Argument error: "); e.printStackTrace(); print(e.toString());*/ null }
-        case e: IllegalStateException    => { /*println(msgText + " Illegal State error: "); e.printStackTrace(); print(e.toString());*/ null }
-        case e: IOException              => { /*println(msgText + " IO Exception error: "); e.printStackTrace(); print(e.toString());*/ null }
-        case e: Throwable => { /*println(msgText + " Other error: "); e.printStackTrace(); print(e.toString());*/ null }
-    }
 }
-    
+*/
 
+//------------------------ init variables --------------
+
+    // Create context with 2 second batch interval
+    val sparkConf = new SparkConf().setAppName("TradeStreamReader")
+    val ssc = new StreamingContext(sparkConf, Seconds(5))
+    //val sqlContext = new SQLContext(sc)
+
+    // Create direct kafka stream with brokers and topics
+    val topicsSet = topics.split(",").toSet
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> brokers, "auto.offset.reset" -> "smallest")
+    val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="trades").toSet)
+    val tmessages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, topics.split(",").filter(_=="ttrades").toSet)
+
+    // create kafka message producer
+    val props = new HashMap[String, Object]()
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("client.id", "SparkHackathon-KafkaProducer")
+
+    val producer = new KafkaProducer[String, String](props)
+
+    // initialise streams from input messages
+    val trades = messages.map(_._2)
+    val ttrades = tmessages.map(_._2)
+
+    // k-means related inits
+    val numDimensions = 3
+    val numClusters = 5
+    val decayFactor = 1.0
+    val numIterations = 100
+
+// k-means streaming model - doesn't work
+//    val sModel = new StreamingKMeans()
+//      .setK(numClusters)
+//      .setDecayFactor(decayFactor)
+//      .setRandomCenters(numDimensions, 0.0)
+
+    // k-means model
+    val model = new KMeans()
+          .setK(numClusters)
+          .setMaxIterations(numIterations)
+
+// processing related inits
+var msgText = "";
+val partitionsEachInterval = 10
+var numCollected = 0L
+
+// save to file inits - not used atm
+//val dirName = "file:///shared/data/traindata/"
+//val fileName =  dirName + "train"
+//var textStream = ssc.textFileStream(dirName);
 
 //------------- start doing something ------------
 
-//println("Input trades n ")
+println("Input messages")
 trades.count().print
 ttrades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 //trades.print()
 //ttrades.print()
 
-val nn = 3;
-var msgText = "";
-val partitionsEachInterval = 10
-var numCollected = 0L
-
-val dirName = "file:///shared/data/traindata/"
-val fileName =  dirName + "train" //  + time.milliseconds.toString
-var textStream = ssc.textFileStream(dirName);
-
-
-msgText = "generate train data"
-println(msgText + " check point")
-//var trainingData = getStreamData(trades, msgText)
-
 try {
+    /*
     val tvectors = ttrades.filter(!_.isEmpty)
         .transform{ rdd =>
             rdd.map{ line =>
@@ -306,7 +212,9 @@ try {
         .cache()
 
     tvectors.count().print  // Calls an action to create the cache.
+    */
 
+    // transform messages to double vectors
     var vectors =
         trades.filter(!_.isEmpty)
         .transform{ rdd =>
@@ -339,6 +247,7 @@ try {
 
     vectors.count().print  // Calls an action to create the cache.
 
+    // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
         if (count > 0) {
@@ -353,36 +262,26 @@ try {
             println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
             println(summary.numNonzeros)
 
-            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-            producer.send(message1)
-
-//            model.run(rdd)
+//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
+//            producer.send(message1)
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
-            println(s"------------Model training (clusters # $numClusters) -------")
+            println(s"------------Model cluster centers (clusters # $numClusters) -------")
             model2.clusterCenters.foreach{ t =>
-                println(t)
+                println("["+t.toArray.mkString(",")+"]")
                 val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
                 producer.send(message2)
             }
 
             println(s"------------Model predict (clusters # $numClusters) -------")
-            val tdata = rdd.take(10).foreach{ a =>
+            val tdata = rdd.takeSample(true, 10, 1).foreach{ a =>
                 val cluster = model2.predict(a) +1 // adding 1 for readability
                 println(a)
                 println(s"Predicted cluster = $cluster")
-                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
+                    val message3 = new ProducerRecord[String, String]("kmstats", null, "["+cluster.toString+"]");
                     producer.send(message3)
             }
-//            tvectors.map{ tdata =>
-//                   val cluster = model2.predict(tdata)
-//                   println(s"Predicted cluster = $cluster")
-//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
-//                    producer.send(message3)
-//
-//                cluster
-//            }
 
             numCollected += count
             if (numCollected > 10000) {
@@ -392,9 +291,6 @@ try {
 
     }
 
-
-
-
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
 //    val inputData = textStream.map(Vectors.parse).cache()
@@ -403,188 +299,9 @@ try {
 
 //    sModel.trainOn(inputData)
 
-//    ssc.sparkContext.makeRDD(model.clusterCenters, numClusters).saveAsObjectFile(dirName + "model")
-//    val message = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-//            producer.send(message)
-
-//    var tvectors =  ttrades.filter(!_.isEmpty)
-//        .transform{ rdd =>
-//            rdd.map{ line =>
-//                {
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        }
-//                    }
-//                }
-//            }
-//            .filter(_.size>1)
-//            .map{ x =>
-//                val n = 4
-//                val buffer: Array[Double] = Array.fill(n)(0.00)
-//                for( i <- 0 to n-1) {
-//                    buffer(i) = x(i).toString.toDouble
-//                }
-//                buffer
-//            }
-//            .map(x => Vectors.dense(x))
-//        }
-//        .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) }).cache()
-//
-//    tvectors.count()  // Calls an action to create the cache.
-//
-//    sModel.predictOnValues(tvectors).print()
-    //ssc.sparkContext().makeRDD(sModel.clusterCenters, numClusters).saveAsObjectFile("/model")
-
-//        .transform { rdd =>
-//            try{
-//                val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//                rdd
-//            } catch {
-//                case e: Throwable => null
-//            }
-//        }
-//        }
-//    .foreachRDD{ (rdd,time) =>
-//        val count = rdd.count()
-//        if (count > 0) {
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//
-//            println(summary.mean) // a dense vector containing the mean value for each column
-//            println(summary.variance) // column-wise variance
-//            println(summary.numNonzeros) // number of nonzeros in each column
-//
-//            val outputRDD = rdd.repartition(partitionsEachInterval)
-//            outputRDD.saveAsTextFile("/traindata_" + time.milliseconds.toString)
-//            numCollected += count
-//            if (numCollected > 10000) {
-//                System.exit(0)
-//            }
-//        }
-    //}
-//.foreachRDD((rdd, time) => {
-//  val count = rdd.count()
-//  if (count > 0) {
-//    val outputRDD = rdd.repartition(partitionsEachInterval)
-//    outputRDD.saveAsTextFile(
-//      outputDirectory + "/tweets_" + time.milliseconds.toString)
-//    numTweetsCollected += count
-//    if (numTweetsCollected > numTweetsToCollect) {
-//      System.exit(0)
-//    }
-//  }
-//})
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
-
-//msgText = "generate test data"
-////val testingData = getStreamData(ttrades, msgText)
-//println(msgText + " check point")
-//try {
-//    ttrades.filter(!_.isEmpty)
-//    .transform{ rdd =>
-//        rdd.map{ line =>
-//            {
-//                JSON.parseFull(line)  match {
-//                    case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                    case Some( mapAsAny ) => mapAsAny match {
-//                        case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                        case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                    }
-//                }
-//            }
-//        }
-//        .filter(_.size>1)
-//        .map{ x =>
-//            val n = 4
-//            val buffer: Array[Double] = Array.fill(n)(0.00)
-//            for( i <- 0 to n-1) {
-//                buffer(i) = x(i).toString.toDouble
-//            }
-//            buffer
-//        }
-//        .map(x => Vectors.dense(x))
-//    }
-//    .transform { rdd =>
-//        try{
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//            rdd
-//        } catch {
-//            case e: Throwable => null
-//        }
-//    }
-//    .filter(_!=null)
-//    .transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })
-//    .print
-//
-////      }.foreachRDD{ rdd =>
-////        val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-////
-////        println(summary.mean) // a dense vector containing the mean value for each column
-////        println(summary.variance) // column-wise variance
-////        println(summary.numNonzeros) // number of nonzeros in each column
-////    }
-//
-//} catch {
-//    case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
-//}
-//
-//msgText = "train data"
-//println(msgText)
-//try{
-//      if (trainingData != null) {
-//          trainingData.print
-//            //sModel.trainOn(trainingData)
-//      } else {
-//          println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//}
-//
-//msgText = "predict on values"
-//println(msgText)
-//try {
-//      if (testingData != null) {
-//        testingData.print
-////        sModel.predictOnValues(testingData.transform(rdd => rdd.map{ x => ((x.toArray)(0), x) })).print()
-//      } else {
-//           println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//}
-
-//msgText = "predict"
-//println(msgText)
-//try{
-//      if (trainingData != null) {
-//        sModel.predictOn(trainingData).print()
-//      } else {
-//          println("Null " + msgText)
-//      }
-//} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//} finally {
-//    println(msgText + " check point")
-//    if (trainingData != null) trainingData.print
-//}
 
 //msgText = "saving to parquet"
 //println(msgText)
