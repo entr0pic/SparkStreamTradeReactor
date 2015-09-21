@@ -20,9 +20,9 @@
       </form>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <div class="col-lg-6 col-sm-12">
+        <div class="col-xl-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Main Chart
@@ -32,7 +32,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-sm-12">
+        <div class="col-xl-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Secondary Chart
@@ -70,7 +70,7 @@
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
@@ -109,7 +109,7 @@
             this.data[dataName].rendered = false;
           }
 
-          if (this.data.cf.size() > 2) {
+          if (this.data[dataName].cf.size() > 2) {
             if (!this.data[dataName].rendered) {
               dc.renderAll(dataName);
               this.data[dataName].rendered = true;
@@ -163,8 +163,8 @@
 
           this.charts.country//.width(990)
                 .height(500)
-                .dimension(this.data.dimensions.country)
-                .group(this.data.groups.country)
+                .dimension(this.data.trades.dimensions.country)
+                .group(this.data.trades.groups.country)
                 .colors(d3.scale.category10())
                 .colorDomain([0, 4000])
                 .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
@@ -190,6 +190,16 @@
             if (msg.trade_time) {
               try {
                 chartManager.addData('trades',msg)
+              } catch (e) {
+                console.warn(e);
+              }
+            }
+          });
+          socket.on('kmstats', function(msg){
+            if (msg.value) {
+              try {
+                //chartManager.addData('kmstats',msg.value)
+                var one = 1;
               } catch (e) {
                 console.warn(e);
               }
@@ -259,11 +269,11 @@
 //                  bindto: "#chart"
 //                });
 //              }
-            } catch (e) {
-              console.warn(e);
-            }
-          }
-      });
+//            } catch (e) {
+//              console.warn(e);
+//            }
+//          }
+//      });
     </script>
   </body>
 </html>
