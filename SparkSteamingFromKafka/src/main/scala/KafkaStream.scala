@@ -258,7 +258,7 @@ try {
 
             strMsg += "{"
 
-            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString.toInt+'"'
+            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
