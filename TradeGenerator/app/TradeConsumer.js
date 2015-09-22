@@ -66,7 +66,7 @@ app.get('/', function(req, res){
 //  }
 //};
 
-//var fs = require('fs');
+//var fs = require('fs');---
 //
 //var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 //var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
@@ -81,10 +81,8 @@ var topicCount = topicNames.map(function(d){var obj = {}; obj[d] = 0; return obj
    console.log(message);
      try {
         if (message.value) {
-
             io.emit(message.topic, message);
-//            console.log(logJsonNicely([jsonValue]));
-            process.stdout.write("Received " + (messageCount++) + "(" + (tradesMsgCnt++) + ")" + " ["+message.topic+"] messages: " + message + "\r");
+            process.stdout.write("Received " + (messageCount++) + "(" + (topicCount[message.topic]++) + ")" + " ["+message.topic+"] messages: " + message.value + "\r");
 
         } else {
             process.stdout.write("Message " + message);
