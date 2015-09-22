@@ -307,17 +307,19 @@ try {
                 nums(cluster) += 1
             }
 
-//            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
-//
-//            buffer.foreach{s =>
-//                if (firstRec) {
-//                    firstRec = false
-//                } else {
-//                    strMsg += ","
-//                }
-//                strMsg += "["+s+"]"
-//            }
-//            strMsg += "]"
+            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
+
+            buffer.foreach{s =>
+                if (s != "") {
+                    if (firstRec) {
+                        firstRec = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
+                }
+            }
+            strMsg += "]"
 
             strMsg += "}"
 
