@@ -36,6 +36,7 @@ import org.apache.spark.util.Utils
 import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
+import java.util.UUID
 //import org.apache.kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
@@ -64,6 +65,7 @@ object TradeStreamReader {
     val Array(brokers, topics, path) = args
 //    println(brokers)
 //    println(topics)
+      println(path)
 
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
