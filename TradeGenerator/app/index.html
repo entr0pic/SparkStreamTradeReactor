@@ -125,6 +125,7 @@
         };
 
         this.addDimension = function(dataName, dimensionName, dimension, grouping) {
+          if (!dimension) dimension = dimensionName;
           if (typeof dimension == 'string') {
             dimension = function(d) {return d[dimension];};
           }
