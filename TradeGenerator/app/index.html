@@ -29,7 +29,7 @@
       </ul>
       <form class="form-inline navbar-form pull-right hidden-xs">
         <input class="form-control" id="filter-all" type="text" placeholder="Filter">
-        <button class="btn btn-success-outline" id="clear-filters" type="submit">Clear</button>
+        <button class="btn btn-success-outline" id="clear-filters">Clear</button>
       </form>
     </nav>
 
@@ -197,7 +197,7 @@
                                   .colorDomain([0, 4000])
                                   .colorCalculator(function (d) {
                                       var a = self.data.trades.groups.country.top(Infinity).map(function(d){return d.value}).reverse();
-                                      return d ? self.colours.redGreen[Math.round((self.colours.redGreen.length/a.length) * a.indexOf(d))-1] : '#ccc';
+                                      return d ? self.colours.redGreen[Math.round(((self.colours.redGreen.length-1)/a.length) * a.indexOf(d))] : '#ccc';
                                     })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
                                       return d.properties.name;
@@ -246,13 +246,14 @@
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
-        $("#filter-all").on('change', function() {
+        $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
           chartManager.filterAll(filterString);
         });
         $("#clear-filters").on('click', function() {
           var filterString = $(this).val();
           chartManager.clearFilters();
+          return false;
         });
           socket.on('trades', function(msg){
               try {
@@ -275,71 +276,6 @@
 
      // | trade_date   | trade_time   | party   | counterparty   | ccp   | exchange   | symbol   | currency   | side   | type   | category   | price   | volume   | unit   | country   | max_bank   | max_symbol   | max_country   | max_currency   | max_exchange   | party_weight   | counterparty_weight   | exchange_weight   | country_weight   | symbol_weight   | currency_weight   |
 
-//      var chart = null;
-      /*
-      var chart = c3.generate({
-          data: {
-              x: 'x',
-              columns: [
-                  ['trade_time', '2012-12-29', '2012-12-30', '2012-12-31'],
-                  ['data1', 230, 300, 330],
-                  ['data2', 190, 230, 200],
-                  ['data3', 90, 130, 180],
-              ]
-          },
-          axis: {
-              x: {
-                  type: 'timeseries',
-                  tick: {
-                      format: '%m/%d',
-                  }
-              }
-          }
-      });
-
-      chart.flow({
-        columns: [
-            ['x', '2013-01-11', '2013-01-21'],
-            ['data1', 500, 200],
-            ['data2', 100, 300],
-            ['data3', 200, 120],
-        ],
-        duration: 200
-      });
-      */
-//      socket.on('trades', function(msg){
-//          if (msg.trade_time) {
-//            allTrades.add([msg]);
-//            dc.redrawAll();
-//            try {
-//              msg.trade_time = new Date(msg.trade_time);
-//              if (chart) {
-//                chart.flow({
-//                  json: [msg],
-//                  duration: 200
-//                });
-//              } else {
-//                chart = c3.generate({
-//                    data: {
-//                        json: [msg],
-//                        keys: {
-//                            x: 'trade_time',
-//                            value: ['price', 'volume'],
-//                        }
-//                    },
-//                    axis: {
-//                        x: {
-//                            type: 'timeseries'
-//                        }
-//                    },
-//                  bindto: "#chart"
-//                });
-//              }
-//            } catch (e) {
-//              console.warn(e);
-//            }
-//          }
-//      });
     </script>
   </body>
 </html>
