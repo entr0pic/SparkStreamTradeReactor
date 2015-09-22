@@ -311,7 +311,7 @@ try {
                 } else {
                     strMsg += ","
                 }
-                strMsg += s
+                strMsg += "["+s+"]"
             }
             strMsg += "]"
 
