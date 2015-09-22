@@ -301,7 +301,7 @@ try {
                 if (buffer(cluster) != "") {
                     buffer(cluster) += ","
                 }
-                buffer[cluster] += a.toString
+                buffer(cluster) += a.toString
             }
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
