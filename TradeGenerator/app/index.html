@@ -27,9 +27,9 @@
           <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
         </li>
       </ul>
-      <form class="form-inline navbar-form pull-right">
-        <input class="form-control" type="text" placeholder="Search">
-        <button class="btn btn-success-outline" type="submit">Filter</button>
+      <form class="form-inline navbar-form pull-right hidden-xs">
+        <input class="form-control" id="filter-all" type="text" placeholder="Filter">
+        <button class="btn btn-success-outline" id="clear-filters" type="submit">Clear</button>
       </form>
     </nav>
 
@@ -38,7 +38,7 @@
         <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Main Chart
+              Trades By Location
             </div>
             <div class="card-block">
               <div id="main-chart"></div>
@@ -51,7 +51,7 @@
        <div class="col-xl-4 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Secondary Chart
+              Trades By Cluster
             </div>
             <div class="card-block">
               <div id="second-chart"></div>
@@ -61,7 +61,7 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Minor Chart
+              Trades By Category
             </div>
             <div class="card-block">
               <div id="minor-chart"></div>
@@ -71,7 +71,7 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Secondary Minor Chart
+              Cluster Movement Over Time
             </div>
             <div class="card-block">
               <div id="second-minor-chart"></div>
@@ -107,6 +107,24 @@
         this.setGeoJson = function(json) {
           this.geoJson = json;
           return this;
+        };
+
+        this.filterAll(text) {
+          for (dataName in this.data) {
+            this.data[dataName].dimensions.all.filter(function(d){return d.indexOf(text) > -1;});
+          }
+          dc.redrawAll();
+          return this;
+        };
+
+        this.clearFilters() {
+          for (dataName in this.data) {
+            for (dimensionName in this.data[dataName].dimensions) {
+              this.data[dataName].dimensions[dimensionName].filterAll();
+            }
+          }
+          dc.redrawAll();
+          return this;
         }
 
         this.addData = function(dataName, data) {
@@ -119,6 +137,7 @@
             this.data[dataName] = {};
             this.data[dataName].cf = new crossfilter(data);
             this.data[dataName].rendered = false;
+            this.addDimension(dataName, 'all', function (d) {return Object.keys(d).map(function(k){ return d[k];}).join(''); });
           }
 
           if (this.data[dataName].cf.size() > 2) {
@@ -227,6 +246,14 @@
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
+        $("#filter-all").on('change', function() {
+          var filterString = $(this).val();
+          chartManager.filterAll(filterString);
+        });
+        $("#clear-filters").on('click', function() {
+          var filterString = $(this).val();
+          chartManager.clearFilters();
+        });
           socket.on('trades', function(msg){
               try {
                 chartManager.addData('trades',JSON.parse(msg.value))
