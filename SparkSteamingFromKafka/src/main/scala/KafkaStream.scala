@@ -273,11 +273,11 @@ try {
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
             strMsg += ",[1]"
             model2.clusterCenters.foreach{ t =>
-                println("["+t.toArray.mkString(",")+"]")
-                strMsg += ",["+t.toArray.mkString(",")+"]"
+//                println("["+t.toArray.mkString(",")+"]")
+//                strMsg += ",["+t.toArray.mkString(",")+"]"
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
-//                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
-//                producer.send(message2)
+                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
+                producer.send(message2)
             }
 
             println(s"------------Model predict (clusters # $numClusters) -------")
