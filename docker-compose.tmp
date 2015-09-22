@@ -215,7 +215,7 @@ tradecon:
   environment:
     KAFKA: kafka
     KAFKA_PORT: 9092
-    KAFKA_TOPIC: trades
+    KAFKA_TOPICS: trades,kmstats
     HTTP_PORT: 80
   command: bash -c "sleep 10 && node TradeConsumer.js"
   ports:

@@ -4,77 +4,66 @@ var io = require('socket.io')(http);
 var port = process.env.HTTP_PORT || 3030;
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
-var topicName = process.env.KAFKA_TOPIC || "trades";
-var statsTopic = "kmstats";
+var topicNames = process.env.KAFKA_TOPICS || "trades";
+
+topicNames = topicNames.split(',').map(function(d) {return d.trim(); });
 
 var kafka = require('kafka-node'),
     Consumer = kafka.Consumer,
     client = new kafka.Client(kafkaLocation+':2181','trade-consumer'),
-    tradeConsumer = new Consumer(
+    consumer = new Consumer(
         client,
-        [
-            { topic: topicName}
-        ],
-        {
-            autoCommit: false
-        }
-    ),
-    statsConsumer = new Consumer(
-        client,
-        [
-            { topic: statsTopic}
-        ],
+        topicNames.map(function(d) {return {topic: d}}),
         {
             autoCommit: false
         }
     );
+
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
 
-
-
 //var lightning = new Lightning({host:'http://' + (process.env.LIGHTNING_HOST||'lightning') + ':'+(process.env.LIGHTNING_PORT||'3000')});
-
-var mapCSVtoJSON = function(csvString) {
-  var trimQuotes = function(input) {
-    if (input.slice(0,1) == '"' && input.slice(-1) == '"')
-      return input.slice(1,input.length-1);
-    return input;
-  };
-  var spliter = csvString.length == trimQuotes(csvString).length ? ',' : '","';
-  var lines = csvString.split("\n").map(trimQuotes);
-  var headers = lines.shift().split(spliter).map(trimQuotes);
-  return lines.map(function(line){
-    return line.split(spliter).map(trimQuotes).reduce(function(json,cell,index){
-      json[headers[index]] = cell;
-      return json;
-    },{});
-  })
-}
-
-var getRepeatingCharacter = function(char,length) {
-  return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
-}
-
-var logJsonNicely = function (jsonArray) {
-  if (jsonArray.length) {
-    var headers = Object.keys(jsonArray[0]);
-    var headerString = "| " + headers.join("   | ") + "   |";
-    console.log(getRepeatingCharacter('_',headerString.length))
-    console.log(headerString);
-    console.log(getRepeatingCharacter('_',headerString.length))
-    var rows = jsonArray.map(function(d) {
-      return headers.map(function(h,i){return (d[h] + getRepeatingCharacter(' ', h.length + 6)).substr(0,h.length + 3);}).join('| ');
-    });
-    console.log("| " + rows.join('|\n| ') + "|");
-    console.log(getRepeatingCharacter('_',headerString.length))
-  } else {
-    console.log('No Data');
-  }
-};
+//
+//var mapCSVtoJSON = function(csvString) {
+//  var trimQuotes = function(input) {
+//    if (input.slice(0,1) == '"' && input.slice(-1) == '"')
+//      return input.slice(1,input.length-1);
+//    return input;
+//  };
+//  var spliter = csvString.length == trimQuotes(csvString).length ? ',' : '","';
+//  var lines = csvString.split("\n").map(trimQuotes);
+//  var headers = lines.shift().split(spliter).map(trimQuotes);
+//  return lines.map(function(line){
+//    return line.split(spliter).map(trimQuotes).reduce(function(json,cell,index){
+//      json[headers[index]] = cell;
+//      return json;
+//    },{});
+//  })
+//}
+//
+//var getRepeatingCharacter = function(char,length) {
+//  return Array.apply(null,{length:length}).map(function(d,i){return ''}).join(char);
+//}
+//
+//var logJsonNicely = function (jsonArray) {
+//  if (jsonArray.length) {
+//    var headers = Object.keys(jsonArray[0]);
+//    var headerString = "| " + headers.join("   | ") + "   |";
+//    console.log(getRepeatingCharacter('_',headerString.length))
+//    console.log(headerString);
+//    console.log(getRepeatingCharacter('_',headerString.length))
+//    var rows = jsonArray.map(function(d) {
+//      return headers.map(function(h,i){return (d[h] + getRepeatingCharacter(' ', h.length + 6)).substr(0,h.length + 3);}).join('| ');
+//    });
+//    console.log("| " + rows.join('|\n| ') + "|");
+//    console.log(getRepeatingCharacter('_',headerString.length))
+//  } else {
+//    console.log('No Data');
+//  }
+//};
 
 //var fs = require('fs');
 //
@@ -84,16 +73,16 @@ var logJsonNicely = function (jsonArray) {
 //var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
 
 var messageCount = 0;
-var tradesMsgCnt = 0;
-var statsMsgCnt = 0;
+var topicCount = topicNames.map(function(d){var obj = {}; obj[d] = 0; return obj;});
 
- tradeConsumer.on('message', function (message) {
+
+ consumer.on('message', function (message) {
      try {
         if (message.value) {
-            var jsonValue = JSON.parse(message.value);
-            io.emit(topicName, jsonValue);
-            console.log(logJsonNicely([jsonValue]));
-            process.stdout.write("Received " + (messageCount++) + "(" + (tradesMsgCnt++) + ")" + " ["+topicName+"] messages\r");
+
+            io.emit(message.topic, message);
+//            console.log(logJsonNicely([jsonValue]));
+            process.stdout.write("Received " + (messageCount++) + "(" + (tradesMsgCnt++) + ")" + " ["+message.topic+"] messages: " + message + "\r");
 
         } else {
             process.stdout.write("Message ["+topicName+"] " + message);
@@ -104,6 +93,7 @@ var statsMsgCnt = 0;
 }).on("error",function(e) {
   console.log("Err: ", e);
 });
+/*
 
  statsConsumer.on('message', function (message) {
     try {
@@ -118,6 +108,7 @@ var statsMsgCnt = 0;
      console.log("Err ["+statsTopic+"]: ", e);
 });
 
+*/
 
 http.listen(port, function(){
   console.log('listening on *:' + port);

@@ -225,7 +225,7 @@
           socket.on('trades', function(msg){
             if (msg.trade_time) {
               try {
-                chartManager.addData('trades',msg)
+                chartManager.addData('trades',JSON.parse(msg.value))
               } catch (e) {
                 console.warn(e);
               }
