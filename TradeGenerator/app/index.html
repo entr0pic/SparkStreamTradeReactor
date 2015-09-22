@@ -87,6 +87,12 @@
         this.charts = {};
 
         this.data = { };
+        this.colours = {
+          greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
+          blues: ['rgb(255,247,251)','rgb(236,231,242)','rgb(208,209,230)','rgb(166,189,219)','rgb(116,169,207)','rgb(54,144,192)','rgb(5,112,176)','rgb(4,90,141)','rgb(2,56,88)'],
+          redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
+          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)']
+        };
 
         this.geoJson = {};
 
@@ -160,7 +166,10 @@
                                   .group(this.data.trades.groups.country)
                                   .colors(d3.scale.category10())
                                   .colorDomain([0, 4000])
-                                  .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
+                                  .colorCalculator(function (d) {
+                                      var a = self.data.trades.groups.category.top(Infinity);
+                                      return d ? self.colours.greens[Math.round((self.colours.greens.length/a.length) * a.indexOf(d))] : '#ccc';
+                                    })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
                                       return d.properties.name;
                                   })
