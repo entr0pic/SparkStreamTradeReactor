@@ -115,7 +115,7 @@
 
           if (this.data[dataName].cf.size() > 2) {
             if (!this.data[dataName].rendered) {
-              dc.renderAll(dataName);
+              dc.renderAll();
               this.data[dataName].rendered = true;
             } else {
               dc.redrawAll(dataName);
