@@ -295,7 +295,7 @@ try {
             var firstRec : Boolean = true;
             val buffer: Array[String] = Array.fill(numClusters)("")
             val tdata = rdd.take(100).foreach{ a =>
-                val cluster = model2.predict(a)  // adding 1 for readability
+                val cluster : Integer = model2.predict(a)  // adding 1 for readability
                 println(a)
                 println("Predicted cluster = "+ (1+cluster).toString)
                 if (buffer[cluster] != "") {
