@@ -118,7 +118,7 @@
               dc.renderAll();
               this.data[dataName].rendered = true;
             } else {
-              dc.redrawAll(dataName);
+              dc.redrawAll();
             }
           }
           return this;
@@ -168,7 +168,7 @@
                                   .colors(d3.scale.category10())
                                   .colorDomain([0, 4000])
                                   .colorCalculator(function (d) {
-                                      var a = self.data.trades.groups.category.top(Infinity);
+                                      var a = self.data.trades.groups.country.top(Infinity);
                                       return d ? self.colours.greens[Math.round((self.colours.greens.length/a.length) * a.indexOf(d))] : '#ccc';
                                     })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
@@ -186,7 +186,7 @@
                                     .dimension(this.data.trades.dimensions.category)
                                     .group(this.data.trades.groups.category)
                                     .ordering(function(d){ return -d.value })
-                                    .cap(20)
+                                    .cap(16)
                                     // assign colors to each value in the x scale domain
                                     //.ordinalColors(d3.scale.category10())
                                     .label(function (d) {
@@ -215,7 +215,7 @@
         //bermuda is buggered for some reason so skip it
         world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
         chartManager.setGeoJson(world)
-                      .addDimension('trades','country','country')
+                      .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
           socket.on('trades', function(msg){
