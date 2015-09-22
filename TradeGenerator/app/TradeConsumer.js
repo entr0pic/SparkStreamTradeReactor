@@ -25,6 +25,8 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 }).get('/compose', function(req, res){
   res.sendFile(__dirname + '/compose.html');
+}).get('/js/dagred3.js', function(req, res){
+  res.sendFile(__dirname + '/dagred3.js');
 });
 
 var messageCount = 0;
