@@ -18,7 +18,8 @@ var kafka = require('kafka-node'),
             autoCommit: false
         }
     );
-
+console.log("Subscribing to topics:");
+console.log(topicNames.map(function(d) {return {topic: d}}));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -77,6 +78,7 @@ var topicCount = topicNames.map(function(d){var obj = {}; obj[d] = 0; return obj
 
 
  consumer.on('message', function (message) {
+   console.log(message);
      try {
         if (message.value) {
 
