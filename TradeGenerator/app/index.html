@@ -5,6 +5,11 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" rel="stylesheet">
+    <style>
+      div.dc-chart {
+        float: none !important;
+      }
+    </style>
   </head>
   <body>
      <nav class="navbar navbar-light bg-faded">
@@ -22,7 +27,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xl-6 col-sm-12">
+        <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
               Main Chart
@@ -32,7 +37,10 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-6 col-sm-12">
+      </div>
+
+      <div class="row">
+       <div class="col-xl-4 col-sm-12">
           <div class="card">
             <div class="card-header">
               Secondary Chart
@@ -42,10 +50,7 @@
             </div>
           </div>
         </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-6 col-sm-12">
+        <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Minor Chart
@@ -55,7 +60,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-6 col-sm-12">
+        <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Secondary Minor Chart
@@ -82,6 +87,12 @@
         this.charts = {};
 
         this.data = { };
+        this.colours = {
+          greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
+          blues: ['rgb(255,247,251)','rgb(236,231,242)','rgb(208,209,230)','rgb(166,189,219)','rgb(116,169,207)','rgb(54,144,192)','rgb(5,112,176)','rgb(4,90,141)','rgb(2,56,88)'],
+          redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
+          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)']
+        };
 
         this.geoJson = {};
 
@@ -104,7 +115,7 @@
 
           if (this.data[dataName].cf.size() > 2) {
             if (!this.data[dataName].rendered) {
-              dc.renderAll(dataName);
+              dc.renderAll();
               this.data[dataName].rendered = true;
             } else {
               dc.redrawAll(dataName);
@@ -114,6 +125,7 @@
         };
 
         this.addDimension = function(dataName, dimensionName, dimension, grouping) {
+          if (!dimension) dimension = dimensionName;
           if (typeof dimension == 'string') {
             dimension = function(d) {return d[dimension];};
           }
@@ -139,7 +151,10 @@
 
         this.initCharts = function() {
           var self = this;
-          var projection = d3.geo.mercator();
+          var projection = d3.geo.mercator()
+              .scale(($('#main-chart').parent().width() + 1) / 2 / Math.PI)
+              .translate([$('#main-chart').parent().width() / 2, 500 / 2])
+              .precision(.1);
 //              .center([133,-28]) //this is aus
 //              .scale(700) //fills about 500px high for aus
 //              .rotate([-12,0]);
@@ -152,7 +167,10 @@
                                   .group(this.data.trades.groups.country)
                                   .colors(d3.scale.category10())
                                   .colorDomain([0, 4000])
-                                  .colorCalculator(function (d) { return d ? stateChart.colors()(d) : '#ccc'; })
+                                  .colorCalculator(function (d) {
+                                      var a = self.data.trades.groups.category.top(Infinity);
+                                      return d ? self.colours.greens[Math.round((self.colours.greens.length/a.length) * a.indexOf(d))] : '#ccc';
+                                    })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
                                       return d.properties.name;
                                   })
@@ -194,7 +212,9 @@
       var chartManager = new ChartViz();
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
-          chartManager.setGeoJson(world)
+        //bermuda is buggered for some reason so skip it
+        world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
+        chartManager.setGeoJson(world)
                       .addDimension('trades','country','country')
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();

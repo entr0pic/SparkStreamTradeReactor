@@ -1,7 +1,7 @@
 var fs = require('fs');
 var kafka = require('kafka-node');
 
-var tradesPerSecond = [0,20];
+var tradesPerSecond = [1,20];
 var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
@@ -189,18 +189,27 @@ logJsonNicely(newTrades);
 
 
 
-Producer = kafka.Producer,
-client = new kafka.Client(kafkaLocation+':2181','trade-generator'),
-producer = new Producer(client);
+Producer = kafka.Producer;
+var client = new kafka.Client(kafkaLocation+':2181','trade-generator');
+var producer = new Producer(client);
 //
 //payloads = [
 //        { topic: 'new-trade', messages: 'hi' },
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
-producer.createTopics([topicName, topicName2], true, function (err, data) {
+
+console.log('Creating topics...');
+producer.createTopics([topicName], true, function (err, data) {
      console.log(err||data);
 });
+
+producer.createTopics([topicName2], true, function (err, data) {
+     console.log(err||data);
+});
+
+
 producer.on('ready', function () {
+    console.log('starting producer');
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
