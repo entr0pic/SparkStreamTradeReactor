@@ -258,7 +258,7 @@ try {
 
             strMsg += "{"
 
-            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
+            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString.toInt+'"'
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
@@ -294,14 +294,17 @@ try {
             println(s"------------Model predict (clusters # $numClusters) -------")
             var firstRec : Boolean = true;
             val buffer: Array[String] = Array.fill(numClusters)("")
+            var nums : Array[Integer] = Array.fill(numClusters)(0)
+            val maxNum : Integer = 20;
             val tdata = rdd.take(100).foreach{ a =>
-                val cluster : Integer = model2.predict(a)  // adding 1 for readability
+                val cluster = model2.predict(a)  // adding 1 for readability
                 println(a)
                 println("Predicted cluster = "+ (1+cluster).toString)
-                if (buffer[cluster] != "") {
-                    buffer[cluster] += ","
+                if (buffer(cluster) != "") {
+                    buffer(cluster) += ","
                 }
-                buffer[cluster] += a.toString
+                if (nums(cluster) <= maxNum)  buffer(cluster) += a.toString // limit each cluster to <=20 examples
+                nums(cluster) += 1
             }
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
@@ -311,7 +314,7 @@ try {
                 } else {
                     strMsg += ","
                 }
-                strMsg += s
+                strMsg += "["+s+"]"
             }
             strMsg += "]"
 
