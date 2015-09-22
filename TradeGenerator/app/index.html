@@ -26,6 +26,9 @@
         <li class="nav-item active">
           <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
         </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/compose">Compose Viz <span class="sr-only"></span></a>
+        </li>
       </ul>
       <form class="form-inline navbar-form pull-right hidden-xs">
         <input class="form-control" id="filter-all" type="text" placeholder="Filter">
@@ -92,6 +95,7 @@
     <script>
       var socket = io();
       var ChartViz = function() {
+        this.updateDelay = 2000;
         this.charts = {};
         this.lastUpdate = new Date();
         this.data = { };
@@ -111,7 +115,7 @@
 
         this.filterAll = function (text) {
           for (dataName in this.data) {
-            this.data[dataName].dimensions.all.filter(function(d){return d.indexOf(text) > -1;});
+            this.data[dataName].dimensions.all.filter(function(d){return d.toLowerCase().indexOf(text.toLowerCase()) > -1;});
           }
           dc.redrawAll();
           return this;
@@ -144,7 +148,7 @@
             if (!this.data[dataName].rendered) {
               dc.renderAll();
               this.data[dataName].rendered = true;
-            } else if (new Date() - this.lastUpdate > 5000) {
+            } else if (new Date() - this.lastUpdate > this.updateDelay) {
               dc.redrawAll();
               this.lastUpdate = new Date();
             }
