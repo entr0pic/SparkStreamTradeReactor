@@ -111,7 +111,7 @@
 
         this.filterAll = function (text) {
           for (dataName in this.data) {
-            this.data[dataName].dimensions.all.filter(function(d){return d.indexOf(text) > -1;});
+            this.data[dataName].dimensions.all.filter(function(d){return d.toLowerCase().indexOf(text.toLowerCase()) > -1;});
           }
           dc.redrawAll();
           return this;
