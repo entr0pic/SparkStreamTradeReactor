@@ -302,6 +302,7 @@ try {
                     buffer[cluster] += ","
                 }
                 buffer[cluster] += a.toString
+            }
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
             buffer.foreach{s =>
