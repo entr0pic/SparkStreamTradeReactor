@@ -81,6 +81,7 @@ object TradeStreamReader {
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers)
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer")
+
     //props.put("client.id", "SparkHackathon-KafkaProducer")
 
     val producer = new KafkaProducer[String, String](props)
@@ -273,6 +274,7 @@ try {
                 println("["+t.toArray.mkString(",")+"]")
                 strMsg += ",["+t.toArray.mkString(",")+"]"
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
+//                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
 //                producer.send(message2)
             }
 
@@ -285,12 +287,15 @@ try {
                 strMsg += ",["+cluster+","+a.toArray.mkString(",")+"]"
 //                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
 //                    producer.send(message3)
+//                    val message4 = new ProducerRecord[String, String]("kmstats", null, a.toString);
+//                    producer.send(message4)
             }
 
 //            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
 //            producer.send(message)
+            println(s"------------Msg sent-------")
             println(summary.mean.toString)
-            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
+            val message1 = new ProducerRecord[String, String]("kmstats", UUID.randomUUID().toString, summary.mean.toString);
             producer.send(message1)
 
             numCollected += count
