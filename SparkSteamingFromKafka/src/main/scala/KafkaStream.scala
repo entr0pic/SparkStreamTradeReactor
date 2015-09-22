@@ -267,14 +267,13 @@ try {
             println(summary.numNonzeros)
 
             strMsg += "[0],["+summary.mean.toArray.mkString(",")+"],["+summary.variance.toArray.mkString(",")+"]"
-
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
             strMsg += ",[1]"
             model2.clusterCenters.foreach{ t =>
-                                          println(t.toString)
-                strMsg += ",["+t.toArray.mkString(",")+"]"
+                println(t.toString)
+                strMsg += ",["+t.toString+"]"
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
 //                producer.send(message2)
@@ -282,16 +281,19 @@ try {
 
             println(s"------------Model predict (clusters # $numClusters) -------")
             strMsg += ",[2]"
-            val tdata = rdd.takeSample(true, 10, 1).foreach{ a =>
+            val tdata = rdd.take(10).foreach{ a =>
                 val cluster = model2.predict(a) +1 // adding 1 for readability
                 println(a)
                 println(s"Predicted cluster = $cluster")
-                strMsg += ",["+cluster+","+a.toArray.mkString(",")+"]"
+                strMsg += ",["+cluster+","+a.toString+"]"
 //                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
 //                    producer.send(message3)
 //                    val message4 = new ProducerRecord[String, String]("kmstats", null, a.toString);
 //                    producer.send(message4)
             }
+
+            println(s"------------Message to send-------")
+            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
