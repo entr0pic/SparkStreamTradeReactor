@@ -89,7 +89,7 @@
       var socket = io();
       var ChartViz = function() {
         this.charts = {};
-
+        this.lastUpdate = new Date();
         this.data = { };
         this.colours = {
           greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
@@ -121,8 +121,9 @@
             if (!this.data[dataName].rendered) {
               dc.renderAll();
               this.data[dataName].rendered = true;
-            } else {
+            } else if (new Date() - this.lastUpdate > 5000) {
               dc.redrawAll();
+              this.lastUpdate = new Date();
             }
           }
           return this;
