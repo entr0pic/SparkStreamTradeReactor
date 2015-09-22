@@ -306,17 +306,18 @@ try {
                 if (nums(cluster) <= maxNum)  buffer(cluster) += a.toString // limit each cluster to <=20 examples
                 nums(cluster) += 1
             }
-            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
-            buffer.foreach{s =>
-                if (firstRec) {
-                    firstRec = false
-                } else {
-                    strMsg += ","
-                }
-                strMsg += "["+s+"]"
-            }
-            strMsg += "]"
+//            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
+//
+//            buffer.foreach{s =>
+//                if (firstRec) {
+//                    firstRec = false
+//                } else {
+//                    strMsg += ","
+//                }
+//                strMsg += "["+s+"]"
+//            }
+//            strMsg += "]"
 
             strMsg += "}"
 
