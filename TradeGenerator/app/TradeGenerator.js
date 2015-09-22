@@ -6,7 +6,13 @@ var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
 var topicName = process.env.KAFKA_TOPIC || "trades";
-var topicName2 = process.env.KAFKA_TTOPIC || "ttrades";
+var extraTopicNames = process.env.KAFKA_EXTRA_TOPICS;
+
+if (extraTopicNames && typeof extraTopicNames == 'string') {
+  extraTopicNames = extraTopicNames.split(',');
+} else {
+  extraTopicNames = [];
+}
 
 var mapCSVtoJSON = function(csvString) {
   var trimQuotes = function(input) {
@@ -199,11 +205,7 @@ var producer = new Producer(client);
 //    ];
 
 console.log('Creating topics...');
-producer.createTopics([topicName], true, function (err, data) {
-     console.log(err||data);
-});
-
-producer.createTopics([topicName2], true, function (err, data) {
+producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
      console.log(err||data);
 });
 
@@ -216,13 +218,6 @@ producer.on('ready', function () {
         payloads = [{topic:topicName,messages:stream1}]
         producer.send( payloads, function (err, data) {
             console.log(topicName+": ", err||data);
-        });
-
-        var i2 = getRandomInt(tradesPerSecond);
-        var stream2 = generateTradePairs(1+i2).map(JSON.stringify);
-        payloads = [{topic:topicName2,messages:stream2}]
-        producer.send( payloads, function (err, data) {
-            console.log(topicName2+": ", err||data);
         });
 
     },1000)
