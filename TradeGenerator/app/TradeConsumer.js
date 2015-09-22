@@ -85,10 +85,10 @@ var topicCount = topicNames.map(function(d){var obj = {}; obj[d] = 0; return obj
             process.stdout.write("Received " + (messageCount++) + "(" + (tradesMsgCnt++) + ")" + " ["+message.topic+"] messages: " + message + "\r");
 
         } else {
-            process.stdout.write("Message ["+topicName+"] " + message);
+            process.stdout.write("Message " + message);
         }
     } catch (error) {
-        process.stderr.write("Err ["+topicName+"]: ", error)
+        process.stderr.write("Err ", error);
     }
 }).on("error",function(e) {
   console.log("Err: ", e);
