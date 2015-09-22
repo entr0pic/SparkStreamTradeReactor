@@ -273,11 +273,11 @@ try {
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
             strMsg += ",[1]"
             model2.clusterCenters.foreach{ t =>
-//                println("["+t.toArray.mkString(",")+"]")
-//                strMsg += ",["+t.toArray.mkString(",")+"]"
+                                          println(t.toString)
+                strMsg += ",["+t.toArray.mkString(",")+"]"
 //                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
-                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
-                producer.send(message2)
+//                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
+//                producer.send(message2)
             }
 
             println(s"------------Model predict (clusters # $numClusters) -------")
@@ -293,13 +293,13 @@ try {
 //                    producer.send(message4)
             }
 
-//            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
-//            producer.send(message)
-            println(s"------------Msg sent-------")
-            println(summary.mean)
-            println(summary.mean.toString)
-            val message1 = new ProducerRecord[String, String]("kmstats", null /*UUID.randomUUID().toString*/, summary.mean.toString);
-            producer.send(message1)
+            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
+            producer.send(message)
+//            println(s"------------Msg sent-------")
+//            println(summary.mean)
+//            println(summary.mean.toString)
+//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
+//            producer.send(message1)
 
             numCollected += count
             if (numCollected > 10000) {
