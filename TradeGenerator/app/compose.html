@@ -16,7 +16,26 @@
       .dc-chart g.row text {
         text-shadow: 1px 1px #000000;
       }
+      g.type-TK > rect {
+        fill: #00ffd0;
+      }
 
+      text {
+        font-weight: 300;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+        font-size: 14px;
+      }
+
+      .node rect {
+        stroke: #999;
+        fill: #fff;
+        stroke-width: 1.5px;
+      }
+
+      .edgePath path {
+        stroke: #333;
+        stroke-width: 1.5px;
+      }
     </style>
   </head>
   <body>
@@ -224,13 +243,7 @@
       "KAFKA_TOPIC": "trades,ttrades"
     },
     "links": [
-      "master",
-      "namenode",
-      "kafka",
-      "tradegen",
-      "lightning",
-      "zeppelin",
-      "dockerui"
+      "master"
     ],
     "volumes": [
       "/Spark/jars:/jars",
@@ -282,8 +295,7 @@
     "hostname": "lightning",
     "links": [
       "kafka",
-      "master",
-      "tradegen"
+      "master"
     ],
     "ports": [
       "3000:3000"
@@ -297,8 +309,6 @@
     "hostname": "tradecon",
     "links": [
       "kafka",
-      "master",
-      "tradegen",
       "lightning"
     ],
     "environment": {
@@ -368,7 +378,7 @@
 
       // Run the renderer. This is what draws the final graph.
       render(d3.select("svg g"), dg);
-
+      svg.attr("width",document.getElementById("main-chart").clientWidth);
       // Center the graph
       var xCenterOffset = (svg.attr("width") - dg.graph().width) / 2;
       svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
