@@ -36,6 +36,7 @@ import org.apache.spark.util.Utils
 import org.apache.spark.util.random.XORShiftRandom
 
 import java.util.HashMap
+import java.util.UUID
 //import org.apache.kafka.serializer.StringDecoder
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.kafka.clients.producer.{ProducerConfig, KafkaProducer, ProducerRecord}
@@ -64,6 +65,7 @@ object TradeStreamReader {
     val Array(brokers, topics, path) = args
 //    println(brokers)
 //    println(topics)
+      println(path)
 
     // Create context with 2 second batch interval
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
@@ -294,8 +296,9 @@ try {
 //            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
 //            producer.send(message)
             println(s"------------Msg sent-------")
+            println(summary.mean)
             println(summary.mean.toString)
-            val message1 = new ProducerRecord[String, String]("kmstats", UUID.randomUUID().toString, summary.mean.toString);
+            val message1 = new ProducerRecord[String, String]("kmstats", null /*UUID.randomUUID().toString*/, summary.mean.toString);
             producer.send(message1)
 
             numCollected += count
