@@ -172,8 +172,8 @@
                                   .colors(d3.scale.category10())
                                   .colorDomain([0, 4000])
                                   .colorCalculator(function (d) {
-                                      var a = self.data.trades.groups.country.top(Infinity).map(function(d){return d.key}).reverse();
-                                      return d ? self.colours.redGreen[Math.round((self.colours.redGreen.length/a.length) * a.indexOf(d.key))] : '#ccc';
+                                      var a = self.data.trades.groups.country.top(Infinity).map(function(d){return d.value}).reverse();
+                                      return d ? self.colours.redGreen[Math.round((self.colours.redGreen.length/a.length) * a.indexOf(d))] : '#ccc';
                                     })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
                                       return d.properties.name;
