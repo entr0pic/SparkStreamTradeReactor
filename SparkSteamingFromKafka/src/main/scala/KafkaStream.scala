@@ -255,10 +255,14 @@ try {
         val count = rdd.count()
         if (count > 0) {
             var strMsg : String = ""
+
+            strMsg += "{"
+
+            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
+
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
             println(s"------------Rdd stats (messages # in RDD = $count) -------")
-
             println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
             println(summary.mean)
             println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
@@ -266,31 +270,51 @@ try {
             println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
             println(summary.numNonzeros)
 
-            strMsg += "[0],["+summary.mean.toArray.mkString(",")+"],["+summary.variance.toArray.mkString(",")+"]"
+            strMsg += ","+s"${'"'}rdd-stats${'"'}"+":["
+            strMsg += summary.mean.toString+","+summary.variance.toString
+            strMsg += "]"
+
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
-            strMsg += ",[1]"
+
+            strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
+            var firstCluster : Boolean = true;
             model2.clusterCenters.foreach{ t =>
                 println(t.toString)
-                strMsg += ",["+t.toString+"]"
-//                val message2 = new ProducerRecord[String, String]("kmstats", null, "["+t.toArray.mkString(",")+"]");
-//                val message2 = new ProducerRecord[String, String]("kmstats", null, t.toString);
-//                producer.send(message2)
+                if (firstCluster) {
+                    firstCluster = false
+                } else {
+                    strMsg += ","
+                }
+                strMsg +=  t.toString
             }
+            strMsg += "]"
 
             println(s"------------Model predict (clusters # $numClusters) -------")
-            strMsg += ",[2]"
-            val tdata = rdd.take(10).foreach{ a =>
-                val cluster = model2.predict(a) +1 // adding 1 for readability
+            var firstRec : Boolean = true;
+            val buffer: Array[String] = Array.fill(numClusters)("")
+            val tdata = rdd.take(100).foreach{ a =>
+                val cluster = model2.predict(a)  // adding 1 for readability
                 println(a)
-                println(s"Predicted cluster = $cluster")
-                strMsg += ",["+cluster+","+a.toString+"]"
-//                    val message3 = new ProducerRecord[String, String]("kmstats", null, cluster.toString);
-//                    producer.send(message3)
-//                    val message4 = new ProducerRecord[String, String]("kmstats", null, a.toString);
-//                    producer.send(message4)
+                println("Predicted cluster = "+ (1+cluster).toString)
+                if (buffer[cluster] != "") {
+                    buffer[cluster] += ","
+                }
+                buffer[cluster] += a.toString
+            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
+
+            buffer.foreach{s =>
+                if (firstRec) {
+                    firstRec = false
+                } else {
+                    strMsg += ","
+                }
+                strMsg += s
             }
+            strMsg += "]"
+
+            strMsg += "}"
 
             println(s"------------Message to send-------")
             println(strMsg)
