@@ -1,0 +1,381 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Viz Server</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta charset="utf-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" rel="stylesheet">
+    <style>
+      div.dc-chart {
+        float: none !important;
+      }
+      .dc-chart g.row text {
+        text-shadow: 1px 1px #000000;
+      }
+
+    </style>
+  </head>
+  <body>
+     <nav class="navbar navbar-light bg-faded">
+      <a class="navbar-brand" href="#">SparkStreaming ML</a>
+      <ul class="nav navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+        </li>
+        <li class="nav-item active">
+          <a class="nav-link" href="/compose">Compose Viz <span class="sr-only"></span></a>
+        </li>
+      </ul>
+      <form class="form-inline navbar-form pull-right hidden-xs">
+        <input class="form-control" id="filter-all" type="text" placeholder="Filter">
+        <button class="btn btn-success-outline" id="clear-filters">Clear</button>
+      </form>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Container Structure
+            </div>
+            <div class="card-block">
+              <div id="main-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/dagre-d3/0.2.9/dagre-d3.min.js"></script>
+
+    <script>
+
+      var compose = {
+  "namenode": {
+    "image": "localhost:5000/hadoop",
+    "hostname": "namenode",
+    "volumes": [
+      "/Hadoop/data/namenode:/shared"
+    ],
+    "ports": [
+      "8020:8020",
+      "50070:50070"
+    ],
+    "command": "hdfs namenode"
+  },
+  "datanode1": {
+    "image": "localhost:5000/hadoop",
+    "hostname": "datanode1",
+    "volumes": [
+      "/Hadoop/data/datanode1:/shared"
+    ],
+    "links": [
+      "namenode"
+    ],
+    "ports": [
+      "5001:50075"
+    ],
+    "command": "hdfs datanode"
+  },
+  "datanode2": {
+    "image": "localhost:5000/hadoop",
+    "hostname": "datanode2",
+    "volumes": [
+      "/Hadoop/data/datanode2:/shared"
+    ],
+    "links": [
+      "namenode"
+    ],
+    "ports": [
+      "5002:50075"
+    ],
+    "command": "hdfs datanode"
+  },
+  "kafka": {
+    "image": "localhost:5000/kafka",
+    "hostname": "kafka",
+    "command": "bash run.sh",
+    "environment": {
+      "ADVERTISED_PORT": 9092
+    },
+    "links": [
+      "namenode"
+    ],
+    "expose": [
+      2181,
+      9092
+    ],
+    "ports": [
+      "2181:2181",
+      "9092:9092"
+    ]
+  },
+  "master": {
+    "image": "localhost:5000/spark",
+    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master",
+    "hostname": "master",
+    "links": [
+      "namenode",
+      "kafka"
+    ],
+    "expose": [
+      7001,
+      7002,
+      7003,
+      7004,
+      7005,
+      7006,
+      7077,
+      6066,
+      4040,
+      8080,
+      50070
+    ],
+    "ports": [
+      "4040:4040",
+      "6066:6066",
+      "7077:7077",
+      "8081:8080",
+      "50071:50070"
+    ],
+    "volumes": [
+      "/Spark/jars:/jars",
+      "/Spark/shared:/shared/data"
+    ]
+  },
+  "worker1": {
+    "image": "localhost:5000/spark",
+    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077",
+    "hostname": "worker1",
+    "environment": {
+      "SPARK_WORKER_CORES": 4,
+      "SPARK_WORKER_MEMORY": "4g",
+      "SPARK_WORKER_PORT": 8881,
+      "SPARK_WORKER_WEBUI_PORT": 8081
+    },
+    "links": [
+      "master",
+      "namenode"
+    ],
+    "expose": [
+      7012,
+      7013,
+      7014,
+      7015,
+      7016,
+      8881
+    ],
+    "ports": [
+      "8082:8081"
+    ],
+    "volumes": [
+      "/Spark/jars:/jars",
+      "/Spark/shared:/shared/data"
+    ]
+  },
+  "worker2": {
+    "image": "localhost:5000/spark",
+    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077",
+    "hostname": "worker1",
+    "environment": {
+      "SPARK_WORKER_CORES": 4,
+      "SPARK_WORKER_MEMORY": "4g",
+      "SPARK_WORKER_PORT": 8881,
+      "SPARK_WORKER_WEBUI_PORT": 8081
+    },
+    "links": [
+      "master",
+      "namenode"
+    ],
+    "expose": [
+      7012,
+      7013,
+      7014,
+      7015,
+      7016,
+      8881
+    ],
+    "ports": [
+      "8083:8081"
+    ],
+    "volumes": [
+      "/Spark/jars:/jars",
+      "/Spark/shared:/shared/data"
+    ]
+  },
+  "submitter": {
+    "image": "localhost:5000/spark",
+    "command": "bash -c \"/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 1 /jars/tradeStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC hdfs://namenode:8020/trade/store.parquet\"",
+    "hostname": "sumbitter",
+    "environment": {
+      "KAFKA_PORT": 9092,
+      "KAFKA_TOPIC": "trades,ttrades"
+    },
+    "links": [
+      "master",
+      "namenode",
+      "kafka",
+      "tradegen",
+      "lightning",
+      "zeppelin",
+      "dockerui"
+    ],
+    "volumes": [
+      "/Spark/jars:/jars",
+      "/Spark/shared:/shared/data"
+    ]
+  },
+  "cadvisor": {
+    "image": "google/cadvisor:latest",
+    "hostname": "cadvisor",
+    "volumes": [
+      "/var/run:/var/run:rw",
+      "/sys:/sys:ro",
+      "/var/lib/docker/:/var/lib/docker:ro"
+    ],
+    "ports": [
+      "8888:8080"
+    ]
+  },
+  "dockerui": {
+    "image": "dockerui/dockerui",
+    "hostname": "dockerui",
+    "volumes": [
+      "/var/run/docker.sock:/var/run/docker.sock"
+    ],
+    "ports": [
+      "9000:9000"
+    ]
+  },
+  "tradegen": {
+    "image": "localhost:5000/tradegenerator",
+    "hostname": "tradegen",
+    "links": [
+      "kafka",
+      "master"
+    ],
+    "environment": {
+      "KAFKA": "kafka",
+      "KAFKA_PORT": 9092,
+      "KAFKA_TOPIC": "trades",
+      "KAFKA_EXTRA_TOPICS": "kmstats,kclusters,kpredict"
+    },
+    "command": "node TradeGenerator.js",
+    "volumes": [
+      "/TradeGenerator:/shared"
+    ]
+  },
+  "lightning": {
+    "image": "localhost:5000/lightning",
+    "hostname": "lightning",
+    "links": [
+      "kafka",
+      "master",
+      "tradegen"
+    ],
+    "ports": [
+      "3000:3000"
+    ],
+    "volumes": [
+      "/Spark/shared:/shared/data"
+    ]
+  },
+  "tradecon": {
+    "image": "localhost:5000/tradegenerator",
+    "hostname": "tradecon",
+    "links": [
+      "kafka",
+      "master",
+      "tradegen",
+      "lightning"
+    ],
+    "environment": {
+      "KAFKA": "kafka",
+      "KAFKA_PORT": 9092,
+      "KAFKA_TOPICS": "trades,kmstats",
+      "HTTP_PORT": 80
+    },
+    "command": "bash -c \"sleep 10 && node TradeConsumer.js\"",
+    "ports": [
+      "80:80"
+    ],
+    "volumes": [
+      "/TradeGenerator:/shared"
+    ]
+  },
+  "zeppelin": {
+    "image": "localhost:5000/zeppelin",
+    "hostname": "zeppelin",
+    "environment": {
+      "ZEPPELIN_PORT": 8090,
+      "ZEPPELIN_JAVA_OPTS": "-Dspark.driver.port=5432 -Dspark.cores.max=2",
+      "MASTER": "spark://master:7077",
+      "ZEPPELIN_NOTEBOOK_DIR": "/zeppelin/data/notebooks"
+    },
+    "links": [
+      "master",
+      "namenode",
+      "kafka"
+    ],
+    "expose": [
+      5432
+    ],
+    "ports": [
+      "8090:8090",
+      "8091:8091"
+    ],
+    "volumes": [
+      "/Zeppelin/data:/zeppelin/data",
+      "/Spark/shared:/shared/data",
+      "/Spark/jars:/jars"
+    ]
+  }
+};
+
+      var dg = new dagreD3.graphlib.Graph()
+                          .setGraph({})
+                          .setDefaultEdgeLabel(function() { return {}; });
+
+      Object.keys(compose).forEach(function(d){dg.setNode(d,{label:d})});
+
+      Object.keys(compose).forEach(function(d){
+        var con = compose[d];
+        if (con.links) {
+          con.links.forEach(function(x) {
+            dg.setEdge(d,x);
+          });
+        }
+      });
+
+      // Create the renderer
+      var render = new dagreD3.render();
+
+      // Set up an SVG group so that we can translate the final graph.
+      var svg = d3.select("#main-chart").append('svg'),
+          svgGroup = svg.append("g");
+
+      // Run the renderer. This is what draws the final graph.
+      render(d3.select("svg g"), dg);
+
+      // Center the graph
+      var xCenterOffset = (svg.attr("width") - dg.graph().width) / 2;
+      svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+      svg.attr("height", dg.graph().height + 40);
+
+     // | trade_date   | trade_time   | party   | counterparty   | ccp   | exchange   | symbol   | currency   | side   | type   | category   | price   | volume   | unit   | country   | max_bank   | max_symbol   | max_country   | max_currency   | max_exchange   | party_weight   | counterparty_weight   | exchange_weight   | country_weight   | symbol_weight   | currency_weight   |
+
+    </script>
+  </body>
+</html>
