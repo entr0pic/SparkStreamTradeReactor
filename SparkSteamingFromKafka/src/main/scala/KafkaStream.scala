@@ -264,8 +264,6 @@ try {
             println(summary.numNonzeros)
 
             strMsg += "[0],["+summary.mean.toArray.mkString(",")+"],["+summary.variance.toArray.mkString(",")+"]"
-//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-//            producer.send(message1)
 
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
@@ -289,8 +287,10 @@ try {
 //                    producer.send(message3)
             }
 
-            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
-            producer.send(message)
+//            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
+//            producer.send(message)
+            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
+            producer.send(message1)
 
             numCollected += count
             if (numCollected > 10000) {
