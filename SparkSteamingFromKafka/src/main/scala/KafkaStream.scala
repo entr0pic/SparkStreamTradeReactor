@@ -296,6 +296,7 @@ try {
 //            val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
 //            producer.send(message)
             println(s"------------Msg sent-------")
+            println(summary.mean)
             println(summary.mean.toString)
             val message1 = new ProducerRecord[String, String]("kmstats", null /*UUID.randomUUID().toString*/, summary.mean.toString);
             producer.send(message1)
