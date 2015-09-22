@@ -10,6 +10,8 @@ var extraTopicNames = process.env.KAFKA_EXTRA_TOPICS;
 
 if (extraTopicNames && typeof extraTopicNames == 'string') {
   extraTopicNames = extraTopicNames.split(',');
+} else {
+  extraTopicNames = [];
 }
 
 var mapCSVtoJSON = function(csvString) {
