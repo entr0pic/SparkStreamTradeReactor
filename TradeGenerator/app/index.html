@@ -109,7 +109,7 @@
           return this;
         };
 
-        this.filterAll(text) {
+        this.filterAll = function (text) {
           for (dataName in this.data) {
             this.data[dataName].dimensions.all.filter(function(d){return d.indexOf(text) > -1;});
           }
@@ -117,7 +117,7 @@
           return this;
         };
 
-        this.clearFilters() {
+        this.clearFilters = function() {
           for (dataName in this.data) {
             for (dimensionName in this.data[dataName].dimensions) {
               this.data[dataName].dimensions[dimensionName].filterAll();
