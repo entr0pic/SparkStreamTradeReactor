@@ -223,18 +223,16 @@
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .initCharts();
           socket.on('trades', function(msg){
-            if (msg.trade_time) {
               try {
                 chartManager.addData('trades',JSON.parse(msg.value))
               } catch (e) {
                 console.warn(e);
               }
-            }
           });
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
-                //chartManager.addData('kmstats',msg.value)
+                chartManager.addData('kmstats',JSON.parse(msg.value))
                 console.log(msg);
               } catch (e) {
                 console.warn(e);
