@@ -197,7 +197,7 @@
                                   .colorDomain([0, 4000])
                                   .colorCalculator(function (d) {
                                       var a = self.data.trades.groups.country.top(Infinity).map(function(d){return d.value}).reverse();
-                                      return d ? self.colours.redGreen[Math.round((self.colours.redGreen.length/a.length) * a.indexOf(d))] : '#ccc';
+                                      return d ? self.colours.redGreen[Math.round((self.colours.redGreen.length/a.length) * a.indexOf(d))-1] : '#ccc';
                                     })
                                   .overlayGeoJson(this.geoJson.features, "country", function (d) {
                                       return d.properties.name;
