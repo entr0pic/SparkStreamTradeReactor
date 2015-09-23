@@ -537,6 +537,7 @@
                                               ;
                                   })
                                   .elasticY(true)
+                                  .elasticX(true)
                                   .x(d3.time.scale().domain(
                                     d3.extent(chartManager.data.trades.groups.time.all(),
                                               function(d) {
