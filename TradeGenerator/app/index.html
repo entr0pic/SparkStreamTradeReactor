@@ -335,6 +335,51 @@
           this.charts.bubbles.yAxis().tickFormat(d3.format(".3s"));
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
+          this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
+                                  //.width(990)
+                                  .height(500)
+                                  .transitionDuration(1000)
+                                  .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                  .dimension(this.data.trades.dimensions.time)
+                                  .group(this.data.trades.groups.time, "All Trades")
+                                  .ordinalColors(this.colours.category)
+                                  .x(d3.time.scale().domain([
+                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                  ]))
+                                  .round(d3.time.minutes.round)
+                                  .xUnits(d3.time.minutes)
+                                  .elasticY(true)
+                                  .renderHorizontalGridLines(true)
+                                  .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
+                                  .brushOn(false)
+                                  // Add the base layer of the stack with group. The second parameter specifies a series name for use in the legend
+                                  // The `.valueAccessor` will be used for the base layer
+                                  .valueAccessor(function (d) {
+                                      return d.value.avgPrice;
+                                  })
+                                  // stack additional layers with `.stack`. The first paramenter is a new group.
+                                  // The second parameter is the series name. The third is a value accessor.
+
+//                                  .stack(this.data.trades.groups.time, "Value 2", function (d) {
+//                                      return d.value.1;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 3", function (d) {
+//                                      return d.value.2;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 4", function (d) {
+//                                      return d.value.3;
+//                                  })
+                                  // title can be called by any stack layer.
+                                  .title(function (d) {
+                                      return d3.time.format('%H:%M')(d.key) + "\n"
+                                              + 'Average Price: ' + (d.value.avgPrice)
+                                              ;
+                                  });
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
@@ -351,10 +396,7 @@
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
         world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
-        chartManager.setGeoJson(world)
-                      .addDimension('trades','country',function(d) {return d.country;})
-                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
-                      .addDimension('trades','ccp',function(d){return d.ccp;},{
+        var customMetrics = {
                         init: function(){
                           return {volume:0,avgPrice:0,totalValue:0,rowCount:0,totalPrice:0 };
                         },
@@ -375,7 +417,12 @@
                           totalled.avgPrice = isNaN(totalled.avgPrice) ? 0 : totalled.avgPrice;
                           return totalled;
                         }
-                      })
+                      };
+        chartManager.setGeoJson(world)
+                      .addDimension('trades','country',function(d) {return d.country;})
+                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
+                      .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
+                      .addDimension('trades','time',function(d){return new Date(d.trade_time);},customMetrics)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
