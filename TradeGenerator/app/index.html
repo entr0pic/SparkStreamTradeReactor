@@ -650,7 +650,11 @@
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
-                      .addDimension('trades','time',function(d){return new Date(d.trade_time);},customMetrics)
+                      .addDimension('trades','time',function(d){
+                          var ttime = new Date(d.trade_time);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/15)*15);
+                          return ttime;
+                        },customMetrics)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
