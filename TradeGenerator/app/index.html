@@ -344,14 +344,14 @@
                                   .group(this.data.trades.groups.time, "All Trades")
                                   .colors(this.colours.category)
                                   .xyTipsOn(true)
-//                                  .x(d3.time.scale().domain([
-//                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                  ]))
+                                  .x(d3.time.scale().domain([
+                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                  ]))
 //                                  .round(d3.time.minutes.round)
 //                                  .xUnits(d3.time.minutes)
                                   .elasticY(true)
