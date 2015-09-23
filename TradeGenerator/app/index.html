@@ -250,7 +250,7 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.trades.groups.category.all().map(function(d) {return d.key}).indexOf(d.key);
+                                        return chartManager.data.trades.groups.category.all().map(function(d) {return d.key}).indexOf(d.key)%8;
                                     })
                                     .keyAccessor(function (p) {
                                         return p.value.avgPrice;
