@@ -541,7 +541,8 @@
                                               })
                                   ))
 
-          this.charts.timeLine.xAxis().tickFormat(d3.time.format('%H:%M'));
+          this.charts.timeLine.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
+          this.charts.timeLine.xAxis().ticks(5);
           this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
 
           Object.keys(this.charts).forEach(function(k){
