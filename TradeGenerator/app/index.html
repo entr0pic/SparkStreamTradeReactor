@@ -262,7 +262,6 @@
                                     .radiusValueAccessor(function (p) {
                                         return p.value.totalValue;
                                     })
-                                    .maxBubbleRelativeSize(0.3)
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .trades
                                                                         .groups
@@ -329,7 +328,7 @@
                                         return [p.key,
                                                "Average Price: " +  d3.format("$,.2f")(p.value.avgPrice),
                                                "Volume: " + d3.format(",")(p.value.volume),
-                                               "Total Value of Trades: " + d3.format("$,")(p.value.totalValue)]
+                                               "Total Value of Trades: " + d3.format("$.3s")(p.value.totalValue)]
                                                .join("\n");
                                     });
 
