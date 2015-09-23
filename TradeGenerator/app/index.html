@@ -288,7 +288,7 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.key).indexOf(d.cluster+(d.center?5:0))%10;
+                                        return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
                                     })
                                     .colorAccessor(function (d) {
                                         return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
