@@ -235,10 +235,10 @@
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
                                     .margins({top: 10, right: 50, bottom: 30, left: 40})
-                                    .dimension(this.trades.dimensions.ccp)
+                                    .dimension(this.data.trades.dimensions.ccp)
                                     //Bubble chart expect the groups are reduced to multiple values which would then be used
                                     //to generate x, y, and radius for each key (bubble) in the group
-                                    .group(this.trades.dimensions.ccp)
+                                    .group(this.data.trades.dimensions.ccp)
                                     .colors(this.colours.category) // (optional) define color function or array for bubbles
                                     //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
                                     //.ordering(function(d){ return -d.value.sales_count; })
