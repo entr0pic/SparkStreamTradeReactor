@@ -538,6 +538,12 @@
                                   })
                                   .elasticY(true)
                                   .elasticX(true)
+                                  .y(d3.scale.linear().domain(
+                                    d3.extent(chartManager.data.trades.groups.time.all(),
+                                              function(d) {
+                                                return d.value.avgPrice;
+                                              })
+                                  ))
                                   .x(d3.time.scale().domain(
                                     d3.extent(chartManager.data.trades.groups.time.all(),
                                               function(d) {
