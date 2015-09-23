@@ -3,6 +3,9 @@ Spark Trade Streaming
 
 ##Instructions
 
+- Ideally you will want to set set this up on a mid to high spec machine with docker and docker compose already installed and you can follow
+
+###Using VMs (not recommended)
 - Clone into a directory either under /Users/username or /Working (others are possible but you must edit the vagrantfile to add them as shared folders)
 - Run ```./one_time_install.sh```
 - This script will provide instructions along the way. (Beware will be downloading a few hundred mb)
@@ -11,23 +14,18 @@ Spark Trade Streaming
 
 ##Usage
 
-Start/Restart a VM with a cluster (includes nodes for Kafka, Zookeeper, Spark and node.js), this includes building packaged jars using SBT:
+Start/Restart a cluster (includes nodes for Kafka, Zookeeper, Spark and node.js), this includes building packaged jars using SBT:
 
 ```shell
-./startup.sh
+sh sbt_rebuild.sh
+sh rebuild_all.sh
+rm -R Hadoop/data/datanode1/*
+rm -R Hadoop/data/datanode2/*
+rm -R Hadoop/data/namenode/*
+sh reformat_hdfs.sh
+docker-compose up -d
 ```
 
-Stop the VM:
-
-```shell
-./shutdown.sh
-```
-
-Restart the VM (usefull if you lose external internet access from the VM):
-
-```shell
-./restart.sh
-```
 ##Kafka Stream
 
 Not currently working properly.

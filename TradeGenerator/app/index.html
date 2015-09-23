@@ -124,6 +124,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.0-dev/dc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.7/d3-tip.min.js"></script>
 
     <script>
 
@@ -544,6 +545,14 @@
           this.charts.timeLine.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
           this.charts.timeLine.xAxis().ticks(5);
           this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
+
+          var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function (d) {
+                    //return "<span style='color: #f0027f'>" +  d.key + "</span> : "  + numberFormat(d.value);
+                    return this;
+                  });
 
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
