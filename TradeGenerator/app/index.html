@@ -271,7 +271,7 @@
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },0).value
+                                                                        },{value:{avgPrice:0}}).value
                                                                         .avgPrice*1.1]))
                                     .y(d3.scale.linear().domain([0, this.data
                                                                         .trades
@@ -282,7 +282,7 @@
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },0).value
+                                                                        },{value:{volume:0}}).value
                                                                         .volume*1.1]))
                                     .r(d3.scale.linear().domain([0, this.data
                                                                         .trades
@@ -293,7 +293,7 @@
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },0).value
+                                                                        },{value:{totalValue:0}}).value
                                                                         .totalValue*1.1]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
