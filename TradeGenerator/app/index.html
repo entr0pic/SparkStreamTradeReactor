@@ -653,6 +653,7 @@
                       .addDimension('trades','time',function(d){
                           var ttime = new Date(d.trade_time);
                           ttime.setSeconds(Math.round(ttime.getSeconds()/15)*15);
+                          ttime.setMilliseconds(0);
                           return ttime;
                         },customMetrics)
                       .initCharts();
