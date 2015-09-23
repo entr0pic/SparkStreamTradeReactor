@@ -54,7 +54,7 @@
        <div class="col-xl-4 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Trades By Cluster
+              Trades By Volume
             </div>
             <div class="card-block">
               <div id="second-chart"></div>
@@ -74,10 +74,43 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Cluster Movement Over Time
+              Trades Movement Over Time
             </div>
             <div class="card-block">
               <div id="second-minor-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="row">
+       <div class="col-xl-4 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Trades By Cluster
+            </div>
+            <div class="card-block">
+              <div id="second-cluster-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Cluster By Category
+            </div>
+            <div class="card-block">
+              <div id="minor-cluster-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Cluster Movement Over Time
+            </div>
+            <div class="card-block">
+              <div id="second-minor-cluster-chart"></div>
             </div>
           </div>
         </div>
@@ -93,6 +126,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.0-dev/dc.min.js"></script>
 
     <script>
+
       var socket = io();
       var ChartViz = function() {
         this.updateDelay = 2000;
@@ -103,7 +137,11 @@
           greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
           blues: ['rgb(255,247,251)','rgb(236,231,242)','rgb(208,209,230)','rgb(166,189,219)','rgb(116,169,207)','rgb(54,144,192)','rgb(5,112,176)','rgb(4,90,141)','rgb(2,56,88)'],
           redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
-          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)']
+          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)'],
+          clusters: [
+              'rgba(166,206,227,0.8)','rgba(31,120,180,0.8)','rgba(178,223,138,0.8)','rgba(51,160,44,0.8)','rgba(251,154,153,0.8)', // normal dots
+              'rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)' // centers
+            ]
         };
 
         this.geoJson = {};
@@ -252,12 +290,15 @@
                                     .colorAccessor(function (d) {
                                         return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
                                     })
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
+                                    })
                                     .colorDomain([1, 9])
                                     .keyAccessor(function (p) {
                                         return p.value.avgPrice;
                                     })
                                     .valueAccessor(function (p) {
-                                        return p.value.volume;
+                                       return p.value.volume;
                                     })
                                     .radiusValueAccessor(function (p) {
                                         return p.value.totalValue;
@@ -335,6 +376,119 @@
           this.charts.bubbles.yAxis().tickFormat(d3.format(".3s"));
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
+          this.charts.bubbles2 = dc.bubbleChart("#second-cluster-chart", "kmstats")
+                                    //.width(990) // (optional) define chart width, :default = 200
+                                    .height(500)  // (optional) define chart height, :default = 200
+                                    .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
+                                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                                    //.dimension(this.data.trades.dimensions.ccp)
+                                    .dimension(this.data.kmstats.dimensions.party_w)
+                                    //Bubble chart expect the groups are reduced to multiple values which would then be used
+                                    //to generate x, y, and radius for each key (bubble) in the group
+                                    .group(this.data.kmstats.groups.party_w)
+                                    .colors(this.colours.clusters) // (optional) define color function or array for bubbles
+                                    //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
+                                    //.ordering(function(d){ return -d.value.sales_count; })
+                                    //##### Accessors
+                                    //Accessor functions are applied to each value returned by the grouping
+                                    //
+                                    //* `.colorAccessor` The returned value will be mapped to an internal scale to determine a fill color
+                                    //* `.keyAccessor` Identifies the `X` value that will be applied against the `.x()` to identify pixel location
+                                    //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
+                                    //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
+                                    })
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.trades.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
+                                    })
+                                    .colorDomain([1, 10])
+                                    .keyAccessor(function (p) {
+                                        return p.value.avgPrice;
+                                    })
+                                    .valueAccessor(function (p) {
+                                        return p.value.rowCount;
+                                    })
+                                    .radiusValueAccessor(function (p) {
+                                        return p.value.totalPrice;
+                                    })
+                                    .x(d3.scale.linear().domain([0, this.data
+                                                                        .kmstats
+                                                                        .groups
+                                                                        .party_w
+                                                                        .order(function(d){
+                                                                          return d.totalPrice;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice*1.2]))
+                                    .y(d3.scale.linear().domain([0, this.data
+                                                                        .kmstats
+                                                                        .groups
+                                                                        .party_w
+                                                                        .order(function(d){
+                                                                          return d.rowCount;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{rowCount:0}}).value
+                                                                        .rowCount*1.2]))
+                                    .r(d3.scale.linear().domain([this.data
+                                                                        .kmstats
+                                                                        .groups
+                                                                        .party_w
+                                                                        .order(function(d){
+                                                                          return -d.totalPrice;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice,
+                                                                 this.data
+                                                                        .kmstats
+                                                                        .groups
+                                                                        .party_w
+                                                                        .order(function(d){
+                                                                          return d.rowCount;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{rowCount:0}}).value
+                                                                        .rowCount]))
+                                    //##### Elastic Scaling
+                                    //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
+                                    //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
+                                    .elasticY(true)
+                                    .elasticX(true)
+                                    .yAxisPadding(30)
+                                    .xAxisPadding(100)
+                                    .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
+                                    .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
+                                    .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
+                                    //.yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
+                                    //#### Labels and  Titles
+                                    //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
+                                    .renderLabel(true) // (optional) whether chart should render labels, :default = true
+                                    .label(function (p) {
+                                        return p.key;
+                                    })
+                                    .renderTitle(true) // (optional) whether chart should render titles, :default = false
+                                    .title(function (p) {
+                                        return [
+                                                p.key,
+                                               "Total Price: " +  d3.format("$,.2f")(p.value.avgPrice),
+                                                "Cluster: " + p.cluster
+//                                               "Volume: " + d3.format(",")(p.value.volume),
+//                                               "Total Value of Trades: " + d3.format("$.3s")(p.value.totalValue)
+                                               ]
+                                               .join("\n");
+                                    });
+
+          this.charts.bubbles2.yAxis().tickFormat(d3.format(".3s"));
+          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.2f"));
+
+
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
                                   //.width(990)
                                   .height(500)
@@ -393,6 +547,7 @@
                                   ))
 
           this.charts.timeLine.xAxis();
+
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
@@ -402,9 +557,71 @@
 
       var chartManager = new ChartViz();
 
+      var sanitiseStatsJson = function (json) {
+          if (json.time) { json.time = parseInt(json.time); }
+          return json;
+      }
       var sanitiseStatsValue = function (value) {
           return value.replace(/[,]+\]/gi,']')
       };
+
+      var getStatsRow = function (point, i, center) {
+          return {
+                "price": point[0],
+                "cluster": i,
+                "key": "Cluster "+i,
+                "party_w": point[1],
+                "exchange_w": point[2],
+                "currency_w": point[3],
+                "center": center
+            };
+      };
+
+      var getStatsData = function (json) {
+          var data = [];
+          json["cluster-centers"].forEach(function (cc, i) {
+              var row = getStatsRow(cc, i, true);
+              row.time = json.time;
+              data.push(row);
+              if (!json["cluster-data"] || !json["cluster-data"][i]) { return; }
+              json["cluster-data"][i].forEach(function (cd,j) {
+                  var row = getStatsRow(cd, i, false);
+                  row.time = json.time;
+                  data.push(row)
+              });
+          });
+          return data;
+      }
+
+      var createStatsData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getStatsData(json);
+      }
+
+        chartManager
+            .addDimension('kmstats','time',function(d) {return d.time;})
+            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
+            .addDimension('kmstats','price',function(d) {return d.price;})
+            .addDimension('kmstats','party_w',function(d){return d.party_w;},{
+                        init: function(){
+                          return {avgPrice:0,rowCount:0,totalPrice:0};
+                        },
+                        sum: function(totalled,row){
+                          totalled.rowCount++;
+                          totalled.totalPrice += row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          return totalled;
+                        },
+                        sub: function(totalled,row){
+                          totalled.rowCount--;
+                          totalled.totalPrice -= row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          totalled.avgPrice = isNaN(totalled.avgPrice) ? 0 : totalled.avgPrice;
+                          return totalled;
+                        }
+                      })
+
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
@@ -456,8 +673,8 @@
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
-                var value = sanitiseStatsValue(msg.value)
-                chartManager.addData('kmstats',JSON.parse(msg.value))
+                var value = createStatsData(msg.value)
+                chartManager.addData('kmstats',value)
                 console.log(msg);
               } catch (e) {
                 console.warn(e);
