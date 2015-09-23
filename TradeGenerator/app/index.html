@@ -342,7 +342,7 @@
                                   .margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.trades.dimensions.time)
                                   .group(this.data.trades.groups.time, "All Trades")
-                                  .ordinalColors(this.colours.category)
+                                  .colors(this.colours.category)
                                   .x(d3.time.scale().domain([
                                       this.data.trades.dimensions.time.top(1).reduce(function(l,c){
                                                                           return c || l;
