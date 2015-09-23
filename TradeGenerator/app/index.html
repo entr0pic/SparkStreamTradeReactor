@@ -146,10 +146,10 @@
 
           if (this.data[dataName].cf.size() > 2) {
             if (!this.data[dataName].rendered) {
-              dc.renderAll();
+              dc.renderAll(dataName);
               this.data[dataName].rendered = true;
             } else if (new Date() - this.lastUpdate > this.updateDelay) {
-              dc.redrawAll();
+              dc.redrawAll(dataName);
               this.lastUpdate = new Date();
             }
           }
