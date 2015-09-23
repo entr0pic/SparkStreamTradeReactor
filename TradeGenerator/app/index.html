@@ -262,9 +262,9 @@
                                         return p.value.totalValue;
                                     })
                                     .maxBubbleRelativeSize(0.3)
-//                                    .x(d3.scale.linear().domain([0, 4000]))
-//                                    .y(d3.scale.linear().domain([0, 100]))
-//                                    .r(d3.scale.linear().domain([0, 7500]))
+                                    .x(d3.scale.linear().domain([0, this.data.trades.groups.ccp.order(function(d){return d.avgPrice;}).top(1)[0].value.avgPrice*1.1]))
+                                    .y(d3.scale.linear().domain([0, this.data.trades.groups.ccp.order(function(d){return d.volume;}).top(1)[0].value.volume*1.1]))
+                                    .r(d3.scale.linear().domain([0, this.data.trades.groups.ccp.order(function(d){return d.totalValue;}).top(1)[0].value.avgPrice]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
