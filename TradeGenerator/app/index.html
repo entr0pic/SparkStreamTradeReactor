@@ -495,20 +495,20 @@
                                   .transitionDuration(1000)
                                   .margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.trades.dimensions.time)
-                                  .group(this.data.trades.groups.time, "All Trades")
-                                  .colors(this.colours.category)
+                                  .group(this.data.trades.groups.time)
+//                                  .colors(this.colours.category)
                                   .xyTipsOn(true)
-                                  .x(d3.time.scale().domain([
-                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
-                                                                          return c || l;
-                                                                        },{key: new Date()}).key,
-                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
-                                                                          return c || l;
-                                                                        },{key: new Date()}).key,
-                                  ]))
+//                                  .x(d3.time.scale().domain([
+//                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
+//                                                                          return c || l;
+//                                                                        },{key: new Date()}).key,
+//                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
+//                                                                          return c || l;
+//                                                                        },{key: new Date()}).key,
+//                                  ]))
 //                                  .round(d3.time.minutes.round)
 //                                  .xUnits(d3.time.minutes)
-                                  .elasticY(true)
+
                                   .renderHorizontalGridLines(true)
                                   .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
                                   .brushOn(false)
@@ -535,9 +535,13 @@
                                       return d3.time.format('%H:%M')(dao.key) + "\n"
                                               + 'Average Price: ' + (dao.value.avgPrice)
                                               ;
-                                  });
+                                  })
+                                  .elasticY(true)
+                                  .x(d3.time.scale().domain(d3.extent(this.data.trades.groups.time.all(), function(d) { return d.key; })))
 
-      Object.keys(this.charts).forEach(function(k){
+          this.charts.timeLine.xAxis();
+
+          Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
           return this;
