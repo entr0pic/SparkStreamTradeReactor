@@ -376,8 +376,8 @@
 //                                  })
                                   // title can be called by any stack layer.
                                   .title(function (d) {
-                                      return d3.time.format('%H:%M')(d.key) + "\n"
-                                              + 'Average Price: ' + (d.value.avgPrice)
+                                      return d3.time.format('%H:%M')(d.data.key) + "\n"
+                                              + 'Average Price: ' + (d.data.value.avgPrice)
                                               ;
                                   });
           Object.keys(this.charts).forEach(function(k){
