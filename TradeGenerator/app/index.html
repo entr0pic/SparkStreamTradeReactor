@@ -164,6 +164,7 @@
             for (dimensionName in this.data[dataName].dimensions) {
               this.data[dataName].dimensions[dimensionName].filterAll();
             }
+            dc.filterAll(dataName);
           }
           dc.redrawAll();
           return this;
