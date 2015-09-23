@@ -289,10 +289,10 @@
                                                "Volume: " + d3.format(",")(p.value.volume),
                                                "Total Value of Trades: " + d3.format("$,")(p.value.totalValue)]
                                                .join("\n");
-                                    })
-                                    //#### Customize Axis
-                                    //Set a custom tick format. Note `.yAxis()` returns an axis object, so any additional method chaining applies to the axis, not the chart.
-                                    .xAxis().tickFormat(d3.format("$,.2f"));
+                                    });
+
+          this.charts.bubbles.yAxis().tickFormat(d3.format(","));
+          this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
