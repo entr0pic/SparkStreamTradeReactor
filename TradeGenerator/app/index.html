@@ -400,7 +400,7 @@
                                         return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
                                     })
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.trades.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
+                                        return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
