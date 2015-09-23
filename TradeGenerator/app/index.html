@@ -93,35 +93,6 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.min.js"></script>
 
     <script>
-        /*------------ Functions from generator ----------------*/
-var mapCSVtoJSON = function(csvString) {
-  var trimQuotes = function(input) {
-    if (input.slice(0,1) == '"' && input.slice(-1) == '"')
-      return input.slice(1,input.length-1);
-    return input;
-  };
-  var spliter = csvString.length == trimQuotes(csvString).length ? ',' : '","';
-  var lines = csvString.split("\n").map(trimQuotes);
-  var headers = lines.shift().split(spliter).map(trimQuotes);
-  return lines.map(function(line){
-    return line.split(spliter).map(trimQuotes).reduce(function(json,cell,index){
-      json[headers[index]] = cell;
-      return json;
-    },{});
-  })
-}
-
-var GenerateIdFromStr = function (str) {
-    return [].concat(str.split("")).map(function (ch){
-        var n = ch.charCodeAt(0);
-        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
-    }).join("").replace(/^[0]+/gi, "");
-};
-
-var fs = require('fs');
-var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
-
-        /*------------ Functions from generator ----------------*/
 
       var socket = io();
       var ChartViz = function() {
@@ -133,7 +104,11 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
           greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
           blues: ['rgb(255,247,251)','rgb(236,231,242)','rgb(208,209,230)','rgb(166,189,219)','rgb(116,169,207)','rgb(54,144,192)','rgb(5,112,176)','rgb(4,90,141)','rgb(2,56,88)'],
           redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
-          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)']
+          category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)'],
+          clusters: [
+              'rgba(166,206,227,0.8)','rgba(31,120,180,0.8)','rgba(178,223,138,0.8)','rgba(51,160,44,0.8)','rgba(251,154,153,0.8)', // normal dots
+              'rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)' // centers
+            ]
         };
 
         this.geoJson = {};
@@ -260,16 +235,17 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
                                     .elasticX(true)
                                     .xAxis().ticks(5);
 
-          this.charts.bubbles = dc.bubbleChart("#second-chart", "trades")
+          this.charts.bubbles = dc.bubbleChart("#second-chart", "kmstats")
                                     //.width(990) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
                                     .margins({top: 10, right: 50, bottom: 30, left: 40})
-                                    .dimension(this.data.trades.dimensions.ccp)
+                                    //.dimension(this.data.trades.dimensions.ccp)
+                                    .dimension(this.data.kmstats.dimensions.party_w)
                                     //Bubble chart expect the groups are reduced to multiple values which would then be used
                                     //to generate x, y, and radius for each key (bubble) in the group
-                                    .group(this.data.trades.groups.ccp)
-                                    .colors(this.colours.category) // (optional) define color function or array for bubbles
+                                    .group(this.data.kmstats.groups.party_w)
+                                    .colors(this.colours.clusters) // (optional) define color function or array for bubbles
                                     //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
                                     //.ordering(function(d){ return -d.value.sales_count; })
                                     //##### Accessors
@@ -280,62 +256,65 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
+                                        return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
                                     })
-                                    .colorDomain([1, 9])
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.trades.groups.cluster.all().map(function(d) {return d.cluster+(d.center?5:0)}).indexOf(d.cluster+(d.center?5:0))%10;
+                                    })
+                                    .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
                                         return p.value.avgPrice;
                                     })
                                     .valueAccessor(function (p) {
-                                        return p.value.volume;
+                                        return p.value.rowCount;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return p.value.totalValue;
+                                        return p.value.totalPrice;
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
-                                                                        .trades
+                                                                        .kmstats
                                                                         .groups
-                                                                        .ccp
+                                                                        .party_w
                                                                         .order(function(d){
-                                                                          return d.avgPrice;
+                                                                          return d.totalPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{avgPrice:0}}).value
-                                                                        .avgPrice*1.2]))
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice*1.2]))
                                     .y(d3.scale.linear().domain([0, this.data
-                                                                        .trades
+                                                                        .kmstats
                                                                         .groups
-                                                                        .ccp
+                                                                        .party_w
                                                                         .order(function(d){
-                                                                          return d.volume;
+                                                                          return d.rowCount;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{volume:0}}).value
-                                                                        .volume*1.2]))
+                                                                        },{value:{rowCount:0}}).value
+                                                                        .rowCount*1.2]))
                                     .r(d3.scale.linear().domain([this.data
-                                                                        .trades
+                                                                        .kmstats
                                                                         .groups
-                                                                        .ccp
+                                                                        .party_w
                                                                         .order(function(d){
-                                                                          return -d.totalValue;
+                                                                          return -d.totalPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{totalValue:0}}).value
-                                                                        .totalValue,
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice,
                                                                  this.data
-                                                                        .trades
+                                                                        .kmstats
                                                                         .groups
-                                                                        .ccp
+                                                                        .party_w
                                                                         .order(function(d){
-                                                                          return d.totalValue;
+                                                                          return d.rowCount;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{totalValue:0}}).value
-                                                                        .totalValue]))
+                                                                        },{value:{rowCount:0}}).value
+                                                                        .rowCount]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
@@ -346,7 +325,7 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
                                     .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
                                     .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
-                                    .yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
+                                    //.yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
                                     //#### Labels and  Titles
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
@@ -355,10 +334,13 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
-                                        return [p.key,
-                                               "Average Price: " +  d3.format("$,.2f")(p.value.avgPrice),
-                                               "Volume: " + d3.format(",")(p.value.volume),
-                                               "Total Value of Trades: " + d3.format("$.3s")(p.value.totalValue)]
+                                        return [
+                                                p.key,
+                                               "Total Price: " +  d3.format("$,.2f")(p.value.avgPrice),
+                                                "Cluster: " + p.cluster
+//                                               "Volume: " + d3.format(",")(p.value.volume),
+//                                               "Total Value of Trades: " + d3.format("$.3s")(p.value.totalValue)
+                                               ]
                                                .join("\n");
                                     });
 
@@ -370,7 +352,7 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
                                     .height(150)
                                     .transitionDuration(2000)
                                     .margins({top: 10, right: 10, bottom: 10, left: 20})
-                                    .dimension(this.data.trades.dimensions.category)
+                                    .dimension(this.data.kmstats.dimensions.category)
                                     .group('price')
 	                                .elasticY(true)
                                     //    .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.dtg; })))
@@ -393,33 +375,30 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
           return value.replace(/[,]+\]/gi,']')
       };
 
-      var getExchangeCountry(weight, exchanges) {
-        if (!exchanges) { exchanges = allExchanges; }
-        return (exchanges.map(function (row) {
-            return {
-                w: GenerateIdFromStr(row.Exchange),
-                c: row.Country
+      var getStatsRow = function (point, i, center) {
+          return {
+                "price": point[0],
+                "cluster": i,
+                "key": "Cluster "+i,
+                "party_w": point[1],
+                "exchange_w": point[2],
+                "currency_w": point[3],
+                "center": center
             };
-        }).sort(function (a,b) {
-            var a1 = Math.abs(a.w - weight);
-            var b1 = Math.abs(b.w - weight);
-            return (a1 > b1 ? 1 : (a1 < b1  ? -1 : 0))
-        }) || [{
-            w: exchange_weight,
-            c: ""
-        }]).slice(0,1)["c"];
       };
 
       var getStatsData = function (json) {
           var data = [];
           json["cluster-centers"].forEach(function (cc, i) {
-            var row = {
-                "time": json.time,
-                "price": cc[0],
-                "cluster": i,
-                "country": getExchangeCountry(cc[2])
-            };
-              data.push(row)
+              var row = getStatsRow(cc, i, true);
+              row.time = json.time;
+              data.push(row);
+              if (!json["cluster-data"] || !json["cluster-data"][i]) { return; }
+              json["cluster-data"][i].forEach(function (cd,j) {
+                  var row = getStatsRow(cd, i, false);
+                  row.time = json.time;
+                  data.push(row)
+              });
           });
           return data;
       }
@@ -432,7 +411,27 @@ var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 
         chartManager
             .addDimension('kmstats','time',function(d) {return d.time;})
-            .addDimension('kmstats','cluster',function(d) {return d.cluster;});
+            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
+            .addDimension('kmstats','price',function(d) {return d.price;})
+            .addDimension('kmstats','party_w',function(d){return d.party_w;},{
+                        init: function(){
+                          return {avgPrice:0,rowCount:0,totalPrice:0};
+                        },
+                        sum: function(totalled,row){
+                          totalled.rowCount++;
+                          totalled.totalPrice += row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          return totalled;
+                        },
+                        sub: function(totalled,row){
+                          totalled.rowCount--;
+                          totalled.totalPrice -= row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          totalled.avgPrice = isNaN(totalled.avgPrice) ? 0 : totalled.avgPrice;
+                          return totalled;
+                        }
+                      })
+
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
