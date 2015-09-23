@@ -192,8 +192,7 @@
 //              .rotate([-12,0]);
 
           /*Init charts */
-          this.charts.country = dc.geoChoroplethChart('#main-chart')
-                                  .chartGroup('trades')
+          this.charts.country = dc.geoChoroplethChart('#main-chart', 'trades')
                                   .height(500)
                                   .dimension(this.data.trades.dimensions.country)
                                   .group(this.data.trades.groups.country)
@@ -211,8 +210,7 @@
                                       return  d.key + "\nTotal Trades: " + (d.value ? d.value : 0);
                                   });
           //this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades_test');
-          this.charts.category = dc.rowChart("#minor-chart")
-                                    .chartGroup('trades')
+          this.charts.category = dc.rowChart("#minor-chart",'trades')
                                     .height(500)
                                     .margins({top: 20, left: 10, right: 10, bottom: 80})
                                     .dimension(this.data.trades.dimensions.category)
@@ -232,7 +230,69 @@
                                     .elasticX(true)
                                     .xAxis().ticks(5);
 
-          //this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades_test');
+          this.charts.bubbles = dc.bubbleChart("#second-chart", "trades")
+                                    //.width(990) // (optional) define chart width, :default = 200
+                                    .height(500)  // (optional) define chart height, :default = 200
+                                    .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
+                                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                                    .dimension(this.trades.dimensions.ccp)
+                                    //Bubble chart expect the groups are reduced to multiple values which would then be used
+                                    //to generate x, y, and radius for each key (bubble) in the group
+                                    .group(this.trades.dimensions.ccp)
+                                    .colors(this.colours.category) // (optional) define color function or array for bubbles
+                                    //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
+                                    //.ordering(function(d){ return -d.value.sales_count; })
+                                    //##### Accessors
+                                    //Accessor functions are applied to each value returned by the grouping
+                                    //
+                                    //* `.colorAccessor` The returned value will be mapped to an internal scale to determine a fill color
+                                    //* `.keyAccessor` Identifies the `X` value that will be applied against the `.x()` to identify pixel location
+                                    //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
+                                    //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.trades.groups.category.all().map(function(d) {return d.key}).indexOf(d.key);
+                                    })
+                                    .keyAccessor(function (p) {
+                                        return p.value.avgPrice;
+                                    })
+                                    .valueAccessor(function (p) {
+                                        return p.value.volume;
+                                    })
+                                    .radiusValueAccessor(function (p) {
+                                        return p.value.totalValue;
+                                    })
+                                    .maxBubbleRelativeSize(0.3)
+//                                    .x(d3.scale.linear().domain([0, 4000]))
+//                                    .y(d3.scale.linear().domain([0, 100]))
+//                                    .r(d3.scale.linear().domain([0, 7500]))
+                                    //##### Elastic Scaling
+                                    //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
+                                    //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
+                                    .elasticY(true)
+                                    .elasticX(true)
+                                    .yAxisPadding(30)
+                                    .xAxisPadding(100)
+                                    .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
+                                    .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
+                                    .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
+                                    .yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
+                                    //#### Labels and  Titles
+                                    //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
+                                    .renderLabel(true) // (optional) whether chart should render labels, :default = true
+                                    .label(function (p) {
+                                        return p.key;
+                                    })
+                                    .renderTitle(true) // (optional) whether chart should render titles, :default = false
+                                    .title(function (p) {
+                                        return [p.key,
+                                               "Average Price: " +  d3.format("$,.2f")(p.value.avgPrice),
+                                               "Volume: " + d3.format(",")(p.value.volume),
+                                               "Total Value of Trades: " + d3.format("$,")(p.value.totalValue)]
+                                               .join("\n");
+                                    })
+                                    //#### Customize Axis
+                                    //Set a custom tick format. Note `.yAxis()` returns an axis object, so any additional method chaining applies to the axis, not the chart.
+                                    .xAxis().tickFormat(d3.format("$,.2f"));
 
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
@@ -253,6 +313,28 @@
         chartManager.setGeoJson(world)
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
+                      .addDimension('trades','ccp',function(d){return d.ccp;},{
+                        init: function(){
+                          return {volume:0,avgPrice:0,totalValue:0,rowCount:0,totalPrice:0 };
+                        },
+                        sum: function(totalled,row){
+                          totalled.rowCount++;
+                          totalled.volume += row.volume;
+                          totalled.totalValue += (row.price*row.volume);
+                          totalled.totalPrice += row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          return totalled;
+                        },
+                        sub: function(totalled,row){
+                          totalled.rowCount--;
+                          totalled.volume -= row.volume;
+                          totalled.totalValue -= (row.price*row.volume);
+                          totalled.totalPrice -= row.price;
+                          totalled.avgPrice = totalled.totalPrice/totalled.rowCount;
+                          totalled.avgPrice = isNaN(totalled.avgPrice) ? 0 : totalled.avgPrice;
+                          return totalled;
+                        }
+                      })
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
