@@ -296,7 +296,7 @@ try {
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
             val maxNum : Integer = 20;
-            val tdata = rdd.take(100).foreach{ a =>
+            val tdata = rdd.takeSample(true, 100, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
                 println(a)
                 println("Predicted cluster = "+ (1+cluster).toString)
@@ -306,15 +306,18 @@ try {
                 if (nums(cluster) <= maxNum)  buffer(cluster) += a.toString // limit each cluster to <=20 examples
                 nums(cluster) += 1
             }
+
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
             buffer.foreach{s =>
-                if (firstRec) {
-                    firstRec = false
-                } else {
-                    strMsg += ","
+                if (s != "") {
+                    if (firstRec) {
+                        firstRec = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
                 }
-                strMsg += "["+s+"]"
             }
             strMsg += "]"
 

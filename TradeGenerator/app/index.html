@@ -243,6 +243,10 @@
 
       var chartManager = new ChartViz();
 
+      var sanitiseStatsValue = function (value) {
+          return value.replace(/[,]+\]/gi,']')
+      };
+
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
         world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
@@ -269,6 +273,7 @@
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
+                var value = sanitiseStatsValue(msg.value)
                 chartManager.addData('kmstats',JSON.parse(msg.value))
                 console.log(msg);
               } catch (e) {
