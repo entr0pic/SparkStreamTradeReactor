@@ -383,7 +383,7 @@
                                               ;
                                   })
                                   .elasticY(true)
-                                  .x(d3.time.scale().domain(d3.extent(this.data.trades.groups.all(), function(d) { return d.key; })))
+                                  .x(d3.time.scale().domain(d3.extent(this.data.trades.groups.time.all(), function(d) { return d.key; })))
 
           this.charts.timeLine.xAxis();
           Object.keys(this.charts).forEach(function(k){
