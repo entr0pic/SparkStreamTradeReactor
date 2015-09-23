@@ -303,7 +303,7 @@
                                     .radiusValueAccessor(function (p) {
                                         return p.value.totalValue;
                                     })
-                                    .x(d3.scale.linear().domain([0, this.data
+                                    .x(d3.scale.sqrt().domain([0, this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
@@ -314,7 +314,7 @@
                                                                           return c || l;
                                                                         },{value:{avgPrice:0}}).value
                                                                         .avgPrice*1.2]))
-                                    .y(d3.scale.linear().domain([0, this.data
+                                    .y(d3.scale.sqrt().domain([0, this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
@@ -352,6 +352,8 @@
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
                                     .elasticY(true)
                                     .elasticX(true)
+                                    .elasticRadius(true)
+                                    .maxBubbleRelativeSize(0.4)
                                     .yAxisPadding(30)
                                     .xAxisPadding(100)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
@@ -508,7 +510,7 @@
 
                                   .renderHorizontalGridLines(true)
                                   .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
-                                  .brushOn(false)
+                                  .brushOn(true)
                                   // Add the base layer of the stack with group. The second parameter specifies a series name for use in the legend
                                   // The `.valueAccessor` will be used for the base layer
                                   .valueAccessor(function (d) {
