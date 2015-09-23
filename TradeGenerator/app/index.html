@@ -496,19 +496,7 @@
                                   .margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.trades.dimensions.time)
                                   .group(this.data.trades.groups.time)
-//                                  .colors(this.colours.category)
                                   .xyTipsOn(true)
-//                                  .x(d3.time.scale().domain([
-//                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                  ]))
-//                                  .round(d3.time.minutes.round)
-//                                  .xUnits(d3.time.minutes)
-
                                   .renderHorizontalGridLines(true)
                                   .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
                                   .brushOn(true)
@@ -538,7 +526,7 @@
                                   })
                                   .elasticY(true)
                                   .elasticX(true)
-                                  .y(d3.scale.linear().domain(
+                                  .y(d3.scale.pow().exponent(0.2).domain(
                                     d3.extent(chartManager.data.trades.groups.time.all(),
                                               function(d) {
                                                 return d.value.avgPrice;
@@ -553,7 +541,8 @@
                                               })
                                   ))
 
-          this.charts.timeLine.xAxis();
+          this.charts.timeLine.xAxis().tickFormat(d3.time.format('%H:%M'));
+          this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
 
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
