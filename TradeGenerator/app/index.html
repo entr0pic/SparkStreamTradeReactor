@@ -8,7 +8,7 @@
     <meta charset="utf-8">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.0-dev/dc.css" rel="stylesheet">
     <style>
       div.dc-chart {
         float: none !important;
@@ -54,7 +54,7 @@
        <div class="col-xl-4 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Trades By Cluster
+              Trades By Volume
             </div>
             <div class="card-block">
               <div id="second-chart"></div>
@@ -74,10 +74,43 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Cluster Movement Over Time
+              Trades Movement Over Time
             </div>
             <div class="card-block">
               <div id="second-minor-chart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="row">
+       <div class="col-xl-4 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Trades By Cluster
+            </div>
+            <div class="card-block">
+              <div id="second-cluster-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Cluster By Category
+            </div>
+            <div class="card-block">
+              <div id="minor-cluster-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-md-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Cluster Movement Over Time
+            </div>
+            <div class="card-block">
+              <div id="second-minor-cluster-chart"></div>
             </div>
           </div>
         </div>
@@ -90,7 +123,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.0-dev/dc.min.js"></script>
 
     <script>
 
@@ -217,7 +250,7 @@
           //this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades_test');
           this.charts.category = dc.rowChart("#minor-chart",'trades')
                                     .height(500)
-                                    .margins({top: 20, left: 10, right: 10, bottom: 80})
+                                    .margins({top: 30, right: 50, bottom: 25, left: 40})
                                     .dimension(this.data.trades.dimensions.category)
                                     .group(this.data.trades.groups.category)
                                     .ordering(function(d){ return -d.value })
@@ -235,7 +268,115 @@
                                     .elasticX(true)
                                     .xAxis().ticks(5);
 
-          this.charts.bubbles = dc.bubbleChart("#second-chart", "kmstats")
+          this.charts.bubbles = dc.bubbleChart("#second-chart", "trades")
+                                    //.width(990) // (optional) define chart width, :default = 200
+                                    .height(500)  // (optional) define chart height, :default = 200
+                                    .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
+                                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                                    .dimension(this.data.trades.dimensions.ccp)
+                                    //Bubble chart expect the groups are reduced to multiple values which would then be used
+                                    //to generate x, y, and radius for each key (bubble) in the group
+                                    .group(this.data.trades.groups.ccp)
+                                    .colors(this.colours.category) // (optional) define color function or array for bubbles
+                                    //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
+                                    //.ordering(function(d){ return -d.value.sales_count; })
+                                    //##### Accessors
+                                    //Accessor functions are applied to each value returned by the grouping
+                                    //
+                                    //* `.colorAccessor` The returned value will be mapped to an internal scale to determine a fill color
+                                    //* `.keyAccessor` Identifies the `X` value that will be applied against the `.x()` to identify pixel location
+                                    //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
+                                    //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.kmstats.groups.cluster.all().map(function(d) {return d.key).indexOf(d.cluster+(d.center?5:0))%10;
+                                    })
+                                    .colorAccessor(function (d) {
+                                        return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
+                                    })
+                                    .colorDomain([1, 9])
+                                    .keyAccessor(function (p) {
+                                        return p.value.avgPrice;
+                                    })
+                                    .valueAccessor(function (p) {
+                                       return p.value.volume;
+                                    })
+                                    .radiusValueAccessor(function (p) {
+                                        return p.value.totalValue;
+                                    })
+                                    .x(d3.scale.linear().domain([0, this.data
+                                                                        .trades
+                                                                        .groups
+                                                                        .ccp
+                                                                        .order(function(d){
+                                                                          return d.avgPrice;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{avgPrice:0}}).value
+                                                                        .avgPrice*1.2]))
+                                    .y(d3.scale.linear().domain([0, this.data
+                                                                        .trades
+                                                                        .groups
+                                                                        .ccp
+                                                                        .order(function(d){
+                                                                          return d.volume;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{volume:0}}).value
+                                                                        .volume*1.2]))
+                                    .r(d3.scale.linear().domain([this.data
+                                                                        .trades
+                                                                        .groups
+                                                                        .ccp
+                                                                        .order(function(d){
+                                                                          return -d.totalValue;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{totalValue:0}}).value
+                                                                        .totalValue,
+                                                                 this.data
+                                                                        .trades
+                                                                        .groups
+                                                                        .ccp
+                                                                        .order(function(d){
+                                                                          return d.totalValue;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{totalValue:0}}).value
+                                                                        .totalValue]))
+                                    //##### Elastic Scaling
+                                    //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
+                                    //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
+                                    .elasticY(true)
+                                    .elasticX(true)
+                                    .yAxisPadding(30)
+                                    .xAxisPadding(100)
+                                    .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
+                                    .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
+                                    .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
+                                    .yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
+                                    //#### Labels and  Titles
+                                    //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
+                                    .renderLabel(true) // (optional) whether chart should render labels, :default = true
+                                    .label(function (p) {
+                                        return p.key;
+                                    })
+                                    .renderTitle(true) // (optional) whether chart should render titles, :default = false
+                                    .title(function (p) {
+                                        return [p.key,
+                                               "Average Price: " +  d3.format("$,.2f")(p.value.avgPrice),
+                                               "Volume: " + d3.format(",")(p.value.volume),
+                                               "Total Value of Trades: " + d3.format("$.3s")(p.value.totalValue)]
+                                               .join("\n");
+                                    });
+
+          this.charts.bubbles.yAxis().tickFormat(d3.format(".3s"));
+          this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
+
+          this.charts.bubbles2 = dc.bubbleChart("#second-cluster-chart", "kmstats")
                                     //.width(990) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
@@ -347,18 +488,56 @@
           this.charts.bubbles.yAxis().tickFormat(d3.format(".3s"));
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
-         this.charts.timeChart = dc.lineChart("#second-minor-chart")
-                                    .chartGroup('kmstats')
-                                    .height(150)
-                                    .transitionDuration(2000)
-                                    .margins({top: 10, right: 10, bottom: 10, left: 20})
-                                    .dimension(this.data.kmstats.dimensions.category)
-                                    .group('price')
-	                                .elasticY(true)
-                                    //    .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.dtg; })))
-                                    .xAxis().ticks(10);
 
-          Object.keys(this.charts).forEach(function(k){
+          this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
+                                  //.width(990)
+                                  .height(500)
+                                  .transitionDuration(1000)
+                                  .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                  .dimension(this.data.trades.dimensions.time)
+                                  .group(this.data.trades.groups.time, "All Trades")
+                                  .colors(this.colours.category)
+                                  .xyTipsOn(true)
+                                  .x(d3.time.scale().domain([
+                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{key: new Date()}).key,
+                                  ]))
+//                                  .round(d3.time.minutes.round)
+//                                  .xUnits(d3.time.minutes)
+                                  .elasticY(true)
+                                  .renderHorizontalGridLines(true)
+                                  .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
+                                  .brushOn(false)
+                                  // Add the base layer of the stack with group. The second parameter specifies a series name for use in the legend
+                                  // The `.valueAccessor` will be used for the base layer
+                                  .valueAccessor(function (d) {
+                                      return d.value.avgPrice;
+                                  })
+                                  // stack additional layers with `.stack`. The first paramenter is a new group.
+                                  // The second parameter is the series name. The third is a value accessor.
+
+//                                  .stack(this.data.trades.groups.time, "Value 2", function (d) {
+//                                      return d.value.1;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 3", function (d) {
+//                                      return d.value.2;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 4", function (d) {
+//                                      return d.value.3;
+//                                  })
+                                  // title can be called by any stack layer.
+                                  .title(function (d) {
+                                      var dao = d.data || d;
+                                      return d3.time.format('%H:%M')(dao.key) + "\n"
+                                              + 'Average Price: ' + (dao.value.avgPrice)
+                                              ;
+                                  });
+
+      Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
           return this;
@@ -436,10 +615,7 @@
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
         world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
-        chartManager.setGeoJson(world)
-                      .addDimension('trades','country',function(d) {return d.country;})
-                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
-                      .addDimension('trades','ccp',function(d){return d.ccp;},{
+        var customMetrics = {
                         init: function(){
                           return {volume:0,avgPrice:0,totalValue:0,rowCount:0,totalPrice:0 };
                         },
@@ -460,7 +636,12 @@
                           totalled.avgPrice = isNaN(totalled.avgPrice) ? 0 : totalled.avgPrice;
                           return totalled;
                         }
-                      })
+                      };
+        chartManager.setGeoJson(world)
+                      .addDimension('trades','country',function(d) {return d.country;})
+                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
+                      .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
+                      .addDimension('trades','time',function(d){return new Date(d.trade_time);},customMetrics)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
