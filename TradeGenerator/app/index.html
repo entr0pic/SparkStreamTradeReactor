@@ -267,34 +267,45 @@
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return d.avgPrice;
+                                                                          return -d.avgPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{avgPrice:0}}).value
-                                                                        .avgPrice*1.1]))
+                                                                        .avgPrice*1.2]))
                                     .y(d3.scale.linear().domain([0, this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return d.avgPrice;
+                                                                          return -d.volume;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{volume:0}}).value
-                                                                        .volume*1.1]))
-                                    .r(d3.scale.linear().domain([0, this.data
+                                                                        .volume*1.2]))
+                                    .r(d3.scale.linear().domain([this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return d.avgPrice;
+                                                                          return d.totalValue;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalValue:0}}).value
-                                                                        .totalValue*1.1]))
+                                                                        .totalValue,
+                                                                 this.data
+                                                                        .trades
+                                                                        .groups
+                                                                        .ccp
+                                                                        .order(function(d){
+                                                                          return -d.totalValue;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{totalValue:0}}).value
+                                                                        .totalValue]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
@@ -321,7 +332,7 @@
                                                .join("\n");
                                     });
 
-          this.charts.bubbles.yAxis().tickFormat(d3.format(","));
+          this.charts.bubbles.yAxis().tickFormat(d3.format(".3s"));
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
           Object.keys(this.charts).forEach(function(k){
