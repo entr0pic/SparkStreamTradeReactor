@@ -250,8 +250,9 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.trades.groups.category.all().map(function(d) {return d.key}).indexOf(d.key)%8;
+                                        return chartManager.data.trades.groups.ccp.all().map(function(d) {return d.key}).indexOf(d.key)%9;
                                     })
+                                    .colorDomain([1, 9])
                                     .keyAccessor(function (p) {
                                         return p.value.avgPrice;
                                     })
@@ -267,7 +268,7 @@
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return -d.avgPrice;
+                                                                          return d.avgPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -278,7 +279,7 @@
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return -d.volume;
+                                                                          return d.volume;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -289,7 +290,7 @@
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return d.totalValue;
+                                                                          return -d.totalValue;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -300,7 +301,7 @@
                                                                         .groups
                                                                         .ccp
                                                                         .order(function(d){
-                                                                          return -d.totalValue;
+                                                                          return d.totalValue;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
