@@ -93,6 +93,36 @@
     <script src="http://cdnjs.cloudflare.com/ajax/libs/dc/1.7.0/dc.min.js"></script>
 
     <script>
+        /*------------ Functions from generator ----------------*/
+var mapCSVtoJSON = function(csvString) {
+  var trimQuotes = function(input) {
+    if (input.slice(0,1) == '"' && input.slice(-1) == '"')
+      return input.slice(1,input.length-1);
+    return input;
+  };
+  var spliter = csvString.length == trimQuotes(csvString).length ? ',' : '","';
+  var lines = csvString.split("\n").map(trimQuotes);
+  var headers = lines.shift().split(spliter).map(trimQuotes);
+  return lines.map(function(line){
+    return line.split(spliter).map(trimQuotes).reduce(function(json,cell,index){
+      json[headers[index]] = cell;
+      return json;
+    },{});
+  })
+}
+
+var GenerateIdFromStr = function (str) {
+    return [].concat(str.split("")).map(function (ch){
+        var n = ch.charCodeAt(0);
+        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
+    }).join("").replace(/^[0]+/gi, "");
+};
+
+var fs = require('fs');
+var allExchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
+
+        /*------------ Functions from generator ----------------*/
+
       var socket = io();
       var ChartViz = function() {
         this.updateDelay = 2000;
@@ -234,6 +264,17 @@
 
           //this.charts.time = dc.barChart("#second-minor-chart").chartGroup('trades_test');
 
+         this.charts.timeChart = dc.lineChart("#second-minor-chart")
+                                    .chartGroup('kmstats')
+                                    .height(150)
+                                    .transitionDuration(2000)
+                                    .margins({top: 10, right: 10, bottom: 10, left: 20})
+                                    .dimension(this.data.trades.dimensions.category)
+                                    .group('price')
+	                                .elasticY(true)
+                                    //    .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.dtg; })))
+                                    .xAxis().ticks(10);
+
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
           });
@@ -243,9 +284,54 @@
 
       var chartManager = new ChartViz();
 
+      var sanitiseStatsJson = function (json) {
+          if (json.time) { json.time = parseInt(json.time); }
+          return json;
+      }
       var sanitiseStatsValue = function (value) {
           return value.replace(/[,]+\]/gi,']')
       };
+
+      var getExchangeCountry(weight, exchanges) {
+        if (!exchanges) { exchanges = allExchanges; }
+        return (exchanges.map(function (row) {
+            return {
+                w: GenerateIdFromStr(row.Exchange),
+                c: row.Country
+            };
+        }).sort(function (a,b) {
+            var a1 = Math.abs(a.w - weight);
+            var b1 = Math.abs(b.w - weight);
+            return (a1 > b1 ? 1 : (a1 < b1  ? -1 : 0))
+        }) || [{
+            w: exchange_weight,
+            c: ""
+        }]).slice(0,1)["c"];
+      };
+
+      var getStatsData = function (json) {
+          var data = [];
+          json["cluster-centers"].forEach(function (cc, i) {
+            var row = {
+                "time": json.time,
+                "price": cc[0],
+                "cluster": i,
+                "country": getExchangeCountry(cc[2])
+            };
+              data.push(row)
+          });
+          return data;
+      }
+
+      var createStatsData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getStatsData(json);
+      }
+
+        chartManager
+            .addDimension('kmstats','time',function(d) {return d.time;})
+            .addDimension('kmstats','cluster',function(d) {return d.cluster;});
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
@@ -273,8 +359,8 @@
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
-                var value = sanitiseStatsValue(msg.value)
-                chartManager.addData('kmstats',JSON.parse(msg.value))
+                var value = createStatsData(msg.value)
+                chartManager.addData('kmstats',value)
                 console.log(msg);
               } catch (e) {
                 console.warn(e);

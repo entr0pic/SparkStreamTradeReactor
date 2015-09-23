@@ -92,6 +92,13 @@ object TradeStreamReader {
     val trades = messages.map(_._2)
     //val ttrades = tmessages.map(_._2)
 
+var allExchanges = sc.textFile("file:///shared/data/exchanges.csv")  // original file
+val allExchangesList = allExchanges.map{ line =>
+    var row = line.split(",").map(elem => elem.trim)
+    var buffer : Array[String] = new Array[String][3]
+    buffer(0) = row()
+}
+
 //------------------------ functions --------------
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
