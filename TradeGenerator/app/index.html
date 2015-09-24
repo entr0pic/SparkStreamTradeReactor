@@ -413,7 +413,7 @@
                                     })
                                     .radiusValueAccessor(function (p) {
                                         var idx = p.key.split(":")[0]
-                                        return p.value.prices[idx];
+                                        return p.value.counts[idx];
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
@@ -437,7 +437,7 @@
                                                                           return c || l;
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))
-                                    .r(d3.scale.linear().domain([this.data
+                                    .r(d3.scale.linear().domain([0,21/*this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
@@ -458,7 +458,7 @@
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalPrice:0}}).value
-                                                                        .totalPrice]))
+                                                                        .totalPrice*/]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
