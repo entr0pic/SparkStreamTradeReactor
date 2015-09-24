@@ -508,7 +508,7 @@ function drawDAG(chartId, dataset) {
       // Center the graph
       var initialScale = 0.75;
       zoom
-        .translate([(svg.attr("width") - g.graph().width * initialScale) / 2, 20])
+        .translate([(svg.attr("width") - dg.graph().width * initialScale) / 2, 20])
         .scale(initialScale)
         .event(svg);
       svg.attr("height", dg.graph().height + 40);
