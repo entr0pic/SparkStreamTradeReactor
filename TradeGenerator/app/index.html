@@ -412,8 +412,9 @@
                                         return p.value.weights[idx];
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.counts[idx];
+                                        return 5;
+//                                        var idx = p.key.split(":")[0]
+//                                        return p.value.counts[idx];
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
@@ -480,9 +481,9 @@
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-                                                p.key,
+//                                                p.key,
+                                               "Cluster: " + idx,
                                                "Total Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
-                                                "Cluster: " + idx,
                                                "Volume: " + d3.format(",")(p.value.counts[idx])
                                                ]
                                                .join("\n");
