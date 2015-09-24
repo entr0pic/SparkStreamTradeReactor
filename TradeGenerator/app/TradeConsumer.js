@@ -23,7 +23,7 @@ console.log(topicNames.map(function(d) {return {topic: d}}));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
-}).get('/compose', function(req, res){
+}).get('/description', function(req, res){
   res.sendFile(__dirname + '/compose.html');
 }).get('/js/dagred3.js', function(req, res){
   res.sendFile(__dirname + '/dagred3.js');
