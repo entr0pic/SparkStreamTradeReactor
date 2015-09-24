@@ -54,7 +54,7 @@
        <div class="col-xl-4 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Trades By Volume
+              Trades By Clearing House
             </div>
             <div class="card-block">
               <div id="second-chart"></div>
@@ -74,7 +74,7 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Trades Movement Over Time
+              Mean Price Over Time
             </div>
             <div class="card-block">
               <div id="second-minor-chart"></div>
@@ -124,6 +124,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dc/2.1.0-dev/dc.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.7/d3-tip.min.js"></script>
 
     <script>
 
@@ -164,6 +165,7 @@
             for (dimensionName in this.data[dataName].dimensions) {
               this.data[dataName].dimensions[dimensionName].filterAll();
             }
+            dc.filterAll(dataName);
           }
           dc.redrawAll();
           return this;
@@ -303,7 +305,7 @@
                                     .radiusValueAccessor(function (p) {
                                         return p.value.totalValue;
                                     })
-                                    .x(d3.scale.linear().domain([0, this.data
+                                    .x(d3.scale.sqrt().domain([0, this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
@@ -314,7 +316,7 @@
                                                                           return c || l;
                                                                         },{value:{avgPrice:0}}).value
                                                                         .avgPrice*1.2]))
-                                    .y(d3.scale.linear().domain([0, this.data
+                                    .y(d3.scale.sqrt().domain([0, this.data
                                                                         .trades
                                                                         .groups
                                                                         .ccp
@@ -352,6 +354,8 @@
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
                                     .elasticY(true)
                                     .elasticX(true)
+                                    .elasticRadius(true)
+                                    .maxBubbleRelativeSize(0.15)
                                     .yAxisPadding(30)
                                     .xAxisPadding(100)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
@@ -499,20 +503,8 @@
                                   .transitionDuration(1000)
                                   .margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.trades.dimensions.time)
-                                  .group(this.data.trades.groups.time)
-//                                  .colors(this.colours.category)
+                                  .group(this.data.trades.groups.time,"Average Price")
                                   .xyTipsOn(true)
-//                                  .x(d3.time.scale().domain([
-//                                      this.data.trades.dimensions.time.top(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                      this.data.trades.dimensions.time.bottom(1).reduce(function(l,c){
-//                                                                          return c || l;
-//                                                                        },{key: new Date()}).key,
-//                                  ]))
-//                                  .round(d3.time.minutes.round)
-//                                  .xUnits(d3.time.minutes)
-
                                   .renderHorizontalGridLines(true)
                                   .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
                                   .brushOn(false)
@@ -542,7 +534,7 @@
                                   })
                                   .elasticY(true)
                                   .elasticX(true)
-                                  .y(d3.scale.linear().domain(
+                                  .y(d3.scale.pow().exponent(0.2).domain(
                                     d3.extent(chartManager.data.trades.groups.time.all(),
                                               function(d) {
                                                 return d.value.avgPrice;
@@ -557,7 +549,17 @@
                                               })
                                   ))
 
-          this.charts.timeLine.xAxis();
+          this.charts.timeLine.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
+          this.charts.timeLine.xAxis().ticks(5);
+          this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
+
+          var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function (d) {
+                    //return "<span style='color: #f0027f'>" +  d.key + "</span> : "  + numberFormat(d.value);
+                    return this;
+                  });
 
           Object.keys(this.charts).forEach(function(k){
             self.charts[k].width($(self.charts[k].anchor()).parent().width())
@@ -675,7 +677,12 @@
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
                       .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
-                      .addDimension('trades','time',function(d){return new Date(d.trade_time);},customMetrics)
+                      .addDimension('trades','time',function(d){
+                          var ttime = new Date(d.trade_time);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/10)*10);
+                          ttime.setMilliseconds(0);
+                          return ttime;
+                        },customMetrics)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
