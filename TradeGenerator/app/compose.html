@@ -76,6 +76,25 @@
         <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
+              Technology Stack
+            </div>
+            <div class="card-block">
+              <div>
+                <div id="tech-stack"></div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12">
+          <div class="card">
+            <div class="card-header">
               Container Structure
             </div>
             <div class="card-block">
@@ -89,23 +108,6 @@
       </div>
     </div>
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xl-12 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              Technology Stack
-            </div>
-            <div class="card-block">
-              <div>
-                <div id="tech-stack"></div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
@@ -435,6 +437,20 @@ var technologyStack = {
       "DockerUI"
     ]
   },
+  "Visualisation":{
+    "links":[
+      "node.js",
+      "socket.io",
+      "d3.js",
+      "dc.js",
+      "Zeppelin"
+    ]
+  },
+  "node.js":{},
+  "socket.io":{},
+  "d3.js":{},
+  "dc.js":{},
+  "Zeppelin":{},
   "Docker Compose":{},
   "DockerUI":{},
   "Hadoop":{"links":[
@@ -451,21 +467,7 @@ var technologyStack = {
       "mllib (K-means)"
     ]
   },
-  "mllib (K-means)":{},
-  "Visualisation":{
-    "links":[
-      "node.js",
-      "socket.io",
-      "d3.js",
-      "dc.js",
-      "Zeppelin"
-    ]
-  },
-  "node.js":{},
-  "socket.io":{},
-  "d3.js":{},
-  "dc.js":{},
-  "Zeppelin":{}
+  "mllib (K-means)":{}
 }
 
 function drawDAG(chartId, dataset) {
@@ -491,12 +493,22 @@ function drawDAG(chartId, dataset) {
       var svg = d3.select("#" + chartId).append('svg'),
           svgGroup = svg.append("g");
 
+      // Set up zoom support
+      var zoom = d3.behavior.zoom().on("zoom", function() {
+          inner.attr("transform", "translate(" + d3.event.translate + ")" +
+                                      "scale(" + d3.event.scale + ")");
+        });
+      svg.call(zoom);
+
       // Run the renderer. This is what draws the final graph.
-      render(d3.select("svg g"), dg);
+      render(svgGroup, dg);
       svg.attr("width",document.getElementById(chartId).clientWidth);
       // Center the graph
-      var xCenterOffset = (svg.attr("width") - dg.graph().width) / 2;
-      svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
+      var initialScale = 0.75;
+      zoom
+        .translate([(svg.attr("width") - g.graph().width * initialScale) / 2, 20])
+        .scale(initialScale)
+        .event(svg);
       svg.attr("height", dg.graph().height + 40);
 }
 
