@@ -88,6 +88,24 @@
         </div>
       </div>
     </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Technology Stack
+            </div>
+            <div class="card-block">
+              <div>
+                <div id="tech-stack"></div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
@@ -408,6 +426,48 @@ var appLogic = {
   }
 } ;
 
+var technologyStack = {
+  "Docker":{
+    "links":[
+      "Hadoop",
+      "Visualisation",
+      "Docker Compose",
+      "DockerUI"
+    ]
+  },
+  "Docker Compose":{},
+  "DockerUI":{},
+  "Hadoop":{"links":[
+    "Spark",
+    "Kafka",
+    "Zookeeper",
+    "HDFS"
+  ]},
+  "Kafka":{},
+  "Zookeeper":{},
+  "HDFS":{},
+  "Spark":{
+    "links":[
+      "mllib (K-means)"
+    ]
+  },
+  "mllib (K-means)":{},
+  "Visualisation":{
+    "links":[
+      "node.js",
+      "socket.io",
+      "d3.js",
+      "dc.js",
+      "Zeppelin"
+    ]
+  },
+  "node.js":{},
+  "socket.io":{},
+  "d3.js":{},
+  "dc.js":{},
+  "Zeppelin":{}
+}
+
 function drawDAG(chartId, dataset) {
       var dg = new dagreD3.graphlib.Graph()
                           .setGraph({})
@@ -442,6 +502,7 @@ function drawDAG(chartId, dataset) {
 
       drawDAG("compose-chart",compose);
       drawDAG("logic-chart",appLogic);
+      drawDAG("tech-stack", technologyStack);
 
     </script>
   </body>
