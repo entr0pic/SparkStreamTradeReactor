@@ -410,10 +410,10 @@ function drawDAG(chartId, dataset) {
                           .setGraph({})
                           .setDefaultEdgeLabel(function() { return {}; });
 
-      Object.keys(compose).forEach(function(d){dg.setNode(d,{label:d})});
+      Object.keys(dataset).forEach(function(d){dg.setNode(d,{label:d})});
 
-      Object.keys(compose).forEach(function(d){
-        var con = compose[d];
+      Object.keys(dataset).forEach(function(d){
+        var con = dataset[d];
         if (con.links) {
           con.links.forEach(function(x) {
             dg.setEdge(d,x);
