@@ -400,29 +400,28 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return chartManager.data.kmstats.groups.cluster_colour.all().map(function(d) {
-                                            return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
-                                        }).indexOf(parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5)%10;
+                                        return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        return p.key
+                                        var idx = p.key.split(":")[0]
+                                        return p.value.prices[idx];
                                     })
                                     .valueAccessor(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return p.value.weights[idx];
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.prices[idx];
+                                        return 5;
+//                                        var idx = p.key.split(":")[0]
+//                                        return p.value.counts[idx];
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.totalPrices[idx];
+                                                                           return d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -433,20 +432,18 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.weights[idx];
+                                                                           return d.party_w;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))
-                                    .r(d3.scale.linear().domain([this.data
+                                    .r(d3.scale.linear().domain([0,21/*this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return -d.value.totalPrices[idx];
+                                                                           return -d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -457,13 +454,12 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.counts[idx];
+                                                                           return d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{rowCount:0}}).value
-                                                                        .rowCount]))
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice*/]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
@@ -485,9 +481,9 @@
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-                                                p.key,
+//                                                p.key,
+                                               "Cluster: " + idx,
                                                "Total Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
-                                                "Cluster: " + idx,
                                                "Volume: " + d3.format(",")(p.value.counts[idx])
                                                ]
                                                .join("\n");
@@ -631,6 +627,10 @@
                           totalled.totalWeights[idx] += row.party_w;
                           totalled.weights[idx] = totalled.totalWeights[idx]/totalled.counts[idx];
                           totalled.prices[idx] = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
+                          totalled.minPrice = Math.min.apply(null, totalled.prices)
+                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
+                          totalled.minWeight = Math.min.apply(null, totalled.weights)
                           return totalled;
                         },
                         sub: function(totalled,row){
@@ -643,6 +643,10 @@
                             if (totalled.totalWeights[idx] <0) totalled.totalWeights[idx] = 0;
                           totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
                           totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
+                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
+                          totalled.minPrice = Math.min.apply(null, totalled.prices)
+                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
+                          totalled.minWeight = Math.min.apply(null, totalled.weights)
                           return totalled;
                         }
                       })
