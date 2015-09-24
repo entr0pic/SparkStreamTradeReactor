@@ -472,7 +472,7 @@ var technologyStack = {
   "mllib (K-means)":{}
 }
 
-function drawDAG(chartId, dataset) {
+function drawDAG(chartId, dataset,initialScale) {
       var dg = new dagreD3.graphlib.Graph()
                           .setGraph({})
                           .setDefaultEdgeLabel(function() { return {}; });
@@ -506,7 +506,6 @@ function drawDAG(chartId, dataset) {
       render(svgGroup, dg);
       svg.attr("width",document.getElementById(chartId).clientWidth);
       // Center the graph
-      var initialScale = 0.75;
       zoom
         .translate([(svg.attr("width") - dg.graph().width * initialScale) / 2, 20])
         .scale(initialScale)
@@ -514,9 +513,9 @@ function drawDAG(chartId, dataset) {
       svg.attr("height", dg.graph().height + 40);
 }
 
-      drawDAG("compose-chart",compose);
-      drawDAG("logic-chart",appLogic);
-      drawDAG("tech-stack", technologyStack);
+      drawDAG("compose-chart",compose,0.8);
+      drawDAG("logic-chart",appLogic,0.9);
+      drawDAG("tech-stack", technologyStack0.78);
 
     </script>
   </body>
