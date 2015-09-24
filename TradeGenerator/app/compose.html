@@ -440,27 +440,29 @@ var technologyStack = {
   "Visualisation":{
     "links":[
       "node.js",
-      "socket.io",
-      "d3.js",
-      "dc.js",
       "Zeppelin"
     ]
   },
-  "node.js":{},
-  "socket.io":{},
-  "d3.js":{},
+  "node.js":{"links":[
+    "socket.io"
+  ]},
+  "socket.io":{"links":[
+      "d3.js"
+  ]},
+  "d3.js":{"links":[
+    "dc.js"
+  ]},
   "dc.js":{},
   "Zeppelin":{},
   "Docker Compose":{},
   "DockerUI":{},
   "Hadoop":{"links":[
     "Spark",
-    "Kafka",
     "Zookeeper",
     "HDFS"
   ]},
   "Kafka":{},
-  "Zookeeper":{},
+  "Zookeeper":{"links":["Kafka"]},
   "HDFS":{},
   "Spark":{
     "links":[
