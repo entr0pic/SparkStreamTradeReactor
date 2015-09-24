@@ -687,7 +687,7 @@
                       .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
                       .addDimension('trades','time',function(d){
                           var ttime = new Date(d.trade_time);
-                          ttime.setSeconds(Math.round(ttime.getSeconds()/10)*10);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
                           ttime.setMilliseconds(0);
                           return ttime;
                         },customMetrics)
