@@ -425,20 +425,20 @@ function drawDAG(chartId, dataset) {
       var render = new dagreD3.render();
 
       // Set up an SVG group so that we can translate the final graph.
-      var svg = d3.select(chartId).append('svg'),
+      var svg = d3.select("#" + chartId).append('svg'),
           svgGroup = svg.append("g");
 
       // Run the renderer. This is what draws the final graph.
       render(d3.select("svg g"), dg);
-      svg.attr("width",document.getElementById("main-chart").clientWidth);
+      svg.attr("width",document.getElementById(chartId).clientWidth);
       // Center the graph
       var xCenterOffset = (svg.attr("width") - dg.graph().width) / 2;
       svgGroup.attr("transform", "translate(" + xCenterOffset + ", 20)");
       svg.attr("height", dg.graph().height + 40);
 }
 
-      drawDAG("#compose-chart",compose);
-      drawDAG("#logic-chart",appLogic);
+      drawDAG("compose-chart",compose);
+      drawDAG("logic-chart",appLogic);
 
     </script>
   </body>
