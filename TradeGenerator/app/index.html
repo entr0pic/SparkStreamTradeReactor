@@ -421,8 +421,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.totalPrices[idx];
+                                                                           return d.value.maxPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -433,8 +432,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.weights[idx];
+                                                                           return d.value.maxWeight;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -445,8 +443,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return -d.value.totalPrices[idx];
+                                                                           return d.value.minPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -457,13 +454,12 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           var idx = d.key.split(":")[0]
-                                                                            return d.value.counts[idx];
+                                                                           return d.value.maxPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{rowCount:0}}).value
-                                                                        .rowCount]))
+                                                                        },{value:{totalPrice:0}}).value
+                                                                        .totalPrice]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
@@ -631,6 +627,10 @@
                           totalled.totalWeights[idx] += row.party_w;
                           totalled.weights[idx] = totalled.totalWeights[idx]/totalled.counts[idx];
                           totalled.prices[idx] = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
+                          totalled.minPrice = Math.min.apply(null, totalled.prices)
+                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
+                          totalled.minWeight = Math.min.apply(null, totalled.weights)
                           return totalled;
                         },
                         sub: function(totalled,row){
@@ -643,6 +643,10 @@
                             if (totalled.totalWeights[idx] <0) totalled.totalWeights[idx] = 0;
                           totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
                           totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
+                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
+                          totalled.minPrice = Math.min.apply(null, totalled.prices)
+                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
+                          totalled.minWeight = Math.min.apply(null, totalled.weights)
                           return totalled;
                         }
                       })
