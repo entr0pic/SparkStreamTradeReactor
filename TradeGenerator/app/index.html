@@ -404,7 +404,8 @@
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        return p.key
+                                        var idx = p.key.split(":")[0]
+                                        return p.value.prices[idx];
                                     })
                                     .valueAccessor(function (p) {
                                         var idx = p.key.split(":")[0]
