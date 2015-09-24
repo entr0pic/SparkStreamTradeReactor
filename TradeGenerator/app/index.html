@@ -620,7 +620,7 @@
             .addDimension('kmstats','cluster',function(d) {return d.cluster;})
             .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
             .addDimension('kmstats','price',function(d) {return d.price;})
-            .addDimension('kmstats','party_w',function(d){return d.party_w;},{
+            .addDimension('kmstats','party_w',function(d){return d.key;},{
                         init: function(){
                           return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0]};
                         },
