@@ -38,20 +38,7 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xl-12 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              Trades By Location
-            </div>
-            <div class="card-block">
-              <div id="main-chart"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-       <div class="col-xl-4 col-sm-12">
+       <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
               Trades By Clearing House
@@ -61,7 +48,22 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-12">
+      </div>
+
+      <div class="row">
+
+        <div class="col-xl-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Trades By Location
+            </div>
+            <div class="card-block">
+              <div id="main-chart"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-6 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Trades By Category
@@ -71,7 +73,10 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-12">
+
+      </div>
+    <div class="row">
+      <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
               Mean Price Over Time
@@ -81,8 +86,7 @@
             </div>
           </div>
         </div>
-      </div>
-
+    </div>
     <div class="row">
        <div class="col-xl-4 col-sm-12">
           <div class="card">
@@ -252,7 +256,7 @@
           //this.charts.cluster = dc.bubbleChart("#second-chart").chartGroup('trades_test');
           this.charts.category = dc.rowChart("#minor-chart",'trades')
                                     .height(500)
-                                    .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                    //.margins({top: 30, right: 50, bottom: 25, left: 40})
                                     .dimension(this.data.trades.dimensions.category)
                                     .group(this.data.trades.groups.category)
                                     .ordering(function(d){ return -d.value })
@@ -274,7 +278,7 @@
                                     //.width(990) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
-                                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                                    //.margins({top: 10, right: 50, bottom: 30, left: 40})
                                     .dimension(this.data.trades.dimensions.ccp)
                                     //Bubble chart expect the groups are reduced to multiple values which would then be used
                                     //to generate x, y, and radius for each key (bubble) in the group
@@ -384,7 +388,7 @@
                                     //.width(990) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
-                                    .margins({top: 10, right: 50, bottom: 30, left: 40})
+                                    //.margins({top: 10, right: 50, bottom: 30, left: 40})
                                     .dimension(this.data.kmstats.dimensions.party_w)
                                     //Bubble chart expect the groups are reduced to multiple values which would then be used
                                     //to generate x, y, and radius for each key (bubble) in the group
@@ -497,7 +501,7 @@
                                   //.width(990)
                                   .height(500)
                                   .transitionDuration(1000)
-                                  .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                  //.margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.trades.dimensions.time)
                                   .group(this.data.trades.groups.time,"Average Price")
                                   .xyTipsOn(true)
