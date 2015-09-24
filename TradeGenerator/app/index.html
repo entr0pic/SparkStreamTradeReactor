@@ -421,7 +421,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.value.maxPrice;
+                                                                           return d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -432,7 +432,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.value.maxWeight;
+                                                                           return d.party_w;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -443,7 +443,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.value.minPrice;
+                                                                           return -d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -454,7 +454,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.value.maxPrice;
+                                                                           return d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
