@@ -708,6 +708,9 @@
             if (msg) {
               try {
                 var value = createStatsData(msg.value)
+                if (chartManager.data['kmstats']) {
+                    chartManager.data['kmstats'].cf.remove();
+                }
                 chartManager.addData('kmstats',value)
                 //console.log(msg);
               } catch (e) {
