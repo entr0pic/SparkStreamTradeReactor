@@ -409,12 +409,14 @@
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        return p.value.price;
+                                        var lastd = p.value.data[p.value.data.length]
+                                        return lastd.price;
 //                                        var idx = p.key.split(":")[0]
 //                                        return p.value.prices[idx];
                                     })
                                     .valueAccessor(function (p) {
-                                        return p.value.weight;
+                                        var lastd = p.value.data[p.value.data.length]
+                                        return lastd.weight;
 //                                        var idx = p.key.split(":")[0]
 //                                        return p.value.weights[idx];
                                     })
@@ -485,15 +487,18 @@
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return "= "+(parseInt(d.key.split(":")[0])+1)   +" ="
+                                        //return "= "+(parseInt(d.key.split(":")[0])+1)   +" ="
+                                        var lastd = d.value.data[d.value.data.length]
+                                        return d.value.data.length ? lastd.cluster : "="+ d + "="
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
+                                        var lastd = d.value.data[d.value.data.length]
                                         var idx = p.key.split(":")[0]
                                         return [
-                                               "== " + idx + " ==",
-                                               "Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
-                                               "Volume: " + d3.format(",")(p.value.counts[idx])
+                                               "== " + lastd.cluster + " ==",
+                                               "Price: " +  d3.format("$,.2f")(p.value.avgPrice),
+                                               "Volume: " + d3.format(",")(lastd.total)
                                                ]
                                                .join("\n");
                                     });
