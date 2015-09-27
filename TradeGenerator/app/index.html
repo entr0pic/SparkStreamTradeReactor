@@ -385,14 +385,15 @@
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
           this.charts.bubbles2 = dc.bubbleChart("#second-cluster-chart", "kmstats")
-                                    //.width(990) // (optional) define chart width, :default = 200
+                                    //.width(700) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
                                     .margins({top: 10, right: 50, bottom: 30, left: 40})
                                     .dimension(this.data.kmstats.dimensions.party_w)
                                     //Bubble chart expect the groups are reduced to multiple values which would then be used
                                     //to generate x, y, and radius for each key (bubble) in the group
-                                    .group(this.data.kmstats.groups.party_w)
+                                    .group(this.data.kmstats.groups.price)
+                                    .group(tihs.data.kmstats.groups.weight)
                                     .colors(this.colours.clusters) // (optional) define color function or array for bubbles
                                     //.colorDomain([-20, 0]) //(optional) define color domain to match your data domain if you want to bind data or color
                                     //.ordering(function(d){ return -d.value.sales_count; })
@@ -423,7 +424,7 @@
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
-                                                                        .party_w
+                                                                        .price
                                                                         .order(function(d){
                                                                            return d.price;
                                                                         }).top(1)
@@ -434,7 +435,7 @@
                                     .y(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
-                                                                        .party_w
+                                                                        .weight
                                                                         .order(function(d){
                                                                            return d.party_w;
                                                                         }).top(1)
@@ -469,6 +470,8 @@
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
                                     .elasticY(true)
                                     .elasticX(true)
+                                    .elasticRadius(true)
+                                    .maxBubbleRelativeSize(0.15)
                                     .yAxisPadding(30)
                                     .xAxisPadding(100)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
@@ -479,7 +482,7 @@
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return "Cluster "+d.key.split(":")[0]
+                                        return "= "+d.key.split(":")[0]+" ="
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
@@ -620,6 +623,7 @@
             .addDimension('kmstats','cluster',function(d) {return d.cluster;})
             .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
             .addDimension('kmstats','price',function(d) {return d.price;})
+            .addDimension('kmstats','weight',function(d) {return d.party_w;})
             .addDimension('kmstats','party_w',function(d){return d.key;},{
                         init: function(){
                           return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0],totals:[0,0,0,0,0]};
