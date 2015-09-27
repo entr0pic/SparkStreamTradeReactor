@@ -404,16 +404,19 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
+                                        return d.key;
+                                        //return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.prices[idx];
+                                        return p.value.price;
+//                                        var idx = p.key.split(":")[0]
+//                                        return p.value.prices[idx];
                                     })
                                     .valueAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.weights[idx];
+                                        return p.value.weight;
+//                                        var idx = p.key.split(":")[0]
+//                                        return p.value.weights[idx];
                                     })
                                     .radiusValueAccessor(function (p) {
                                          return 2;
@@ -663,7 +666,7 @@
             .addDimension('kmstats','party_w',function(d){return d.cluster;},{
                         init: function(){
                           return {
-                              price:0, count:0, weight:0, avgWeight:0, avgPrice:0, total:0
+                              price:0, count:0, weight:0, avgWeight:0, avgPrice:0, total:0, data:[]
                           };
                         },
                         sum: function(totalled,row){
@@ -671,6 +674,7 @@
                             totalled.total = row.total;
                           totalled.price += row.price;
                           totalled.weight += row.party_w;
+                            totalled.data.push(row)
                           totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
                           totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
                           totalled.maxPrice = Math.max(row.price, totalled.price);
@@ -685,6 +689,7 @@
                             totalled.total = row.total;
                           totalled.price -= row.price;
                           totalled.weight -= row.party_w;
+                            totalled.data.pop()
                           totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
                           totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
                           totalled.maxPrice = Math.max(row.price, totalled.price);
