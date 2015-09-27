@@ -720,12 +720,13 @@
               try {
                 var value = createStatsData(msg.value)
                   if (value) {
-//                if (chartManager.data['kmstats']) {
-//                    chartManager.data['kmstats'].cf.remove();
-//                }
-
+                     chartManager.data['kmstats'].cf = null
                   for (var i=0; i < value.length; i++) {
                         chartManager.addData('kmstats',value[i])
+                        if (i>0 && value[i].cluster != value[i-1].cluster) {
+                            dc.redrawAll('kmstats');
+                        }
+                      dc.redrawAll('kmstats');
                   }
 //                console.log(chartManager.data.kmstats)
                 //console.log(msg);
