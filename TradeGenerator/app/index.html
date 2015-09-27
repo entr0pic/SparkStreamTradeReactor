@@ -416,9 +416,8 @@
                                         return p.value.weights[idx];
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return 5;
-//                                        var idx = p.key.split(":")[0]
-//                                        return p.value.counts[idx];
+                                        var idx = p.key.split(":")[0]
+                                        return p.value.counts[idx];
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
