@@ -775,7 +775,7 @@
                   cluster: d.cluster
               }}).filter(function (v,k,a){ return k == a.indexOf(v); })
               .forEach(function (d){
-                  kmStats.total[d.cluster]= d.total;
+                  globalKmStats.total[d.cluster]= d.total;
               });
           }
           var globalKmStats =  {
