@@ -669,7 +669,7 @@
                         sum: function(totalled,row){
                           var idx = row.cluster;
                             totalled["count"+idx] = (totalled["count"+idx] || 0) + 1
-                            console.log("Sum: ", totalled.counts, [totalled.count0, totalled.count1, totalled.count2, totalled.count3, totalled.count4], row)
+                            console.log("Sum: ", row.cluster_idx, totalled.counts, [totalled.count0, totalled.count1, totalled.count2, totalled.count3, totalled.count4])
                             totalled.rowCount ++;
                           totalled.totals[idx] = row.total;
                           totalled.counts[idx] += 1;
