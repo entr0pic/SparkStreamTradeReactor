@@ -664,6 +664,7 @@
               row.time = json.time;
               row.key = i+":1"
               row.total = json["cluster-data"][i] ? json["cluster-data"][i].length : 0;
+              row.time = parseInt(cc.time)
               data.push(row);
               if (!json["cluster-data"] || !json["cluster-data"][i]) { return; }
               json["cluster-data"][i].forEach(function (cd,j) {
