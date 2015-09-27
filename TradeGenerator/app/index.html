@@ -719,14 +719,17 @@
             if (msg) {
               try {
                 var value = createStatsData(msg.value)
+                  if (value) {
                 if (chartManager.data['kmstats']) {
                     chartManager.data['kmstats'].cf.remove();
                 }
+
                   for (var i=0; i < value.length; i++) {
                         chartManager.addData('kmstats',value[i])
                   }
 //                console.log(chartManager.data.kmstats)
                 //console.log(msg);
+                  }
               } catch (e) {
                 console.warn(e);
               }
