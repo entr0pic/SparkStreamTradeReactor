@@ -750,7 +750,12 @@
                           ttime.setMilliseconds(0);
                           return ttime;
                         },customMetrics)
-            .addDimension('kmstats','time',function(d) {return d.time;},clusterCustomise)
+                      .addDimension('kmstats','time',function(d){
+                          var ttime = new Date(d.trade_time);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
+                          ttime.setMilliseconds(0);
+                          return ttime;
+                        },clusterCustomise)
             .addDimension('kmstats','cluster',function(d) {return d.cluster;})
             .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
             .addDimension('kmstats','price',function(d) {return d.price;})
