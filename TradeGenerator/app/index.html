@@ -723,9 +723,10 @@
                 if (chartManager.data['kmstats']) {
                     chartManager.data['kmstats'].cf.remove();
                 }
-                chartManager.addData('kmstats',value)
-                dc.redrawAll()
-                console.log(chartManager.data.kmstats)
+                  for (var i=0; i < value.length; i++) {
+                        chartManager.addData('kmstats',value[i])
+                  }
+//                console.log(chartManager.data.kmstats)
                 //console.log(msg);
               } catch (e) {
                 console.warn(e);
