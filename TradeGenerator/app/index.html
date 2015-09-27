@@ -660,45 +660,38 @@
             .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
             .addDimension('kmstats','price',function(d) {return d.price;})
             .addDimension('kmstats','weight',function(d) {return d.party_w;})
-            .addDimension('kmstats','party_w',function(d){return d.key;},{
+            .addDimension('kmstats','party_w',function(d){return d.cluster;},{
                         init: function(){
                           return {
-                              prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0],totals:[0,0,0,0,0]
+                              price:0, count:0, weight:0, avgWeight:0, avgPrice:0, total:0
                           };
                         },
                         sum: function(totalled,row){
-                          var idx = row.cluster;
-                            totalled["count"+idx] = (totalled["count"+idx] || 0) + 1
-                            console.log("Sum: ", row.cluster_idx, totalled.counts, [totalled.count0, totalled.count1, totalled.count2, totalled.count3, totalled.count4])
-                            totalled.rowCount ++;
-                          totalled.totals[idx] = row.total;
-                          totalled.counts[idx] += 1;
-                          totalled.totalPrices[idx] += row.price;
-                          totalled.totalWeights[idx] += row.party_w;
-                          totalled.weights[idx] = totalled.totalWeights[idx]/totalled.counts[idx];
-                          totalled.prices[idx] = totalled.totalPrices[idx]/totalled.counts[idx];
-                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
-                          totalled.minPrice = Math.min.apply(null, totalled.prices)
-                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
-                          totalled.minWeight = Math.min.apply(null, totalled.weights)
+                            totalled.count ++;
+                            totalled.total = row.total;
+                          totalled.price += row.price;
+                          totalled.weight += row.party_w;
+                          totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
+                          totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.maxPrice = Math.max(row.price, totalled.price);
+                          totalled.minPrice = Math.min(row.price, totalled.price)
+                          totalled.maxWeight = Math.max(row.weight, totalled.weight);
+                          totalled.minWeight = Math.min(row.weight, totalled.weight)
 
                           return totalled;
                         },
                         sub: function(totalled,row){
-//                            console.log("Sub: ", totalled.counts, row)
-                            return totalled
-//                          var idx = row.cluster;
-//                          totalled.totals[idx] = row.total;
-//                          totalled.counts[idx] -= 1;
-//                          totalled.totalPrices[idx] -= row.price;
-//                          totalled.totalWeights[idx] -= row.party_w;
-//                          totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
-//                          totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
-//                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
-//                          totalled.minPrice = Math.min.apply(null, totalled.prices)
-//                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
-//                          totalled.minWeight = Math.min.apply(null, totalled.weights)
-//                          return totalled;
+                            totalled.count --;
+                            totalled.total = row.total;
+                          totalled.price -= row.price;
+                          totalled.weight -= row.party_w;
+                          totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
+                          totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.maxPrice = Math.max(row.price, totalled.price);
+                          totalled.minPrice = Math.min(row.price, totalled.price)
+                          totalled.maxWeight = Math.max(row.weight, totalled.weight);
+                          totalled.minWeight = Math.min(row.weight, totalled.weight)
+                          return totalled;
                         }
                       })
                       .initCharts();
