@@ -723,20 +723,14 @@
               try {
                 var value = createStatsData(msg.value)
                   if (value) {
-                     chartManager.data['kmstats'].cf = null
+                    chartManager.data["kmstats"] = {};
+
                   for (var i=0; i < value.length; i++) {
                         chartManager.addData('kmstats',value[i])
                         if (i>0 && value[i].cluster != value[i-1].cluster) {
-                            if (!chartManager.data["kmstats"].rendered) {
-                                dc.renderAll("kmstats");
-                            }
                             dc.redrawAll('kmstats');
                         }
                   }
-                        if (!chartManager.data["kmstats"].rendered) {
-                            dc.renderAll("kmstats");
-                            chartManager.data["kmstats"].rendered = true;
-                        }
                       dc.redrawAll('kmstats');
 //                console.log(chartManager.data.kmstats)
                 //console.log(msg);
