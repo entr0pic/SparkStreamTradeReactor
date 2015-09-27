@@ -770,7 +770,13 @@
           }
 
           var initKmStats = function (value) {
-
+              value.map(function (d){ return {
+                  total: d.total,
+                  cluster: d.cluster
+              }}).filter(function (v,k,a){ return k == a.indexOf(v); })
+              .forEach(function (d){
+                  kmStats.total[d.cluster]= d.total;
+              });
           }
           var globalKmStats =  {
               minPrice:[0,0,0,0,0], maxPrice:[0,0,0,0,0],
