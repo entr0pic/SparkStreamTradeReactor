@@ -416,6 +416,7 @@
                                         return p.value.weights[idx];
                                     })
                                     .radiusValueAccessor(function (p) {
+              console.log("Radius : ", p.value.counts[idx], p)
                                         var idx = p.key.split(":")[0]
                                         return p.value.counts[idx];
                                     })
