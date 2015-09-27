@@ -494,7 +494,7 @@
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
                                         var lastd = p.value.data[p.value.data.length-1]
-                                        var idx = p.key.split(":")[0]
+                                        //var idx = p.key.split(":")[0]
                                         return [
                                                "== " + lastd.cluster + " ==",
                                                "Price: " +  d3.format("$,.2f")(p.value.avgPrice),
