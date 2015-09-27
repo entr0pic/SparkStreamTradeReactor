@@ -482,7 +482,7 @@
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return "= "+d.key.split(":")[0]+" ="
+                                        return "= "+(parseInt(d.key.split(":")[0])+1)   +" ="
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
