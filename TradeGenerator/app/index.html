@@ -417,8 +417,8 @@
                                     })
                                     .radiusValueAccessor(function (p) {
                                         var idx = p.key.split(":")[0]
-              console.log("Radius : ", p.value.counts[idx], p)
-                                        return p.value.counts[idx];
+                                        var center = parseInt(p.key.split(":")[1])
+                                        return center > 0 ? p.value.totals[idx] : 3;
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
@@ -596,6 +596,7 @@
               var row = getStatsRow(cc, i, true);
               row.time = json.time;
               row.key = i+":1:0"
+              row.total = json["cluster-data"][i].length;
               data.push(row);
               if (!json["cluster-data"] || !json["cluster-data"][i]) { return; }
               json["cluster-data"][i].forEach(function (cd,j) {
