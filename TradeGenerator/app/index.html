@@ -493,7 +493,7 @@
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
-                                        var lastd = d.value.data[d.value.data.length-1]
+                                        var lastd = p.value.data[d.value.data.length-1]
                                         var idx = p.key.split(":")[0]
                                         return [
                                                "== " + lastd.cluster + " ==",
