@@ -418,7 +418,7 @@
                                     .radiusValueAccessor(function (p) {
                                         var idx = p.key.split(":")[0]
                                         var center = parseInt(p.key.split(":")[1])
-                                        return center > 0 ? p.value.totals[idx] : 3;
+                                        return center > 0 ? p.value.totals[idx] : 1;
                                     })
                                     .x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
@@ -442,7 +442,7 @@
                                                                           return c || l;
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))
-                                    .r(d3.scale.linear().domain([0,21/*this.data
+                                    .r(d3.scale.linear().domain([1,21/*this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
@@ -622,10 +622,11 @@
             .addDimension('kmstats','price',function(d) {return d.price;})
             .addDimension('kmstats','party_w',function(d){return d.key;},{
                         init: function(){
-                          return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0]};
+                          return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0],totals:[0,0,0,0,0]};
                         },
                         sum: function(totalled,row){
                           var idx = row.cluster;
+                          totalled.totals[idx] = row.total;
                           totalled.counts[idx] += 1;
                           totalled.totalPrices[idx] += row.price;
                           totalled.totalWeights[idx] += row.party_w;
@@ -640,6 +641,7 @@
                         },
                         sub: function(totalled,row){
                           var idx = row.cluster;
+                          totalled.totals[idx] = row.total;
                           totalled.counts[idx] -= 1;
                           totalled.totalPrices[idx] -= row.price;
                           totalled.totalWeights[idx] -= row.party_w;
@@ -714,7 +716,8 @@
                     chartManager.data['kmstats'].cf.remove();
                 }
                 chartManager.addData('kmstats',value)
-                //dc.redrawAll()
+                dc.redrawAll()
+                console.log(chartManager.data.kmstats)
                 //console.log(msg);
               } catch (e) {
                 console.warn(e);
