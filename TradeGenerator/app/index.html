@@ -662,11 +662,14 @@
             .addDimension('kmstats','weight',function(d) {return d.party_w;})
             .addDimension('kmstats','party_w',function(d){return d.key;},{
                         init: function(){
-                          return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0],totals:[0,0,0,0,0],rowCount:0};
+                          return {
+                              prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0],totals:[0,0,0,0,0]
+                          };
                         },
                         sum: function(totalled,row){
-                            console.log("Sum: ", totalled.counts, row)
                           var idx = row.cluster;
+                            totalled["count"+idx] = (totalled["count"+idx] || 0) + 1
+                            console.log("Sum: ", totalled.counts, [totalled.count0, totalled.count1, totalled.count2, totalled.count3, totalled.count4], row)
                             totalled.rowCount ++;
                           totalled.totals[idx] = row.total;
                           totalled.counts[idx] += 1;
