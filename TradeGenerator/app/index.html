@@ -640,18 +640,20 @@
                           return totalled;
                         },
                         sub: function(totalled,row){
-                          var idx = row.cluster;
-                          totalled.totals[idx] = row.total;
-                          totalled.counts[idx] -= 1;
-                          totalled.totalPrices[idx] -= row.price;
-                          totalled.totalWeights[idx] -= row.party_w;
-                          totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
-                          totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
-                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
-                          totalled.minPrice = Math.min.apply(null, totalled.prices)
-                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
-                          totalled.minWeight = Math.min.apply(null, totalled.weights)
-                          return totalled;
+                            console.log("Sub: ", totalled.counts, row)
+                            return totalled
+//                          var idx = row.cluster;
+//                          totalled.totals[idx] = row.total;
+//                          totalled.counts[idx] -= 1;
+//                          totalled.totalPrices[idx] -= row.price;
+//                          totalled.totalWeights[idx] -= row.party_w;
+//                          totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
+//                          totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
+//                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
+//                          totalled.minPrice = Math.min.apply(null, totalled.prices)
+//                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
+//                          totalled.minWeight = Math.min.apply(null, totalled.weights)
+//                          return totalled;
                         }
                       })
 
