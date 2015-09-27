@@ -485,9 +485,8 @@
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-//                                                p.key,
-                                               "Cluster: " + idx,
-                                               "Total Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
+                                               "== " + idx + " ==",
+                                               "Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
                                                "Volume: " + d3.format(",")(p.value.counts[idx])
                                                ]
                                                .join("\n");
