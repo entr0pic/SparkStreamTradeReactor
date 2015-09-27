@@ -719,9 +719,9 @@
               try {
                 var value = createStatsData(msg.value)
                   if (value) {
-                if (chartManager.data['kmstats']) {
-                    chartManager.data['kmstats'].cf.remove();
-                }
+//                if (chartManager.data['kmstats']) {
+//                    chartManager.data['kmstats'].cf.remove();
+//                }
 
                   for (var i=0; i < value.length; i++) {
                         chartManager.addData('kmstats',value[i])
