@@ -716,8 +716,8 @@
                           totalled.price += row.price;
                           totalled.weight += row.party_w;
                             totalled.data.push(row)
-                          totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
-                          totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.avgWeight = totalled.weight/totalled.count;
+                          totalled.avgPrice = totalled.price/totalled.count;
                           totalled.maxPrice = Math.max(row.price, totalled.price);
                           totalled.minPrice = Math.min(row.price, totalled.price)
                           totalled.maxWeight = Math.max(row.weight, totalled.weight);
@@ -731,8 +731,8 @@
                           totalled.price -= row.price;
                           totalled.weight -= row.party_w;
                             totalled.data.pop()
-                          totalled.avgWeight = totalled.totalWeights[idx]/totalled.counts[idx];
-                          totalled.avgPrice = totalled.totalPrices[idx]/totalled.counts[idx];
+                          totalled.avgWeight = totalled.weight/totalled.count;
+                          totalled.avgPrice = totalled.price/totalled.count;
                           totalled.maxPrice = Math.max(row.price, totalled.price);
                           totalled.minPrice = Math.min(row.price, totalled.price)
                           totalled.maxWeight = Math.max(row.weight, totalled.weight);
