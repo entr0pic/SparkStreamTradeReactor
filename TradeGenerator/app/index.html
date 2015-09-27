@@ -573,7 +573,63 @@
         };
       };
 
-      var chartManager = new ChartViz();
+           this.charts.timeLine2 = dc.lineChart("#second-minor-cluster-chart","kmstats")
+                                  //.width(990)
+                                  .height(500)
+                                  .transitionDuration(1000)
+                                  .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                  .dimension(this.data.kmstats.dimensions.time)
+                                  .group(this.data.kmstats.groups.time,"Average Price")
+                                  .xyTipsOn(true)
+                                  .renderHorizontalGridLines(true)
+                                  .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
+                                  .brushOn(false)
+                                  // Add the base layer of the stack with group. The second parameter specifies a series name for use in the legend
+                                  // The `.valueAccessor` will be used for the base layer
+                                  .valueAccessor(function (d) {
+                                      return d.value.avgPrice;
+                                  })
+                                  // stack additional layers with `.stack`. The first paramenter is a new group.
+                                  // The second parameter is the series name. The third is a value accessor.
+
+//                                  .stack(this.data.trades.groups.time, "Value 2", function (d) {
+//                                      return d.value.1;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 3", function (d) {
+//                                      return d.value.2;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 4", function (d) {
+//                                      return d.value.3;
+//                                  })
+                                  // title can be called by any stack layer.
+                                  .title(function (d) {
+                                      var dao = d.data || d;
+                                      return d3.time.format('%H:%M')(dao.key) + "\n"
+                                              + 'Average Price: ' + (dao.value.avgPrice)
+                                              ;
+                                  })
+                                  .elasticY(true)
+                                  .elasticX(true)
+                                  .y(d3.scale.pow().exponent(0.2).domain(
+                                    d3.extent(chartManager.data.kmstats.groups.time.all(),
+                                              function(d) {
+                                                return d.value.avgPrice;
+                                              })
+                                  ))
+                                  .x(d3.time.scale().domain(
+                                    d3.extent(chartManager.data.kmstats.groups.time.all(),
+                                              function(d) {
+                                                return +d.key;
+                                              }).map(function(d) {
+                                                return new Date(d);
+                                              })
+                                  ))
+
+          this.charts.timeLine2.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
+          this.charts.timeLine2.xAxis().ticks(5);
+          this.charts.timeLine2.yAxis().tickFormat(d3.format('$.3s'));
+
+        var chartManager = new ChartViz();
 
       var sanitiseStatsJson = function (json) {
           if (json.time) { json.time = parseInt(json.time); }
@@ -648,22 +704,7 @@
                           return totalled;
                         }
                       };
-        chartManager.setGeoJson(world)
-                      .addDimension('trades','country',function(d) {return d.country;})
-                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
-                      .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
-                      .addDimension('trades','time',function(d){
-                          var ttime = new Date(d.trade_time);
-                          ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
-                          ttime.setMilliseconds(0);
-                          return ttime;
-                        },customMetrics)
-            .addDimension('kmstats','time',function(d) {return d.time;})
-            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
-            .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
-            .addDimension('kmstats','price',function(d) {return d.price;})
-            .addDimension('kmstats','weight',function(d) {return d.party_w;})
-            .addDimension('kmstats','party_w',function(d){return d.cluster;},{
+          var clusterCustomise = {
                         init: function(){
                           return {
                               price:0, count:0, weight:0, avgWeight:0, avgPrice:0, total:0, data:[]
@@ -698,7 +739,23 @@
                           totalled.minWeight = Math.min(row.weight, totalled.weight)
                           return totalled;
                         }
-                      })
+                      };
+        chartManager.setGeoJson(world)
+                      .addDimension('trades','country',function(d) {return d.country;})
+                      .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
+                      .addDimension('trades','ccp',function(d){return d.ccp;},customMetrics)
+                      .addDimension('trades','time',function(d){
+                          var ttime = new Date(d.trade_time);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
+                          ttime.setMilliseconds(0);
+                          return ttime;
+                        },customMetrics)
+            .addDimension('kmstats','time',function(d) {return d.time;},clusterCustomise)
+            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
+            .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
+            .addDimension('kmstats','price',function(d) {return d.price;})
+            .addDimension('kmstats','weight',function(d) {return d.party_w;})
+            .addDimension('kmstats','party_w',function(d){return d.cluster;},clusterCustomise)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
