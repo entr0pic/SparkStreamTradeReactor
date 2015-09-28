@@ -144,8 +144,8 @@
           redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
           category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)'],
           clusters: [
-              'rgb(215,48,39)','rgb(31,120,180)','rgb(51,160,44)','rgb(251,154,153)','rgb(255,127,0)', // normal dots
-              'rgba(215,48,39,0.6)','rgba(31,120,180,0.6)','rgba(51,160,44,0.6)','rgba(251,154,153,0.6)','rgba(255,127,0,0.6)' // centers
+              'rgba(215,48,39,0.6)','rgba(31,120,180,0.6)','rgba(51,160,44,0.6)','rgba(102,51,153,0.6)','rgba(255,127,0,0.6)', // normal dots
+              'rgb(215,48,39)','rgb(31,120,180)','rgb(51,160,44)','rgb(102,51,153)','rgb(255,127,0)'  // centers
             ]
         };
 
@@ -414,7 +414,7 @@
                                         return p.value.weight;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return parseInt(p.key.split(":")[1]) ? p.value.total : 2;
+                                        return parseInt(p.key.split(":")[1]) ? p.value.total : 4;
                                          //return p.value.price;
                                     })
                                     .x(d3.scale.linear().domain([0,1]))
