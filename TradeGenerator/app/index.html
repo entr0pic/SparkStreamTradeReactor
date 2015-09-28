@@ -489,7 +489,7 @@
                                         return [
                                                "== " + idx + " ==",
                                                "Price: " +  d3.format("$,.2f")(p.value.price),
-                                               "Volume: " + d3.format(",")(lastd.total)
+                                               "Volume: " + d3.format(",")(p.value.total)
                                                ]
                                                .join("\n");
                                     });
