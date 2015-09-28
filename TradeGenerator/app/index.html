@@ -554,28 +554,13 @@
           this.charts.timeLine.xAxis().ticks(5);
           this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
 
-          var tip = d3.tip()
-                  .attr('class', 'd3-tip')
-                  .offset([-10, 0])
-                  .html(function (d) {
-                    //return "<span style='color: #f0027f'>" +  d.key + "</span> : "  + numberFormat(d.value);
-                    return this;
-                  });
-
-          Object.keys(this.charts).forEach(function(k){
-            self.charts[k].width($(self.charts[k].anchor()).parent().width())
-          });
-          return this;
-        };
-      };
-
            this.charts.timeLine2 = dc.lineChart("#second-minor-cluster-chart","kmstats")
                                   //.width(990)
                                   .height(500)
                                   .transitionDuration(1000)
                                   .margins({top: 30, right: 50, bottom: 25, left: 40})
                                   .dimension(this.data.kmstats.dimensions.time)
-                                  .group(this.data.kmstats.groups.time,"Average Price")
+                                  .group(this.data.kmstats.groups.time,"Price")
                                   .xyTipsOn(true)
                                   .renderHorizontalGridLines(true)
                                   .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
@@ -601,7 +586,7 @@
                                   .title(function (d) {
                                       var dao = d.data || d;
                                       return d3.time.format('%H:%M')(dao.key) + "\n"
-                                              + 'Average Price: ' + (dao.value.price)
+                                              + 'Price: ' + (dao.value.price)
                                               ;
                                   })
                                   .elasticY(true)
@@ -624,6 +609,23 @@
           this.charts.timeLine2.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
           this.charts.timeLine2.xAxis().ticks(5);
           this.charts.timeLine2.yAxis().tickFormat(d3.format('$.3s'));
+
+
+
+          var tip = d3.tip()
+                  .attr('class', 'd3-tip')
+                  .offset([-10, 0])
+                  .html(function (d) {
+                    //return "<span style='color: #f0027f'>" +  d.key + "</span> : "  + numberFormat(d.value);
+                    return this;
+                  });
+
+          Object.keys(this.charts).forEach(function(k){
+            self.charts[k].width($(self.charts[k].anchor()).parent().width())
+          });
+          return this;
+        };
+      };
 
         var chartManager = new ChartViz();
 
