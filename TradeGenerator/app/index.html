@@ -414,7 +414,7 @@
                                         return p.value.weight;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return parseInt(p.key.split(":")[1]) ? 4 : 2;
+                                        return parseInt(p.key.split(":")[1]) ? p.value.total : 2;
                                          //return p.value.price;
                                     })
                                     .x(d3.scale.linear().domain([0,1]))
@@ -441,35 +441,25 @@
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))*/
                                     .y(d3.scale.linear().domain([0,1]))
-                                    /*.r(d3.scale.linear().domain([this.data
-                                                                        .kmstats
-                                                                        .groups
-                                                                        .party_w
-                                                                        .order(function(d){
-                                                                           return d.minPrice;
-                                                                        }).top(1)
-                                                                        .reduce(function(l,c){
-                                                                          return c || l;
-                                                                        },{value:{totalPrice:0}}).value
-                                                                        .totalPrice,
+                                    .r(d3.scale.linear().domain([0,
                                                                  this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.maxPrice;
+                                                                           return d.maxR;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{totalPrice:0}}).value
-                                                                        .totalPrice]))*/
+                                                                        },{value:{total:0}}).value
+                                                                        .total]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
                                     .elasticY(true)
                                     .elasticX(true)
                                     .elasticRadius(true)
-                                    .maxBubbleRelativeSize(0.15)
+                                    .maxBubbleRelativeSize(0.05)
                                     .yAxisPadding(0.05)
                                     .xAxisPadding(0.05)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
@@ -480,21 +470,21 @@
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return "= "+(parseInt(d.key.split(":")[0])+1)   +" ="
+                                        return(parseInt(d.key.split(":")[0])+1)
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-                                               "== " + idx + " ==",
+                                               idx,
                                                "Price: " +  d3.format("$,.2f")(p.value.price),
                                                "Volume: " + d3.format(",")(p.value.total)
                                                ]
                                                .join("\n");
                                     });
 
-          this.charts.bubbles2.yAxis().tickFormat(d3.format(".5f")).ticks(7);
-          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.5f")).ticks(10);
+          this.charts.bubbles2.yAxis().tickFormat(d3.format(".2f")).ticks(7);
+          this.charts.bubbles2.xAxis().tickFormat(d3.format("$.2f")).ticks(10);
 
 
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
@@ -778,10 +768,13 @@
               value.map(function (d){ return {
                   total: d.total,
                   price: d.price,
+                  total: d.total,
                   cluster: d.cluster
               }}).filter(function (v,k,a){ return k == a.indexOf(v); })
               .forEach(function (d){
                   globalKmStats.total[d.cluster]= d.total;
+                  globalKmStats.maxR[d.cluster] = Math.max(globalKmStats.maxR[d.cluster], d.total)
+                  globalKmStats.minR[d.cluster] = Math.min(globalKmStats.minR[d.cluster], d.total)
                   globalKmStats.maxPrice[d.cluster] = Math.max(globalKmStats.maxPrice[d.cluster], d.price)
                   globalKmStats.minPrice[d.cluster] = Math.min(globalKmStats.minPrice[d.cluster], d.price)
               });
