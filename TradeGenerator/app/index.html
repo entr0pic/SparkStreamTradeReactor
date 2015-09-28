@@ -419,7 +419,8 @@
 //                                        var center = parseInt(p.key.split(":")[1])
 //                                        return center > 0 ? p.value.totals[idx] : 1;
                                     })
-                                    .x(d3.scale.linear().domain([0, this.data
+                                    .x(d3.scale.linear().domain([0,1]))
+                                    /*.x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .price
@@ -429,7 +430,7 @@
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalPrice:0}}).value
-                                                                        .totalPrice*1.2]))
+                                                                        .totalPrice*1.2]))*/
                                     /*.y(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
@@ -442,12 +443,12 @@
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))*/
                                     .y(d3.scale.linear().domain([0,1]))
-                                    /*.r(d3.scale.linear().domain([this.data
+                                    .r(d3.scale.linear().domain([this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return -d.price;
+                                                                           return d.minPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
@@ -458,12 +459,12 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.price;
+                                                                           return d.maxPrice;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalPrice:0}}).value
-                                                                        .totalPrice]))*/
+                                                                        .totalPrice]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
@@ -475,7 +476,7 @@
                                     .xAxisPadding(100)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
                                     .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
-                                    .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
+                                    //.xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
                                     //.yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
                                     //#### Labels and  Titles
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
@@ -494,8 +495,8 @@
                                                .join("\n");
                                     });
 
-          this.charts.bubbles2.yAxis().tickFormat(d3.format(".3s")).ticks(7);
-          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.2f")).ticks(7);
+          this.charts.bubbles2.yAxis().tickFormat(d3.format(".5f")).ticks(7);
+          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.4f")).ticks(7);
 
 
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
@@ -709,15 +710,21 @@
                         sum: function(totalled,row){
                             var idx = row.cluster;
                             totalled.total = globalKmStats.total[idx];
+                            totalled.minPrice = globalKmStats.minPrice[idx];
+                            totalled.maxPrice = globalKmStats.maxPrice[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
+                            totalled.currency = row.currency_w;
                           return totalled;
                         },
                         sub: function(totalled,row){
                             var idx = row.cluster;
                             totalled.total = globalKmStats.total[idx];
+                            totalled.minPrice = globalKmStats.minPrice[idx];
+                            totalled.maxPrice = globalKmStats.maxPrice[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
+                            totalled.currency = row.currency_w;
                           return totalled;
                         }
                       };
@@ -769,11 +776,19 @@
           var initKmStats = function (value) {
               value.map(function (d){ return {
                   total: d.total,
+                  price: d.price,
                   cluster: d.cluster
               }}).filter(function (v,k,a){ return k == a.indexOf(v); })
               .forEach(function (d){
                   globalKmStats.total[d.cluster]= d.total;
+                  globalKmStats.maxPrice[d.cluster] = Math.max(globalKmStats.maxPrice[d.cluster], d.price)
+                  globalKmStats.minPrice[d.cluster] = Math.min(globalKmStats.minPrice[d.cluster], d.price)
               });
+              return value.map(function (row) {
+                  row.minPrice = globalKmStats.minPrice[row.cluster]
+                  row.maxPrice = globalKmStats.maxPrice[row.cluster]
+                  return row;
+              })
           }
           var globalKmStats =  {
               minPrice:[0,0,0,0,0], maxPrice:[0,0,0,0,0],
@@ -786,8 +801,8 @@
             if (msg) {
               try {
                 var value = createStatsData(msg.value);
-                initKmStats(value);
-                resetGlobalKmStats()
+                resetGlobalKmStats();
+                value = initKmStats(value);
                   if (value) {
                   for (var i=0; i < value.length; i++) {
                         chartManager.addData('kmstats',value[i])
