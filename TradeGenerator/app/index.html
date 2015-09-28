@@ -799,6 +799,7 @@
             if (msg) {
               try {
                 var value = createStatsData(msg.value);
+                  chartManager.data.kmstats.cf.remove()
                 resetGlobalKmStats();
                 value = initKmStats(value);
                   if (value) {
