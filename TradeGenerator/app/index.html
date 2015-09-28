@@ -783,9 +783,18 @@
               .forEach(function (d){
                   globalKmStats.total[d.cluster]= d.total;
                   globalKmStats.maxR[d.cluster] = Math.max(globalKmStats.maxR[d.cluster], d.total)
-                  globalKmStats.minR[d.cluster] = Math.min(globalKmStats.minR[d.cluster], d.total)
+                  if (globalKmStats.minR[d.cluster] > 0) {
+                      globalKmStats.minR[d.cluster] = Math.min(globalKmStats.minR[d.cluster], d.total)
+                  } else {
+                      globalKmStats.minR[d.cluster] = d.total
+                  }
                   globalKmStats.maxPrice[d.cluster] = Math.max(globalKmStats.maxPrice[d.cluster], d.price)
-                  globalKmStats.minPrice[d.cluster] = Math.min(globalKmStats.minPrice[d.cluster], d.price)
+                  if (globalKmStats.minPrice[d.cluster] > 0) {
+                      globalKmStats.minPrice[d.cluster] = Math.min(globalKmStats.minPrice[d.cluster], d.price)
+                  } else {
+                      globalKmStats.minPrice[d.cluster] = d.price;
+                  }
+
               });
               return value.map(function (row) {
                   row.minPrice = globalKmStats.minPrice[row.cluster]
