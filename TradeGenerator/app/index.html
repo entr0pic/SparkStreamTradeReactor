@@ -745,7 +745,7 @@
                           return ttime;
                         },customMetrics)
                       .addDimension('kmstats','time',function(d){
-                          var ttime = new Date(d.trade_time);
+                          var ttime = new Date(d.time);
                           ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
                           ttime.setMilliseconds(0);
                           return ttime;
