@@ -360,7 +360,7 @@ try{
     val dirNameStatic = "file:///shared/data/"
     var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"bank.csv")
     if (bankRdd.toLocalIterator.nonEmpty) {
-        val sqlContext = new SQLContext(rdd.sparkContext)
+        val sqlContext = new SQLContext(bankRdd.sparkContext)
         import sqlContext.implicits._
 
         // Convert your data to a DataFrame, depends on the structure of your data
