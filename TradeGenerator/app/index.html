@@ -672,10 +672,20 @@
           return data;
       }
 
+      var getRddData = function (json) {
+          return json["rdd-stats"];
+      }
+
       var createStatsData = function (value) {
           var value = sanitiseStatsValue(value);
           var json = JSON.parse(value);
           return getStatsData(json);
+      }
+
+      var createRddData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getRddData(json);
       }
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
@@ -825,6 +835,7 @@
             if (msg) {
               try {
                 var value = createStatsData(msg.value);
+                var rdd = createRddData(msg.value);
                   chartManager.data.kmstats.cf.remove()
                 resetGlobalKmStats();
                 value = initKmStats(value);
