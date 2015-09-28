@@ -147,12 +147,12 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
 //------------------------ init variables --------------
 
     // k-means related inits
-    val numDimensions = 3
     val numClusters = 5
     val decayFactor = 1.0
     val numIterations = 100
 
 // k-means streaming model - doesn't work
+//      val numDimensions = 3
 //    val sModel = new StreamingKMeans()
 //      .setK(numClusters)
 //      .setDecayFactor(decayFactor)
@@ -354,26 +354,26 @@ try {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
 
-//msgText = "saving to parquet"
-//println(msgText)
-//try{
-//    trades.foreachRDD{rdd =>
-//        if (rdd.toLocalIterator.nonEmpty) {
-//            val sqlContext = new SQLContext(rdd.sparkContext)
-//            import sqlContext.implicits._
-//
-//            // Convert your data to a DataFrame, depends on the structure of your data
-//            val df = sqlContext.jsonRDD(rdd).toDF
-//            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-//        }
-//    }
-//} catch {
+msgText = "saving to parquet"
+println(msgText)
+try{
+    val dirNameStatic = "file:///shared/data/"
+    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"bank.csv")
+    if (bankRdd.toLocalIterator.nonEmpty) {
+        val sqlContext = new SQLContext(rdd.sparkContext)
+        import sqlContext.implicits._
+
+        // Convert your data to a DataFrame, depends on the structure of your data
+        val df = sqlContext.jsonRDD(bankRdd).toDF
+        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+    }
+} catch {
 //    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
 //    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
 //    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-//}
-//
+    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+}
+
         ssc.start()
         ssc.awaitTermination()
     }
