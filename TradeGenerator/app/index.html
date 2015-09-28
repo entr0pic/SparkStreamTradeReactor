@@ -805,8 +805,8 @@
               return value.map(function (row) {
                   row.minPrice = globalKmStats.minPrice[row.cluster]
                   row.maxPrice = globalKmStats.maxPrice[row.cluster]
-                  row.minR = globalKmStats.minR[row.cluster]
-                  row.maxR = globalKmStats.maxR[row.cluster]
+                  row.minR = Math.min.apply(null,globalKmStats.minR)
+                  row.maxR = Math.max.apply(null, globalKmStats.maxR)
                   return row;
               })
           }
