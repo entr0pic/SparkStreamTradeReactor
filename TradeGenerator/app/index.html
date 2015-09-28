@@ -111,7 +111,7 @@
         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Price Mean Over Time
+              Mean Price Over Time
             </div>
             <div class="card-block">
               <div id="second-minor-cluster-chart"></div>
@@ -530,7 +530,7 @@
                                   .title(function (d) {
                                       var dao = d.data || d;
                                       return d3.time.format('%H:%M')(dao.key) + "\n"
-                                              + 'Average Price: ' + (dao.value.avgPrice)
+                                              + 'Mean Price: ' + d3.format("$,.2f")(dao.value.avgPrice)
                                               ;
                                   })
                                   .elasticY(true)
