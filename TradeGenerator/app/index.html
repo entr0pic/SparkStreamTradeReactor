@@ -470,13 +470,13 @@
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return(parseInt(d.key.split(":")[0])+1)
+                                        return (parseInt(d.key.split(":")[0])+1)
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-                                               idx,
+                                               (parseInt(p.key.split(":")[0])+1),
                                                "Price: " +  d3.format("$,.2f")(p.value.price),
                                                "Volume: " + d3.format(",")(p.value.total)
                                                ]
@@ -484,7 +484,7 @@
                                     });
 
           this.charts.bubbles2.yAxis().tickFormat(d3.format(".2f")).ticks(7);
-          this.charts.bubbles2.xAxis().tickFormat(d3.format("$.2f")).ticks(10);
+          this.charts.bubbles2.xAxis().tickFormat(d3.format(".2f")).ticks(10);
 
 
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
