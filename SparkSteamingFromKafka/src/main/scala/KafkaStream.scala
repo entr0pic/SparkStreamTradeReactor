@@ -370,7 +370,10 @@ try{
 
         // Convert your data to a DataFrame, depends on the structure of your data
         val df = sqlContext.jsonRDD(bankRdd).toDF
-        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+        df.registerTempTable("banks")
+        val banks = sqlContext.sql("SELECT * FROM banks")
+        banks.take(10).println
+//        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
     }
 } catch {
 //    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
