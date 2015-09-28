@@ -291,8 +291,9 @@ try {
             }
             strMsg += "]"
 
-            var sampleSize = (count*0.3).toInt
+            var sampleSize = (count*0.4).toInt
             if (sampleSize > 130) sampleSize = 130;
+            if (sampleSize < 50) sampleSize = 50;
 
             println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
 
@@ -300,7 +301,7 @@ try {
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
             val maxNum : Integer = 20;
-            val tdata = rdd.takeSample(true, 130, 1).foreach{ a =>
+            val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
                 println(a)
                 println("Predicted cluster = "+ (1+cluster).toString)
