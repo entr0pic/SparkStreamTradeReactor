@@ -131,6 +131,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.7/d3-tip.min.js"></script>
 
     <script>
+      var baseRadius = 4;
 
       var socket = io();
       var ChartViz = function() {
@@ -414,10 +415,10 @@
                                         return p.value.weight;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return parseInt(p.key.split(":")[1]) ? p.value.total : 4;
+                                        return parseInt(p.key.split(":")[1]) ? p.value.total : baseRadius;
                                          //return p.value.price;
                                     })
-                                    .x(d3.scale.linear().domain([0,1]))
+                                    .x(d3.scale.sqrt().domain([0,1]))
                                     /*.x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
@@ -440,8 +441,18 @@
                                                                           return c || l;
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))*/
-                                    .y(d3.scale.linear().domain([0,1]))
-                                    .r(d3.scale.linear().domain([0,
+                                    .y(d3.scale.sqrt().domain([0,1]))
+                                    .r(d3.scale.linear().domain([this.data
+                                                                        .kmstats
+                                                                        .groups
+                                                                        .party_w
+                                                                        .order(function(d){
+                                                                           return d.minR;
+                                                                        }).top(1)
+                                                                        .reduce(function(l,c){
+                                                                          return c || l;
+                                                                        },{value:{total:0}}).value
+                                                                        .total,
                                                                  this.data
                                                                         .kmstats
                                                                         .groups
@@ -665,8 +676,6 @@
           return getStatsData(json);
       }
 
-
-
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
         world.features = world.features.filter(function(d) {return d.properties.name != 'Bermuda';})
@@ -787,7 +796,8 @@
           var globalKmStats =  {
               minPrice:[0,0,0,0,0], maxPrice:[0,0,0,0,0],
               minWeight:[0,0,0,0,0], maxWeight:[0,0,0,0,0],
-              minR:[0,0,0,0,0], maxR:[0,0,0,0,0],
+              minR:[baseRadius,baseRadius,baseRadius,baseRadius,baseRadius],
+              maxR:[baseRadius,baseRadius,baseRadius,baseRadius,baseRadius],
               avgPrice:[0,0,0,0,0], avgWeight:[0,0,0,0,0],
               total:[0,0,0,0,0]
             }
