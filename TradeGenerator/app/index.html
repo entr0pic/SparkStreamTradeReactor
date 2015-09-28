@@ -404,7 +404,7 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
+                                        return (parseInt(d.key.split(":")[0])+1) + parseInt(d.key.split(":")[1])*5;
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
