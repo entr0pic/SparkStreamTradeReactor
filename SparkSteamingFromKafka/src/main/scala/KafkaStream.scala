@@ -372,7 +372,7 @@ try{
         val df = sqlContext.jsonRDD(bankRdd).toDF
         df.registerTempTable("banks")
         val banks = sqlContext.sql("SELECT * FROM banks")
-        banks.take(10).println
+        println(banks.take(10))
 //        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
     }
 } catch {
