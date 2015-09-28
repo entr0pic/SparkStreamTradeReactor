@@ -408,16 +408,13 @@
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        return p.value.price;
+                                        return p.value.currency;
                                     })
                                     .valueAccessor(function (p) {
                                         return p.value.weight;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                         return 2;
-//                                        var idx = p.key.split(":")[0]
-//                                        var center = parseInt(p.key.split(":")[1])
-//                                        return center > 0 ? p.value.totals[idx] : 1;
+                                         return p.value.price;
                                     })
                                     .x(d3.scale.linear().domain([0,1]))
                                     /*.x(d3.scale.linear().domain([0, this.data
@@ -496,7 +493,7 @@
                                     });
 
           this.charts.bubbles2.yAxis().tickFormat(d3.format(".5f")).ticks(7);
-          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.4f")).ticks(7);
+          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.5f")).ticks(10);
 
 
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
