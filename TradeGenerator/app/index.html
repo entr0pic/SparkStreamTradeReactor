@@ -414,7 +414,8 @@
                                         return p.value.weight;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                         return p.value.price;
+                                        return parseInt(p.key.split(":")[1]) ? 4 : 2;
+                                         //return p.value.price;
                                     })
                                     .x(d3.scale.linear().domain([0,1]))
                                     /*.x(d3.scale.linear().domain([0, this.data
@@ -440,7 +441,7 @@
                                                                         },{value:{avgWeight:0}}).value
                                                                         .avgWeight*1.2]))*/
                                     .y(d3.scale.linear().domain([0,1]))
-                                    .r(d3.scale.linear().domain([this.data
+                                    /*.r(d3.scale.linear().domain([this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
@@ -461,7 +462,7 @@
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalPrice:0}}).value
-                                                                        .totalPrice]))
+                                                                        .totalPrice]))*/
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
