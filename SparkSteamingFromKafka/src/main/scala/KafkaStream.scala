@@ -358,7 +358,7 @@ msgText = "saving to parquet"
 println(msgText)
 try{
     val dirNameStatic = "file:///shared/data/"
-    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"bank.csv")
+    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"banks.csv")
     if (bankRdd.toLocalIterator.nonEmpty) {
         val sqlContext = new SQLContext(bankRdd.sparkContext)
         import sqlContext.implicits._
