@@ -291,7 +291,11 @@ try {
             }
             strMsg += "]"
 
-            println(s"------------Model predict (clusters # $numClusters) -------")
+            var sampleSize = (count*0.3).toInt
+            if (sampleSize > 130) sampleSize = 130;
+
+            println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
+
             var firstRec : Boolean = true;
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
