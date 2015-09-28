@@ -296,7 +296,7 @@ try {
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
             val maxNum : Integer = 20;
-            val tdata = rdd.takeSample(true, 100, 1).foreach{ a =>
+            val tdata = rdd.takeSample(true, 130, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
                 println(a)
                 println("Predicted cluster = "+ (1+cluster).toString)
