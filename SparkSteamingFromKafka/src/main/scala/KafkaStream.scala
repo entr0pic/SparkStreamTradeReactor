@@ -262,13 +262,13 @@ try {
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-            println(s"------------Rdd stats (messages # in RDD = $count) -------")
-            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
-            println(summary.mean)
-            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
-            println(summary.variance)
-            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
-            println(summary.numNonzeros)
+//            println(s"------------Rdd stats (messages # in RDD = $count) -------")
+//            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
+//            println(summary.mean)
+//            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
+//            println(summary.variance)
+//            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
+//            println(summary.numNonzeros)
 
             strMsg += ","+s"${'"'}rdd-stats${'"'}"+":["
             strMsg += summary.mean.toString+","+summary.variance.toString
@@ -330,8 +330,8 @@ try {
 
             strMsg += "}"
 
-            println(s"------------Message to send-------")
-            println(strMsg)
+//            println(s"------------Message to send-------")
+//            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
