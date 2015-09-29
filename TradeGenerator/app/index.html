@@ -412,10 +412,12 @@
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        return p.value.currency;
+                                        //return p.value.currency;
+                                        return p.value.weight;
                                     })
                                     .valueAccessor(function (p) {
-                                        return p.value.weight;
+                                        //return p.value.weight;
+                                        return p.value.currency;
                                     })
                                     .radiusValueAccessor(function (p) {
                                         return parseInt(p.key.split(":")[1]) ? p.value.total : baseRadius;
