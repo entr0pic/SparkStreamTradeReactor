@@ -361,28 +361,28 @@ try {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
 
-msgText = "saving to parquet"
-println(msgText)
-try{
-    val dirNameStatic = "file:///shared/data/"
-    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"banks.json")
-    if (bankRdd.toLocalIterator.nonEmpty) {
-        val sqlContext = new SQLContext(bankRdd.sparkContext)
-        import sqlContext.implicits._
-
-        // Convert your data to a DataFrame, depends on the structure of your data
-        val df = sqlContext.jsonRDD(bankRdd).toDF
-        df.registerTempTable("banks")
-        val banks = sqlContext.sql("SELECT * FROM banks")
-        println(banks.take(10))
-//        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-    }
-} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
-    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
-}
+//msgText = "saving to parquet"
+//println(msgText)
+//try{
+//    val dirNameStatic = "file:///shared/data/"
+//    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"banks.json")
+//    if (bankRdd.toLocalIterator.nonEmpty) {
+//        val sqlContext = new SQLContext(bankRdd.sparkContext)
+//        import sqlContext.implicits._
+//
+//        // Convert your data to a DataFrame, depends on the structure of your data
+//        val df = sqlContext.jsonRDD(bankRdd).toDF
+//        df.registerTempTable("banks")
+//        val banks = sqlContext.sql("SELECT * FROM banks")
+//        println(banks.take(10))
+////        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+//    }
+//} catch {
+////    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+////    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+////    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+//    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
+//}
 
         ssc.start()
         ssc.awaitTermination()
