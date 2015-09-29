@@ -160,7 +160,7 @@ var generateTradePairs = function(count, startDate) {
       //party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
         party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / Math.pow(10,11),
       counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / Math.pow(10,11),
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchangey.length-1)) ,
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchange.length-1)) ,
       country_weight: GenerateIdFromStr(bank[0].country) / Math.pow(10,3*(bank[0].country.length-1)),
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / Math.pow(10, 3*(symbol[0].Symbol-1)),
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / Math.pow(10, 8)
@@ -191,7 +191,7 @@ var generateTradePairs = function(count, startDate) {
 //      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
         party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / Math.pow(10,11),
       counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / Math.pow(10,11),
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchangey.length-1)) ,
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchange.length-1)) ,
       country_weight: GenerateIdFromStr(bank[1].country) / Math.pow(10,3*(bank[1].country.length-1)),
       symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / Math.pow(10, 3*(symbol[0].Symbol-1)),
       currency_weight : GenerateIdFromStr(symbol[0].Currency) / Math.pow(10, 8)
