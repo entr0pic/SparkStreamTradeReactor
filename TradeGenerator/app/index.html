@@ -452,7 +452,7 @@
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.minR;
+                                                                           return Math.max(d.minR, baseRadius);
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
