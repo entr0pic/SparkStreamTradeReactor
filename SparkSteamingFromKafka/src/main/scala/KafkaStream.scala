@@ -305,8 +305,8 @@ try {
             val maxNum : Integer = 20;
             val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
-                println(a)
-                println("Predicted cluster = "+ (1+cluster).toString)
+//                println(a)
+//                println("Predicted cluster = "+ (1+cluster).toString)
                 if (buffer(cluster) != "") {
                     buffer(cluster) += ","
                 }
