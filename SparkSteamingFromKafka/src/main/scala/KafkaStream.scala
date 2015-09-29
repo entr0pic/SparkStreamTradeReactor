@@ -291,9 +291,11 @@ try {
             }
             strMsg += "]"
 
-            var sampleSize = (count*0.4).toInt
+            var sampleSize = (count/2).toInt
             if (sampleSize > 130) sampleSize = 130;
-            if (sampleSize < 50) sampleSize = 50;
+            else {
+                if (sampleSize < 70) sampleSize = (count*0.75).toInt
+            }
 
             println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
 
