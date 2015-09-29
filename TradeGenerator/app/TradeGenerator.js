@@ -86,13 +86,15 @@ var maxCurrency = symbols.map(function(d) { return d.Currency; }).map(function (
 var maxExchange = symbols.map(function(d) { return d.Exchange; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxBank = banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 
-var maxBankCombi = GenerateIdFromStr(
-    symbols.map(function(d) { return d.Currency; }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxCurrency})
-    +
-    " "
-    +
-    banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxBank})
-    );
+//var maxBankCombi = GenerateIdFromStr(
+//    symbols.map(function(d) { return d.Currency; }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxCurrency})
+//    +
+//    " "
+//    +
+//    banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxBank})
+//    );
+
+maxBankCombi = 1000000000000000000000;
     
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
