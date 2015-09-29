@@ -94,7 +94,7 @@ var maxBank = banks.map(function(d) { return d.swift.slice(0,4); }).map(function
 //    banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxBank})
 //    );
 
-maxBankCombi = 1000000000000000000000;
+maxBankCombi = 100000000000000000000;
     
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
