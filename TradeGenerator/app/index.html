@@ -413,7 +413,8 @@
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
                                         //return p.value.currency;
-                                        return p.value.weight;
+                                        //return p.value.weight;
+                                        return p.value.exchange;
                                     })
                                     .valueAccessor(function (p) {
                                         //return p.value.weight;
@@ -729,7 +730,7 @@
           var clusterCustomise = {
                         init: function(){
                           return {
-                              price:0, weight:0, total:0,currency:0,
+                              price:0, weight:0, total:0,currency:0,exchange:0,
                               minPrice:0, maxPrice:0,
                               minR:baseRadius,maxR:baseRadius
                           };
@@ -744,6 +745,7 @@
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
                             totalled.currency = row.currency_w;
+                            totalled.exchange = row.exchange_w;
                           return totalled;
                         },
                         sub: function(totalled,row){
@@ -756,6 +758,7 @@
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
                             totalled.currency = row.currency_w;
+                            totalled.exchange = row.exchange_w;
                           return totalled;
                         }
                       };
