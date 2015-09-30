@@ -120,6 +120,18 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
 
+def getStringByWeight(a: Double) : String = {
+    var ss = a.toString.substring(2)
+    val n = (ss.length/3).toInt
+    for (i <- 0 to (ss.length-n)-1) {
+        ss = "0".concat(ss)
+    }
+    var buffer: String = ""
+    for (i <- 0 to ss.length-1 by 3) {
+        buffer += ("\u0"+ss(i)+ss(i+1)+ss(i+2)).toString
+    }
+    buffer
+}
 
 
 /*
@@ -136,7 +148,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
         }
     }
     .map{ x => {
-         if (x.size>1)  CreateDoubleArray(x,4)
+         if (x.size>1)  CreateDoubleArray(x,featuresNum)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
@@ -152,6 +164,8 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val numClusters = 5
     val decayFactor = 1.0
     val numIterations = 100
+
+    val featuresNum = 4
 
 // k-means streaming model - doesn't work
 //      val numDimensions = 3
@@ -201,7 +215,7 @@ try {
             }
             .filter(_.size>1)
             .map{ x =>
-                val n = 4
+                val n = featuresNum
                 var buffer: Array[Double] = Array.fill(n)(0.00)
                 var line = ""
                 for( i <- 0 to n-1) {
@@ -236,7 +250,7 @@ try {
             }
             .filter(_.size>1)
             .map{ x =>
-                val n = 4
+                val n = featuresNum
                 var buffer: Array[Double] = Array.fill(n)(0.00)
                 var line = ""
                 for( i <- 0 to n-1) {
@@ -301,9 +315,9 @@ try {
 
             println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
 
-            var firstRec : Boolean = true;
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
+            var labels : Array[String] = Array.fill(numClusters)("")
             val maxNum : Integer = 20;
             val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
@@ -312,11 +326,17 @@ try {
                 if (buffer(cluster) != "") {
                     buffer(cluster) += ","
                 }
-                if (nums(cluster) <= maxNum)  buffer(cluster) += a.toString // limit each cluster to <=20 examples
+
+                if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
+                    buffer(cluster) += a.toString
+                    labelBuf : Array[String] = Array.fill(featuresNum)("")
+                    for (i < 0 to featuresNum-1) {
+                        labelBuf(i) = getStringByWeight(cluster(i))
+                    }
+                    labels(cluster) = labelBuf.toString
+                }
                 nums(cluster) += 1
             }
-
-            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
             var printMsg = ""
             for( i <- 0 to numClusters-1) {
@@ -326,10 +346,28 @@ try {
             println(s"------------Model predict (size of predicted clusters)  -------")
             println(printMsg)
 
+            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
+
+            var firstRec : Boolean = true;
             buffer.foreach{s =>
                 if (s != "") {
                     if (firstRec) {
                         firstRec = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
+                }
+            }
+            strMsg += "]"
+
+            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
+
+            var firstLbl : Boolean = true;
+            labels.foreach{s =>
+                if (s != "") {
+                    if (firstLbl) {
+                        firstLbl = false
                     } else {
                         strMsg += ","
                     }
