@@ -120,6 +120,8 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
 
+
+
 /*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val rdd1 : RDD[Vector] = rdd.map{ line =>
@@ -316,6 +318,14 @@ try {
 
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
+            var printMsg = ""
+            for( i <- 0 to numClusters-1) {
+                if (i>0) printMsg += ","
+                printMsg += (i+1)+":"+nums(i).toString
+            }
+            println(s"------------Model predict (size of predicted clusters)  -------")
+            println(printMsg)
+
             buffer.foreach{s =>
                 if (s != "") {
                     if (firstRec) {
@@ -336,10 +346,6 @@ try {
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
 //            println(s"------------Msg sent-------")
-//            println(summary.mean)
-//            println(summary.mean.toString)
-//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-//            producer.send(message1)
 
             numCollected += count
             if (numCollected > 10000) {
