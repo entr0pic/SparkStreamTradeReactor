@@ -74,6 +74,10 @@ var GenerateIdFromStr = function (str) {
     }).join("").replace(/^[0]+/gi, "");
 };
 
+val GenerateDoubleIdFromStr = function (str) {
+    return "0."+GenerateIdFromStr(str)
+}
+
 var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
@@ -158,12 +162,12 @@ var generateTradePairs = function(count, startDate) {
       max_exchange: maxExchange,
 
       //party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
-        party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / Math.pow(10,11),
-      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / Math.pow(10,11),
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchange.length-1)) ,
-      country_weight: GenerateIdFromStr(bank[0].country) / Math.pow(10,3*(bank[0].country.length-1)),
-      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / Math.pow(10, 3*(symbol[0].Symbol-1)),
-      currency_weight : GenerateIdFromStr(symbol[0].Currency) / Math.pow(10, 8)
+        party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)),
+      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)),
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange),
+      country_weight: GenerateIdFromStr(bank[0].country),
+      symbol_weight : GenerateIdFromStr(symbol[0].Symbol),
+      currency_weight : GenerateIdFromStr(symbol[0].Currency)
         
     },{
       trade_date: dateTime[0],
@@ -189,12 +193,12 @@ var generateTradePairs = function(count, startDate) {
       max_exchange: maxExchange,
         
 //      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
-        party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / Math.pow(10,11),
-      counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / Math.pow(10,11),
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / Math.pow(10,3*(symbol[0].Exchange.length-1)) ,
-      country_weight: GenerateIdFromStr(bank[1].country) / Math.pow(10,3*(bank[1].country.length-1)),
-      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / Math.pow(10, 3*(symbol[0].Symbol-1)),
-      currency_weight : GenerateIdFromStr(symbol[0].Currency) / Math.pow(10, 8)
+        party_weight: generateDoubleIdFromStr(bank[1].swift.slice(0,4)),
+      counterparty_weight: generateDoubleIdFromStr(bank[0].swift.slice(0,4)),
+      exchange_weight : generateDoubleIdFromStr(symbol[0].Exchange),
+      country_weight: generateDoubleIdFromStr(bank[1].country),
+      symbol_weight : generateDoubleIdFromStr(symbol[0].Symbol),
+      currency_weight : generateDoubleIdFromStr(symbol[0].Currency)
     }])
   }
   return trades;
