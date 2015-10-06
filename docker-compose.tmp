@@ -140,7 +140,6 @@ submitter:
     - namenode
     - kafka
     - tradegen
-    - lightning
     - zeppelin
     - dockerui
   volumes:
@@ -211,7 +210,6 @@ tradecon:
     - kafka
     - master
     - tradegen
-    - lightning
   environment:
     KAFKA: kafka
     KAFKA_PORT: 9092
