@@ -29,11 +29,11 @@ FROM localhost:5000/hadoop
 #CMD ["run.sh"]
 
 # Install Kafka, Zookeeper and other needed things
-RUN wget -q http://apache.mirrors.spacedump.net/kafka/0.8.1.1/kafka_2.8.0-0.8.1.1.tgz -O /tmp/kafka_2.8.0-0.8.1.1.tgz && \
-    tar xfz /tmp/kafka_2.8.0-0.8.1.1.tgz -C /opt && \
-    rm /tmp/kafka_2.8.0-0.8.1.1.tgz
+RUN wget -q http://apache.mirror.digitalpacific.com.au/kafka/0.8.2.1/kafka_2.9.1-0.8.2.1.tgz -O /tmp/kafka_2.9.1-0.8.2.1.tgz && \
+    tar xfz /tmp/kafka_2.9.1-0.8.2.1.tgz -C /opt && \
+    rm /tmp/kafka_2.9.1-0.8.2.1.tgz
 
-ENV KAFKA_HOME /opt/kafka_2.8.0-0.8.1.1
+ENV KAFKA_HOME /opt/kafka_2.9.1-0.8.2.1
 ADD scripts/start-kafka.sh /usr/bin/start-kafka.sh
 
 # Supervisor config
