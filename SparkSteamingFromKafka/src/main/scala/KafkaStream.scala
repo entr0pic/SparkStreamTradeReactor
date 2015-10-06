@@ -120,6 +120,20 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
     buffer
 }
 
+def getStringByWeight(a: Double) : String = {
+    var ss = a.toString.substring(2)
+    val n = (ss.length/3).toInt
+    for (i <- 0 to (ss.length-n)-1) {
+        ss = "0".concat(ss)
+    }
+    var buffer: String = ""
+    for (i <- 0 to ss.length-1 by 3) {
+        buffer += ("\u0"+ss(i)+ss(i+1)+ss(i+2)).toString
+    }
+    buffer
+}
+
+
 /*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val rdd1 : RDD[Vector] = rdd.map{ line =>
@@ -134,7 +148,7 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
         }
     }
     .map{ x => {
-         if (x.size>1)  CreateDoubleArray(x,4)
+         if (x.size>1)  CreateDoubleArray(x,featuresNum)
          else CreateDoubleArray(Array.fill(1)(0.00),1)
         }
     }
@@ -147,12 +161,14 @@ def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
 //------------------------ init variables --------------
 
     // k-means related inits
-    val numDimensions = 3
     val numClusters = 5
     val decayFactor = 1.0
     val numIterations = 100
 
+    val featuresNum = 4
+
 // k-means streaming model - doesn't work
+//      val numDimensions = 3
 //    val sModel = new StreamingKMeans()
 //      .setK(numClusters)
 //      .setDecayFactor(decayFactor)
@@ -199,7 +215,7 @@ try {
             }
             .filter(_.size>1)
             .map{ x =>
-                val n = 4
+                val n = featuresNum
                 var buffer: Array[Double] = Array.fill(n)(0.00)
                 var line = ""
                 for( i <- 0 to n-1) {
@@ -234,7 +250,7 @@ try {
             }
             .filter(_.size>1)
             .map{ x =>
-                val n = 4
+                val n = featuresNum
                 var buffer: Array[Double] = Array.fill(n)(0.00)
                 var line = ""
                 for( i <- 0 to n-1) {
@@ -262,13 +278,13 @@ try {
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
 
-            println(s"------------Rdd stats (messages # in RDD = $count) -------")
-            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
-            println(summary.mean)
-            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
-            println(summary.variance)
-            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
-            println(summary.numNonzeros)
+//            println(s"------------Rdd stats (messages # in RDD = $count) -------")
+//            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
+//            println(summary.mean)
+//            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
+//            println(summary.variance)
+//            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
+//            println(summary.numNonzeros)
 
             strMsg += ","+s"${'"'}rdd-stats${'"'}"+":["
             strMsg += summary.mean.toString+","+summary.variance.toString
@@ -291,24 +307,48 @@ try {
             }
             strMsg += "]"
 
-            println(s"------------Model predict (clusters # $numClusters) -------")
-            var firstRec : Boolean = true;
+            var sampleSize = (count/2).toInt
+            if (sampleSize > 130) sampleSize = 130;
+            else {
+                if (sampleSize < 70) sampleSize = (count*0.75).toInt
+            }
+
+            println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
+
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
+            var labels : Array[String] = Array.fill(numClusters)("")
             val maxNum : Integer = 20;
-            val tdata = rdd.takeSample(true, 100, 1).foreach{ a =>
+            val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
-                println(a)
-                println("Predicted cluster = "+ (1+cluster).toString)
+//                println(a)
+//                println("Predicted cluster = "+ (1+cluster).toString)
                 if (buffer(cluster) != "") {
                     buffer(cluster) += ","
                 }
-                if (nums(cluster) <= maxNum)  buffer(cluster) += a.toString // limit each cluster to <=20 examples
+
+                if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
+                    buffer(cluster) += a.toString
+                    labelBuf : Array[String] = Array.fill(featuresNum)("")
+                    for (i < 0 to featuresNum-1) {
+                        labelBuf(i) = getStringByWeight(cluster(i))
+                    }
+                    labels(cluster) = labelBuf.toString
+                }
                 nums(cluster) += 1
             }
 
+            var printMsg = ""
+            for( i <- 0 to numClusters-1) {
+                if (i>0) printMsg += ","
+                printMsg += (i+1)+":"+nums(i).toString
+            }
+            println(s"------------Model predict (size of predicted clusters)  -------")
+            println(printMsg)
+
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
+            var firstRec : Boolean = true;
             buffer.foreach{s =>
                 if (s != "") {
                     if (firstRec) {
@@ -321,18 +361,29 @@ try {
             }
             strMsg += "]"
 
+            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
+
+            var firstLbl : Boolean = true;
+            labels.foreach{s =>
+                if (s != "") {
+                    if (firstLbl) {
+                        firstLbl = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
+                }
+            }
+            strMsg += "]"
+
             strMsg += "}"
 
-            println(s"------------Message to send-------")
-            println(strMsg)
+//            println(s"------------Message to send-------")
+//            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
 //            println(s"------------Msg sent-------")
-//            println(summary.mean)
-//            println(summary.mean.toString)
-//            val message1 = new ProducerRecord[String, String]("kmstats", null, summary.mean.toString);
-//            producer.send(message1)
 
             numCollected += count
             if (numCollected > 10000) {
@@ -357,23 +408,26 @@ try {
 //msgText = "saving to parquet"
 //println(msgText)
 //try{
-//    trades.foreachRDD{rdd =>
-//        if (rdd.toLocalIterator.nonEmpty) {
-//            val sqlContext = new SQLContext(rdd.sparkContext)
-//            import sqlContext.implicits._
+//    val dirNameStatic = "file:///shared/data/"
+//    var bankRdd = ssc.sparkContext.textFile(dirNameStatic+"banks.json")
+//    if (bankRdd.toLocalIterator.nonEmpty) {
+//        val sqlContext = new SQLContext(bankRdd.sparkContext)
+//        import sqlContext.implicits._
 //
-//            // Convert your data to a DataFrame, depends on the structure of your data
-//            val df = sqlContext.jsonRDD(rdd).toDF
-//            df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
-//        }
+//        // Convert your data to a DataFrame, depends on the structure of your data
+//        val df = sqlContext.jsonRDD(bankRdd).toDF
+//        df.registerTempTable("banks")
+//        val banks = sqlContext.sql("SELECT * FROM banks")
+//        println(banks.take(10))
+////        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
 //    }
 //} catch {
-//    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
-//    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
+////    case e: IllegalArgumentException => { println(msgText + " Illegal Argument error: "); e.printStackTrace(); println(e.toString()) }
+////    case e: IllegalStateException    => { println(msgText + " Illegal State error: "); e.printStackTrace(); println(e.toString()) }
+////    case e: IOException              => { println(msgText + " IO Exception error: "); e.printStackTrace(); println(e.toString()) }
 //    case e: Throwable => { println(msgText + " Other error: "); e.printStackTrace(); println(e.toString()) }
 //}
-//
+
         ssc.start()
         ssc.awaitTermination()
     }

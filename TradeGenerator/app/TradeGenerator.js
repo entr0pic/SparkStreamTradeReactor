@@ -1,7 +1,7 @@
 var fs = require('fs');
 var kafka = require('kafka-node');
 
-var tradesPerSecond = [1,20];
+var tradesPerSecond = [5,20];
 var tadesQueue = [];
 
 var kafkaLocation = process.env.KAFKA || 'vagrant';
@@ -74,17 +74,31 @@ var GenerateIdFromStr = function (str) {
     }).join("").replace(/^[0]+/gi, "");
 };
 
+val GenerateDoubleIdFromStr = function (str) {
+    return "0."+GenerateIdFromStr(str)
+}
+
 var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
 var symbols = mapCSVtoJSON(fs.readFileSync('symbols_clean.csv').toString()).filter(function(d){return d.Currency});
 
 var maxCountry = banks.map(function(d) { return d.country; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
-var maxBank = banks.map(function(d) { return d.swift; }).map(function (d) { return d.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxBranch = banks.map(function(d) { return d.swift; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxSymbol = symbols.map(function(d) { return d.Symbol; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxCurrency = symbols.map(function(d) { return d.Currency; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
 var maxExchange = symbols.map(function(d) { return d.Exchange; }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+var maxBank = banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).reduce(function (prev, current) { return Math.max(prev, current);}, 0);
+
+//var maxBankCombi = GenerateIdFromStr(
+//    symbols.map(function(d) { return d.Currency; }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxCurrency})
+//    +
+//    " "
+//    +
+//    banks.map(function(d) { return d.swift.slice(0,4); }).map(function (d){ return GenerateIdFromStr(d); }).filter(function (d) { return d == maxBank})
+//    );
+
+maxBankCombi = 100000000000000000000;
     
 console.log("exchanges");
 logJsonNicely(randomSample(exchanges, 10));
@@ -147,12 +161,13 @@ var generateTradePairs = function(count, startDate) {
       max_currency: maxCurrency,
       max_exchange: maxExchange,
 
-      party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
-      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
-      country_weight: GenerateIdFromStr(bank[0].country) / maxCountry,
-      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
-      currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
+      //party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
+        party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)),
+      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)),
+      exchange_weight : GenerateIdFromStr(symbol[0].Exchange),
+      country_weight: GenerateIdFromStr(bank[0].country),
+      symbol_weight : GenerateIdFromStr(symbol[0].Symbol),
+      currency_weight : GenerateIdFromStr(symbol[0].Currency)
         
     },{
       trade_date: dateTime[0],
@@ -177,12 +192,13 @@ var generateTradePairs = function(count, startDate) {
       max_currency: maxCurrency,
       max_exchange: maxExchange,
         
-      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
-      counterparty_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange) / maxExchange,
-      country_weight: GenerateIdFromStr(bank[1].country) / maxCountry,
-      symbol_weight : GenerateIdFromStr(symbol[0].Symbol) / maxSymbol,
-      currency_weight : GenerateIdFromStr(symbol[0].Currency) / maxCurrency
+//      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
+        party_weight: generateDoubleIdFromStr(bank[1].swift.slice(0,4)),
+      counterparty_weight: generateDoubleIdFromStr(bank[0].swift.slice(0,4)),
+      exchange_weight : generateDoubleIdFromStr(symbol[0].Exchange),
+      country_weight: generateDoubleIdFromStr(bank[1].country),
+      symbol_weight : generateDoubleIdFromStr(symbol[0].Symbol),
+      currency_weight : generateDoubleIdFromStr(symbol[0].Currency)
     }])
   }
   return trades;

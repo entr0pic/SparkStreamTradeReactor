@@ -88,17 +88,31 @@
         </div>
     </div>
     <div class="row">
-       <div class="col-xl-4 col-sm-12">
+      <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Trades By Cluster
+              Clustering real time
             </div>
             <div class="card-block">
               <div id="second-cluster-chart"></div>
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-12">
+    </div>
+    <div class="row">
+      <div class="col-xl-12 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Mean Price Over Time (per RDD)
+            </div>
+            <div class="card-block">
+              <div id="second-minor-cluster-chart"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="row">
+         <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Cluster By Category
@@ -108,17 +122,6 @@
             </div>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              Cluster Movement Over Time
-            </div>
-            <div class="card-block">
-              <div id="second-minor-cluster-chart"></div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
@@ -131,6 +134,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.7/d3-tip.min.js"></script>
 
     <script>
+      var baseRadius = 4;
 
       var socket = io();
       var ChartViz = function() {
@@ -144,8 +148,8 @@
           redGreen: ['rgb(215,48,39)','rgb(244,109,67)','rgb(253,174,97)','rgb(254,224,139)','rgb(255,255,191)','rgb(217,239,139)','rgb(166,217,106)','rgb(102,189,99)','rgb(26,152,80)'],
           category: ['rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)','rgb(227,26,28)','rgb(253,191,111)','rgb(255,127,0)','rgb(202,178,214)'],
           clusters: [
-              'rgba(166,206,227,0.8)','rgba(31,120,180,0.8)','rgba(178,223,138,0.8)','rgba(51,160,44,0.8)','rgba(251,154,153,0.8)', // normal dots
-              'rgb(166,206,227)','rgb(31,120,180)','rgb(178,223,138)','rgb(51,160,44)','rgb(251,154,153)' // centers
+              'rgba(215,48,39,0.6)','rgba(31,120,180,0.6)','rgba(51,160,44,0.6)','rgba(102,51,153,0.6)','rgba(255,127,0,0.6)', // normal dots
+              'rgb(215,48,39)','rgb(31,120,180)','rgb(51,160,44)','rgb(102,51,153)','rgb(255,127,0)'  // centers
             ]
         };
 
@@ -385,7 +389,7 @@
           this.charts.bubbles.xAxis().tickFormat(d3.format("$,.2f"));
 
           this.charts.bubbles2 = dc.bubbleChart("#second-cluster-chart", "kmstats")
-                                    //.width(990) // (optional) define chart width, :default = 200
+                                    //.width(700) // (optional) define chart width, :default = 200
                                     .height(500)  // (optional) define chart height, :default = 200
                                     .transitionDuration(1000) // (optional) define chart transition duration, :default = 750
                                     .margins({top: 10, right: 50, bottom: 30, left: 40})
@@ -404,97 +408,100 @@
                                     //* `.valueAccessor` Identifies the `Y` value that will be applied agains the `.y()` to identify pixel location
                                     //* `.radiusValueAccessor` Identifies the value that will be applied agains the `.r()` determine radius size, by default this maps linearly to [0,100]
                                     .colorAccessor(function (d) {
-                                        return parseInt(d.key.split(":")[0]) + parseInt(d.key.split(":")[1])*5;
+                                        return (parseInt(d.key.split(":")[0])+1) + parseInt(d.key.split(":")[1])*5;
                                     })
                                     .colorDomain([1, 10])
                                     .keyAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.prices[idx];
+                                        //return p.value.currency;
+                                        //return p.value.weight;
+                                        return p.value.exchange;
                                     })
                                     .valueAccessor(function (p) {
-                                        var idx = p.key.split(":")[0]
-                                        return p.value.weights[idx];
+                                        //return p.value.weight;
+                                        return p.value.currency;
                                     })
                                     .radiusValueAccessor(function (p) {
-                                        return 5;
-//                                        var idx = p.key.split(":")[0]
-//                                        return p.value.counts[idx];
+                                        return parseInt(p.key.split(":")[1]) ? p.value.total : baseRadius;
+                                         //return p.value.price;
                                     })
-                                    .x(d3.scale.linear().domain([0, this.data
+                                    .x(d3.scale.sqrt().domain([0,1]))
+                                    /*.x(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
-                                                                        .party_w
+                                                                        .price
                                                                         .order(function(d){
                                                                            return d.price;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{totalPrice:0}}).value
-                                                                        .totalPrice*1.2]))
-                                    .y(d3.scale.linear().domain([0, this.data
+                                                                        .totalPrice*1.2]))*/
+                                    /*.y(d3.scale.linear().domain([0, this.data
                                                                         .kmstats
                                                                         .groups
-                                                                        .party_w
+                                                                        .weight
                                                                         .order(function(d){
                                                                            return d.party_w;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
                                                                         },{value:{avgWeight:0}}).value
-                                                                        .avgWeight*1.2]))
-                                    .r(d3.scale.linear().domain([0,21/*this.data
+                                                                        .avgWeight*1.2]))*/
+                                    .y(d3.scale.sqrt().domain([0,1]))
+                                    .r(d3.scale.linear().domain([this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return -d.price;
+                                                                           return Math.max(d.minR, baseRadius);
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{totalPrice:0}}).value
-                                                                        .totalPrice,
+                                                                        },{value:{total:0}}).value
+                                                                        .total,
                                                                  this.data
                                                                         .kmstats
                                                                         .groups
                                                                         .party_w
                                                                         .order(function(d){
-                                                                           return d.price;
+                                                                           return d.maxR;
                                                                         }).top(1)
                                                                         .reduce(function(l,c){
                                                                           return c || l;
-                                                                        },{value:{totalPrice:0}}).value
-                                                                        .totalPrice*/]))
+                                                                        },{value:{total:0}}).value
+                                                                        .total]))
                                     //##### Elastic Scaling
                                     //`.elasticX` and `.elasticX` determine whether the chart should rescale each axis to fit data.
                                     //The `.yAxisPadding` and `.xAxisPadding` add padding to data above and below their max values in the same unit domains as the Accessors.
                                     .elasticY(true)
                                     .elasticX(true)
-                                    .yAxisPadding(30)
-                                    .xAxisPadding(100)
+                                    .elasticRadius(true)
+                                    .maxBubbleRelativeSize(0.05)
+                                    .yAxisPadding(0.05)
+                                    .xAxisPadding(0.05)
                                     .renderHorizontalGridLines(true) // (optional) render horizontal grid lines, :default=false
                                     .renderVerticalGridLines(true) // (optional) render vertical grid lines, :default=false
-                                    .xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
+                                    //.xAxisLabel('Price per Unit') // (optional) render an axis label below the x axis
                                     //.yAxisLabel('Volume of Trades') // (optional) render a vertical axis lable left of the y axis
                                     //#### Labels and  Titles
                                     //Labels are displaed on the chart for each bubble. Titles displayed on mouseover.
                                     .renderLabel(true) // (optional) whether chart should render labels, :default = true
                                     .label(function (d) {
-                                        return "Cluster "+d.key.split(":")[0]
+                                        return (parseInt(d.key.split(":")[0])+1)
                                     })
                                     .renderTitle(true) // (optional) whether chart should render titles, :default = false
                                     .title(function (p) {
                                         var idx = p.key.split(":")[0]
                                         return [
-//                                                p.key,
-                                               "Cluster: " + idx,
-                                               "Total Price: " +  d3.format("$,.2f")(p.value.prices[idx]),
-                                               "Volume: " + d3.format(",")(p.value.counts[idx])
+                                               (parseInt(p.key.split(":")[0])+1),
+                                               "Price: " +  d3.format("$,.2f")(p.value.price),
+                                               "Volume: " + d3.format(",")(p.value.total)
                                                ]
                                                .join("\n");
                                     });
 
-          this.charts.bubbles2.yAxis().tickFormat(d3.format(".3s")).ticks(7);
-          this.charts.bubbles2.xAxis().tickFormat(d3.format("$,.2f")).ticks(7);
+          this.charts.bubbles2.yAxis().tickFormat(d3.format(".2f")).ticks(10);
+          this.charts.bubbles2.xAxis().tickFormat(d3.format(".2f")).ticks(12);
 
 
           this.charts.timeLine = dc.lineChart("#second-minor-chart","trades")
@@ -529,7 +536,7 @@
                                   .title(function (d) {
                                       var dao = d.data || d;
                                       return d3.time.format('%H:%M')(dao.key) + "\n"
-                                              + 'Average Price: ' + (dao.value.avgPrice)
+                                              + 'Mean Price: ' + d3.format("$,.2f")(dao.value.avgPrice)
                                               ;
                                   })
                                   .elasticY(true)
@@ -553,6 +560,64 @@
           this.charts.timeLine.xAxis().ticks(5);
           this.charts.timeLine.yAxis().tickFormat(d3.format('$.3s'));
 
+           this.charts.timeLine2 = dc.lineChart("#second-minor-cluster-chart","rddstats")
+                                  //.width(990)
+                                  .height(350)
+                                  .transitionDuration(1000)
+                                  .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                  .dimension(this.data.rddstats.dimensions.time)
+                                  .group(this.data.rddstats.groups.time,"Price")
+                                  .xyTipsOn(true)
+                                  .renderHorizontalGridLines(true)
+                                  .legend(dc.legend().x(50).y(35).itemHeight(13).gap(5))
+                                  .brushOn(false)
+                                  // Add the base layer of the stack with group. The second parameter specifies a series name for use in the legend
+                                  // The `.valueAccessor` will be used for the base layer
+                                  .valueAccessor(function (d) {
+                                      return d.value;
+                                  })
+//                                   stack additional layers with `.stack`. The first paramenter is a new group.
+//                                   The second parameter is the series name. The third is a value accessor.
+//
+//                                  .stack(this.data.trades.groups.time, "Value 2", function (d) {
+//                                      return d.value.1;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 3", function (d) {
+//                                      return d.value.2;
+//                                  })
+//                                  .stack(this.data.trades.groups.time, "Value 4", function (d) {
+//                                      return d.value.3;
+//                                  })
+//                                   title can be called by any stack layer.
+                                  .title(function (d) {
+                                      var dao = d.data || d;
+                                      return d3.time.format('%H:%M')(dao.key) + "\n"
+                                              + 'Price: ' + (dao.value)
+                                              ;
+                                  })
+                                  .elasticY(true)
+                                  .elasticX(true)
+                                  .y(d3.scale.pow().exponent(0.2).domain(
+                                    d3.extent(chartManager.data.rddstats.groups.time.all(),
+                                              function(d) {
+                                                return d.value;
+                                              })
+                                  ))
+                                  .x(d3.time.scale().domain(
+                                    d3.extent(chartManager.data.rddstats.groups.time.all(),
+                                              function(d) {
+                                                return +d.key;
+                                              }).map(function(d) {
+                                                return new Date(d);
+                                              })
+                                  ))
+
+          this.charts.timeLine2.xAxis().tickFormat(d3.time.format('%H:%M:%S'));
+          this.charts.timeLine2.xAxis().ticks(5);
+          this.charts.timeLine2.yAxis().tickFormat(d3.format('$.3s'));
+
+
+
           var tip = d3.tip()
                   .attr('class', 'd3-tip')
                   .offset([-10, 0])
@@ -568,10 +633,10 @@
         };
       };
 
-      var chartManager = new ChartViz();
+        var chartManager = new ChartViz();
 
       var sanitiseStatsJson = function (json) {
-          if (json.time) { json.time = parseInt(json.time); }
+          if (json.time) { json.time = parseInt(json.time.replace(" ms",""),10); }
           return json;
       }
       var sanitiseStatsValue = function (value) {
@@ -591,22 +656,38 @@
             };
       };
 
+        var getTimeFromJson = function (json) {
+            return parseInt(json.time.replace(" ms",""),10);
+        }
+
       var getStatsData = function (json) {
           var data = [];
           json["cluster-centers"].forEach(function (cc, i) {
               var row = getStatsRow(cc, i, true);
-              row.time = json.time;
               row.key = i+":1:0"
+              var total = json["cluster-data"][i] ? json["cluster-data"][i].length : 0;
+              var t = getTimeFromJson(json)
+              row.total = total;
+              row.time = t;
               data.push(row);
               if (!json["cluster-data"] || !json["cluster-data"][i]) { return; }
               json["cluster-data"][i].forEach(function (cd,j) {
                   var row = getStatsRow(cd, i, false);
-                  row.time = json.time;
-                  row.key = i+":0:"+(1+j)
+                  row.total = total;
+                  row.time = t;
+                  row.key = i+":0:"+(1+j);
                   data.push(row)
               });
           });
           return data;
+      }
+
+      var getRddData = function (json) {
+          var stats = json["rdd-stats"];
+          return {
+              key: getTimeFromJson(json),
+              value: stats[0][0] // mean by price
+          }
       }
 
       var createStatsData = function (value) {
@@ -615,46 +696,11 @@
           return getStatsData(json);
       }
 
-        chartManager
-            .addDimension('kmstats','time',function(d) {return d.time;})
-            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
-            .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
-            .addDimension('kmstats','price',function(d) {return d.price;})
-            .addDimension('kmstats','party_w',function(d){return d.key;},{
-                        init: function(){
-                          return {prices:[0,0,0,0,0],counts:[0,0,0,0,0],weights:[0,0,0,0,0],totalPrices:[0,0,0,0,0],totalWeights:[0,0,0,0,0]};
-                        },
-                        sum: function(totalled,row){
-                          var idx = row.cluster;
-                          totalled.counts[idx] ++;
-                          totalled.totalPrices[idx] += row.price;
-                          totalled.totalWeights[idx] += row.party_w;
-                          totalled.weights[idx] = totalled.totalWeights[idx]/totalled.counts[idx];
-                          totalled.prices[idx] = totalled.totalPrices[idx]/totalled.counts[idx];
-                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
-                          totalled.minPrice = Math.min.apply(null, totalled.prices)
-                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
-                          totalled.minWeight = Math.min.apply(null, totalled.weights)
-                          return totalled;
-                        },
-                        sub: function(totalled,row){
-                          var idx = row.cluster;
-                          totalled.counts[idx] --;
-                          if (totalled.counts[idx] < 0) totalled.counts[idx] = 0;
-                          totalled.totalPrices[idx] -= row.price;
-                            if (totalled.totalPrices[idx] <0) totalled.totalPrices[idx] = 0;
-                          totalled.totalWeights[idx] -= row.party_w;
-                            if (totalled.totalWeights[idx] <0) totalled.totalWeights[idx] = 0;
-                          totalled.weights[idx] = (totalled.counts[idx]>0?totalled.totalWeights[idx]/totalled.counts[idx]:0);
-                          totalled.prices[idx] = (totalled.counts[idx]>0?totalled.totalPrices[idx]/totalled.counts[idx]:0);
-                          totalled.maxPrice = Math.max.apply(null, totalled.prices);
-                          totalled.minPrice = Math.min.apply(null, totalled.prices)
-                          totalled.maxWeight = Math.max.apply(null, totalled.weights);
-                          totalled.minWeight = Math.min.apply(null, totalled.weights)
-                          return totalled;
-                        }
-                      })
-
+      var createRddData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getRddData(json);
+      }
 
       $.getJSON("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json",function(world){
         //bermuda is buggered for some reason so skip it
@@ -681,6 +727,41 @@
                           return totalled;
                         }
                       };
+          var clusterCustomise = {
+                        init: function(){
+                          return {
+                              price:0, weight:0, total:0,currency:0,exchange:0,
+                              minPrice:0, maxPrice:0,
+                              minR:baseRadius,maxR:baseRadius
+                          };
+                        },
+                        sum: function(totalled,row){
+                            var idx = row.cluster;
+                            totalled.total = globalKmStats.total[idx];
+                            totalled.minPrice = globalKmStats.minPrice[idx];
+                            totalled.maxPrice = globalKmStats.maxPrice[idx];
+                            totalled.minR = globalKmStats.minR[idx];
+                            totalled.maxR = globalKmStats.maxR[idx];
+                            totalled.price = row.price;
+                            totalled.weight = row.party_w;
+                            totalled.currency = row.currency_w;
+                            totalled.exchange = row.exchange_w;
+                          return totalled;
+                        },
+                        sub: function(totalled,row){
+                            var idx = row.cluster;
+                            totalled.total = globalKmStats.total[idx];
+                            totalled.minPrice = globalKmStats.minPrice[idx];
+                            totalled.maxPrice = globalKmStats.maxPrice[idx];
+                            totalled.minR = globalKmStats.minR[idx];
+                            totalled.maxR = globalKmStats.maxR[idx];
+                            totalled.price = row.price;
+                            totalled.weight = row.party_w;
+                            totalled.currency = row.currency_w;
+                            totalled.exchange = row.exchange_w;
+                          return totalled;
+                        }
+                      };
         chartManager.setGeoJson(world)
                       .addDimension('trades','country',function(d) {return d.country;})
                       .addDimension('trades','category',function(d) {return d.category && d.category.length ? d.category : ('General: ' + d.type + ' - ' + d.unit)})
@@ -691,6 +772,17 @@
                           ttime.setMilliseconds(0);
                           return ttime;
                         },customMetrics)
+                      .addDimension('rddstats','time',function(d){
+                          var ttime = new Date(d.key);
+                          ttime.setSeconds(Math.round(ttime.getSeconds()/3)*3);
+                          ttime.setMilliseconds(0);
+                          return ttime;
+                        },"value")
+            .addDimension('kmstats','cluster',function(d) {return d.cluster;})
+            .addDimension('kmstats','cluster_colour',function(d) {return d.cluster_cidx;})
+            .addDimension('kmstats','price',function(d) {return d.price;})
+            .addDimension('kmstats','weight',function(d) {return d.party_w;})
+            .addDimension('kmstats','party_w',function(d){return d.key;},clusterCustomise)
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
@@ -708,15 +800,71 @@
                 console.warn(e);
               }
           });
+
+          var resetGlobalKmStats = function () {
+              Object.keys(globalKmStats).forEach(function (key) {
+                  globalKmStats[key] = [0,0,0,0,0];
+              })
+          }
+
+          var initKmStats = function (value) {
+              value.map(function (d){ return {
+                  total: d.total,
+                  price: d.price,
+                  total: d.total,
+                  cluster: d.cluster
+              }}).filter(function (v,k,a){ return k == a.indexOf(v); })
+              .forEach(function (d){
+                  globalKmStats.total[d.cluster]= d.total;
+                  globalKmStats.maxR[d.cluster] = Math.max(globalKmStats.maxR[d.cluster], d.total)
+                  if (globalKmStats.minR[d.cluster] > 0) {
+                      globalKmStats.minR[d.cluster] = Math.min(globalKmStats.minR[d.cluster], d.total)
+                  } else {
+                      globalKmStats.minR[d.cluster] = d.total
+                  }
+                  globalKmStats.maxPrice[d.cluster] = Math.max(globalKmStats.maxPrice[d.cluster], d.price)
+                  if (globalKmStats.minPrice[d.cluster] > 0) {
+                      globalKmStats.minPrice[d.cluster] = Math.min(globalKmStats.minPrice[d.cluster], d.price)
+                  } else {
+                      globalKmStats.minPrice[d.cluster] = d.price;
+                  }
+
+              });
+              return value.map(function (row) {
+                  row.minPrice = globalKmStats.minPrice[row.cluster]
+                  row.maxPrice = globalKmStats.maxPrice[row.cluster]
+                  row.minR = Math.min.apply(null,globalKmStats.minR)
+                  row.maxR = Math.max.apply(null, globalKmStats.maxR)
+                  return row;
+              })
+          }
+          var globalKmStats =  {
+              minPrice:[0,0,0,0,0], maxPrice:[0,0,0,0,0],
+              minWeight:[0,0,0,0,0], maxWeight:[0,0,0,0,0],
+              minR:[baseRadius,baseRadius,baseRadius,baseRadius,baseRadius],
+              maxR:[baseRadius,baseRadius,baseRadius,baseRadius,baseRadius],
+              avgPrice:[0,0,0,0,0], avgWeight:[0,0,0,0,0],
+              total:[0,0,0,0,0]
+            }
+
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
-                var value = createStatsData(msg.value)
-                if (chartManager.data['kmstats']) {
-                    chartManager.data['kmstats'].cf.remove();
-                }
-                chartManager.addData('kmstats',value)
+                var value = createStatsData(msg.value);
+                var rdd = createRddData(msg.value);
+                chartManager.addData('rddstats', rdd);
+                chartManager.data.kmstats.cf.remove()
+                resetGlobalKmStats();
+                value = initKmStats(value);
+                  if (value) {
+                  for (var i=0; i < value.length; i++) {
+                        chartManager.addData('kmstats',value[i])
+                  }
+                dc.redrawAll("kmstats");
+
+//                console.log(chartManager.data.kmstats)
                 //console.log(msg);
+                  }
               } catch (e) {
                 console.warn(e);
               }
