@@ -231,7 +231,7 @@ producer.on('ready', function () {
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
-        payloads = [{topic:topicName,partition: 0, messages:stream1}]
+        payloads = [{topic:topicName,messages:stream1}]
         producer.send( payloads, function (err, data) {
             console.log(topicName+": ", err||data);
         });
