@@ -127,8 +127,8 @@ def getStringByWeight(a: Double) : String = {
         //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
         val z = "0"
         var b = ss(i)
-        if (i>0) b = ss(i-1) + b else b = z + b
-        if (i>1) b = ss(i-2) + b else b = z + b
+        if (i>0) b = ss(i-1).toString + b else b = z + b
+        if (i>1) b = ss(i-2).toString + b else b = z + b
         b = """\""" +"u0"+ b
         buffer = b.toChar + buffer
     }
