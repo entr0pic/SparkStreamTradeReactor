@@ -221,6 +221,7 @@ var producer = new Producer(client);
 //    ];
 
 console.log('Creating topics...');
+console.log(topicName, extraTopicNames, [topicName].concat(extraTopicNames));
 producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
      console.log(err||data);
 });
