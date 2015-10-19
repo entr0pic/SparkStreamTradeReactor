@@ -124,8 +124,11 @@ def getStringByWeight(a: Double) : String = {
     var ss = a.toString.substring(2)
     var buffer: String = ""
     for (i <- ss.length-1 to 0 by -3) {
-        //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
-        buffer = ("\u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
+        val z = "0"
+        var b = ss(i)
+        if (i>0) b = ss(i-1) + b else b = z + b
+        if (i>1) b = ss(i-2) + b else b = z + b
+        buffer = "\u0"+ b + buffer
     }
     buffer
 }
