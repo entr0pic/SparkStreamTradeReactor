@@ -222,19 +222,27 @@ var producer = new Producer(client);
 //    ];
 
 
-
+var createExtraTopics = function() {
+  console.log('Creating additional topics...', extraTopicNames);
+  producer.createTopics(extraTopicNames, true, function (err, data) {
+         console.log(err||data);
+  });
+};
 
 producer.on('ready', function () {
     console.log('starting producer');
-    console.log('Creating topics...', [topicName].concat(extraTopicNames));
-    producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
-         console.log(err||data);
-    });
+    var countSuccessfull = 0;
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
         payloads = [{topic:topicName,messages:stream1}]
         producer.send( payloads, function (err, data) {
+            if (!err) {
+              countSuccessfull++;
+              if (countSuccessfull===1) {
+                createExtraTopics();
+              }
+            }
             console.log(topicName+": ", err||data);
         });
 
