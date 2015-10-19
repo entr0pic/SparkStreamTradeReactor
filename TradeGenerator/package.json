@@ -8,7 +8,7 @@
     "url": "https://github.com/entr0pic/SparkStreamTradeReactor"
   },
   "dependencies": {
-    "kafka-node": "0.2.15",
+    "kafka-node": "0.2.29",
     "lightning.js": "^1.6.0",
     "express" :"latest",
     "socket.io": "latest"

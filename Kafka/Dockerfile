@@ -28,12 +28,16 @@ FROM localhost:5000/hadoop
 ##CMD ["supervisord", "-n"]
 #CMD ["run.sh"]
 
+ENV KAFKA_VERSION 0.8.1
+ENV KAFKA_SCALA_VERSION 2.10
+ENV DOWNLOAD_VERION kafka_$KAFKA_SCALA_VERSION-$KAFKA_VERSION
+ENV KAFKA_TGZ_VERSION $DOWNLOAD_VERION.tgz
 # Install Kafka, Zookeeper and other needed things
-RUN wget -q http://apache.mirror.digitalpacific.com.au/kafka/0.8.2.1/kafka_2.9.1-0.8.2.1.tgz -O /tmp/kafka_2.9.1-0.8.2.1.tgz && \
-    tar xfz /tmp/kafka_2.9.1-0.8.2.1.tgz -C /opt && \
-    rm /tmp/kafka_2.9.1-0.8.2.1.tgz
+RUN wget -q https://archive.apache.org/dist/kafka/$KAFKA_VERSION/$KAFKA_TGZ_VERSION -O /tmp/$KAFKA_TGZ_VERSION && \
+    tar xfz /tmp/$KAFKA_TGZ_VERSION -C /opt && \
+    rm /tmp/$KAFKA_TGZ_VERSION
 
-ENV KAFKA_HOME /opt/kafka_2.9.1-0.8.2.1
+ENV KAFKA_HOME /opt/$DOWNLOAD_VERION
 ADD scripts/start-kafka.sh /usr/bin/start-kafka.sh
 
 # Supervisor config
