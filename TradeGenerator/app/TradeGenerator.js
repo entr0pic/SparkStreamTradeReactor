@@ -222,12 +222,16 @@ var producer = new Producer(client);
 //    ];
 
 
-var createExtraTopics = function() {
-  console.log('Creating additional topics...', extraTopicNames);
+var createExtraTopics = function(extraTopicNames) {
+
   extraTopicNames.forEach(function(extraTopic) {
+    console.log('Creating additional topic:', extraTopic);
     var payloads = [{topic:extraTopic,messages:'Initialise'}];
     producer.send( payloads, function (err, data) {
       console.log(err||data);
+      if (err) {
+        createExtraTopics([extraTopic]);
+      }
     });
   });
 //  producer.createTopics(extraTopicNames, true, function (err, data) {
@@ -246,7 +250,7 @@ producer.on('ready', function () {
             if (!err) {
               countSuccessfull++;
               if (countSuccessfull===1) {
-                createExtraTopics();
+                createExtraTopics(extraTopicNames);
               }
             }
             console.log(topicName+": ", err||data);
