@@ -42,14 +42,14 @@
      <nav class="navbar navbar-light bg-faded">
       <a class="navbar-brand" href="#">SparkStreaming ML</a>
       <ul class="nav navbar-nav">
-        <li class="nav-item active">
+        <li class="nav-item ">
           <a class="nav-link" href="/">Home <span class="sr-only"></span></a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item ">
           <a class="nav-link" href="/description">Description <span class="sr-only"></span></a>
         </li>
         <li class="nav-item active">
-          <a class="nav-link" href="/description">Description <span class="sr-only"></span></a>
+          <a class="nav-link" href="/background">Background <span class="sr-only"></span></a>
         </li>
       </ul>
       <form class="form-inline navbar-form pull-right hidden-xs">
@@ -60,33 +60,128 @@
 
     <div class="container-fluid">
       <div class="row">
-        <div class="col-xl-12 col-sm-12">
+        <div style="height:20px;"></div>
+      </div>
+      <div class="row">
+       <div class="col-xl-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+              Quick overview
+            </div>
+            <div class="card-block">
+              <div>
+                <p>This example system demonstrates the implementation of stream based dataflow using something similar to the Kappa architecture, the only thing stopping it from being pure Kappa is that SparkStreaming can only process streams discretely, i.e. it uses 'micro-batches'. Other than that every bit of data is delivered through a stream which is either persisted to HDFS or visualised by a client.</p>
+                <p>The is a scalable 'Trade Generator' node which uses real seed values to generate randomised trades across a variety of products, countries, exchanges and currencies, the trades are immediately fed into a Kafka producer. Spark Streaming then consumes the feed and generates another derived stream which outputs kmeans clusting results. Spark Stream also persists these messages from these streams to HDFS.</p>
+                <p>Theres is then another node.js based Kafka consumer subscribing to both the raw stream and the derived stream and translates both these streams into web-sockets using socket.io, by which a front end client subscribes to and consumers the messages via the socket. Each message consumed by the frontend client results in the re-rendering of all applicable visualisation to convey the last known state.</p>
+                <p class="lead">Example of data flow through the system</p>
+                <img src="/assets/data-flow.png" alt="Data flow" width="100%;">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+       <div class="row">
+        <div class="col-xl-6 col-sm-12">
+         <div class="card">
+            <div class="card-header">
+              Spark
+            </div>
+            <div class="card-block">
+              <div>
+              Fill the gaps
+              </div>
+            </div>
+          </div>
           <div class="card">
             <div class="card-header">
               Kafka
             </div>
             <div class="card-block">
-              <p>
-
-              </p>
+              <p class="lead">Why Kafka?</p>
+              <p>Kafka is more than just a message broker, think of it as a message broker crossed with a distributed database and all the replication, scalability, fault tolerance and speed benefits that come with it.</p>
+              <p>Kafka maintains a sequential commit log of all messages it recieves, akin to a write ahead log used for database replication. </p>
+              <img src="/assets/kafka_log.png" alt="Kafka Log">
+              <p>This means consumers can be stateful and replay messages in order from the last message they recieved in the commit log.</p>
+              <p>On top of this Kafka was designed to handle incredibly high-throughput, it can <strong>"support high volume event streams such as real-time log aggregation"</strong>, it can <strong>"deal gracefully with large data backlogs to be able to support periodic data loads from offline systems"</strong> as well as handle <strong>"low-latency delivery to handle more traditional messaging use-cases"</strong>.</p>
+              <p>This makes it the ideal ESB, allowing you to more effectively manage data pipelines across an organisation with tens to hundreds of systems.</p>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xl-12 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Technology Stack
+              Reactive Programming
             </div>
             <div class="card-block">
               <div>
-                <div id="tech-stack"></div>
+                <p class="lead">Streams Everywhere!</p>
+                <p>Reactive programming according to wikipedia is <strong>"is a programming paradigm oriented around data flows and the propagation of change"</strong>. And while theres a whole heap of definitions, the easiest way to think of it is treating <strong>everything</strong> as a stream of data. The means no more REST, the only way of getting data is subscribing to a stream and likewise all new data is published to a stream.</p>
+                <p>This example of a trade monitoring system uses the reactive approach where all data is in a continuous stateful stream and that state is propagated to the UI as and when it changes. Technologies like Kafka on the backend, Spark, Storm and Samza as stream processing tools and things like socket.io which nicely wraps web sockets for the frontend, make developing reactive applications and systems simpler and easier</p>
+                <p>Check out the </p><a href="http://www.reactivemanifesto.org/">Reactive Manifesto</a>
+              </div>
+            </div>
+          </div>
 
+        </div>
+
+        <div class="col-xl-6 col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              Docker
+            </div>
+            <div class="card-block">
+              <div>
+                <p class="lead">Hadoop on Docker?</p>
+                <p>It may not be as crazy as it sounds, in fact one of the main reasons it was used for this project (aside from being fun to play with) was cost. Rather than provisioning VM instances for each box we would have needed in our multi-node hadoop cluster, we could provision a single mid-spec or low-spec box. From that single box we would be able to run our 14 containers. In fact the entire system can run on a single CPU box with 3.75gb of memory.</p>
+                <p>So while this isn't the exact use case that you would be trying to replicate within a business, it shows you the efficiency you can get out of docker vs using standalone VMs. You vastly reduce the overhead of using VM's and it allows you to utilize every last bit of CPU memory on a given hardware stack.</p>
+                <p>In fact, a <a href="http://domino.research.ibm.com/library/cyberdig.nsf/papers/0929052195DD819C85257D2300681E7B/$File/rc25482.pdf">2014 study done by IBM</a> shows that <strong>"The general result is that Docker is nearly identical to Native performance and faster than KVM in every category."  </strong>, the one exception to this is network latency if you use dockers virtual NAT rather than giving the container access to the host NAT (which again performs virtually identically to the native host)</p>
+                <img src="/assets/docker-throughput.png" alt="Docker Throuput" width="50%"><img src="/assets/docker-iops.png" alt="Docker IOPS" width="50%">
+                <p class="lead">So how does it compare then?</p>
+                <table class="table resplonsive">
+                  <thead>
+                    <tr>
+                       <th>Cluster Type</th>
+                      <th>Pure Speed</th>
+                      <th>Multi-tenancy</th>
+                      <th>Cost Efficiency</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Bare-Metal</td>
+                      <td><strong>Best</strong></td>
+                      <td><strong>Worst</strong> - Hard to provision and maintain isolated environments cheaply</td>
+                      <td><strong>Most expensive</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Kernel-based Virtual Machine</td>
+                      <td><strong>Slightly-Worse</strong></td>
+                      <td><strong>Better</strong> - Managing and provisioning isolated environments with new nodes is easier, but introduces overhead for every VM provisioned</td>
+                      <td><strong>Middle ground</strong></td>
+                    </tr>
+                    <tr>
+                      <td>Docker</td>
+                      <td><strong>Near-Best</strong></td>
+                      <td><strong>Best</strong> - Quickest to provision and scale nodes (containers), easy to provision isolated network environments between clusters of contaiers and quick to spin up and spin down containers</td>
+                      <td><strong>Cheapest</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <br />
+                <p>Docker allows you to manage, monitor and provision more of the physically available compute compacity than you would normally be able to.</p>
+                <p>Running docker on distributed set of physical hardware using a resource negotiator like YARN or MESOS can allow you to get more out of your hadoop implementation.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              Some handy references
+            </div>
+            <div class="card-block">
+              <div>
+                <div><a href="https://www.youtube.com/watch?v=fU9hR3kiOK0">"Turning the database inside out with Apache Samza" by Martin Kleppmann</a></div>
+                <div><a href="https://www.youtube.com/watch?v=fU9hR3kiOK0">"Putting Apache Kafka to Use for Event Streams" by Jay Kreps</a></div>
+                <div><a href="http://radar.oreilly.com/2014/07/questioning-the-lambda-architecture.html">Questioning The Lambda Architecture</a></div>
+                <div><a href="http://thenewstack.io/running-hadoop-docker-production-scale/">Running Hadoop on Docker, in Production and at Scale</a></div>
               </div>
             </div>
           </div>
@@ -95,433 +190,10 @@
     </div>
 
 
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xl-12 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              Container Structure
-            </div>
-            <div class="card-block">
-              <div>
-                <div id="compose-chart"></div>
 
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crossfilter/1.3.12/crossfilter.min.js"></script>
-    <script src="/js/dagred3.js"></script>
 
-    <script>
-
-      var compose = {
-  "namenode": {
-    "image": "localhost:5000/hadoop",
-    "hostname": "namenode",
-    "volumes": [
-      "/Hadoop/data/namenode:/shared"
-    ],
-    "ports": [
-      "8020:8020",
-      "50070:50070"
-    ],
-    "command": "hdfs namenode"
-  },
-  "datanode1": {
-    "image": "localhost:5000/hadoop",
-    "hostname": "datanode1",
-    "volumes": [
-      "/Hadoop/data/datanode1:/shared"
-    ],
-    "links": [
-      "namenode"
-    ],
-    "ports": [
-      "5001:50075"
-    ],
-    "command": "hdfs datanode"
-  },
-  "datanode2": {
-    "image": "localhost:5000/hadoop",
-    "hostname": "datanode2",
-    "volumes": [
-      "/Hadoop/data/datanode2:/shared"
-    ],
-    "links": [
-      "namenode"
-    ],
-    "ports": [
-      "5002:50075"
-    ],
-    "command": "hdfs datanode"
-  },
-  "kafka": {
-    "image": "localhost:5000/kafka",
-    "hostname": "kafka",
-    "command": "bash run.sh",
-    "environment": {
-      "ADVERTISED_PORT": 9092
-    },
-    "links": [
-      "namenode"
-    ],
-    "expose": [
-      2181,
-      9092
-    ],
-    "ports": [
-      "2181:2181",
-      "9092:9092"
-    ]
-  },
-  "master": {
-    "image": "localhost:5000/spark",
-    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master",
-    "hostname": "master",
-    "links": [
-      "namenode",
-      "kafka"
-    ],
-    "expose": [
-      7001,
-      7002,
-      7003,
-      7004,
-      7005,
-      7006,
-      7077,
-      6066,
-      4040,
-      8080,
-      50070
-    ],
-    "ports": [
-      "4040:4040",
-      "6066:6066",
-      "7077:7077",
-      "8081:8080",
-      "50071:50070"
-    ],
-    "volumes": [
-      "/Spark/jars:/jars",
-      "/Spark/shared:/shared/data"
-    ]
-  },
-  "worker1": {
-    "image": "localhost:5000/spark",
-    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077",
-    "hostname": "worker1",
-    "environment": {
-      "SPARK_WORKER_CORES": 4,
-      "SPARK_WORKER_MEMORY": "4g",
-      "SPARK_WORKER_PORT": 8881,
-      "SPARK_WORKER_WEBUI_PORT": 8081
-    },
-    "links": [
-      "master",
-      "namenode"
-    ],
-    "expose": [
-      7012,
-      7013,
-      7014,
-      7015,
-      7016,
-      8881
-    ],
-    "ports": [
-      "8082:8081"
-    ],
-    "volumes": [
-      "/Spark/jars:/jars",
-      "/Spark/shared:/shared/data"
-    ]
-  },
-  "worker2": {
-    "image": "localhost:5000/spark",
-    "command": "/usr/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077",
-    "hostname": "worker1",
-    "environment": {
-      "SPARK_WORKER_CORES": 4,
-      "SPARK_WORKER_MEMORY": "4g",
-      "SPARK_WORKER_PORT": 8881,
-      "SPARK_WORKER_WEBUI_PORT": 8081
-    },
-    "links": [
-      "master",
-      "namenode"
-    ],
-    "expose": [
-      7012,
-      7013,
-      7014,
-      7015,
-      7016,
-      8881
-    ],
-    "ports": [
-      "8083:8081"
-    ],
-    "volumes": [
-      "/Spark/jars:/jars",
-      "/Spark/shared:/shared/data"
-    ]
-  },
-  "submitter": {
-    "image": "localhost:5000/spark",
-    "command": "bash -c \"/usr/spark/bin/spark-submit --master spark://master:7077 --total-executor-cores 1 /jars/tradeStream.jar kafka:$KAFKA_PORT $KAFKA_TOPIC hdfs://namenode:8020/trade/store.parquet\"",
-    "hostname": "sumbitter",
-    "environment": {
-      "KAFKA_PORT": 9092,
-      "KAFKA_TOPIC": "trades,ttrades"
-    },
-    "links": [
-      "master"
-    ],
-    "volumes": [
-      "/Spark/jars:/jars",
-      "/Spark/shared:/shared/data"
-    ]
-  },
-  "cadvisor": {
-    "image": "google/cadvisor:latest",
-    "hostname": "cadvisor",
-    "volumes": [
-      "/var/run:/var/run:rw",
-      "/sys:/sys:ro",
-      "/var/lib/docker/:/var/lib/docker:ro"
-    ],
-    "ports": [
-      "8888:8080"
-    ]
-  },
-  "dockerui": {
-    "image": "dockerui/dockerui",
-    "hostname": "dockerui",
-    "volumes": [
-      "/var/run/docker.sock:/var/run/docker.sock"
-    ],
-    "ports": [
-      "9000:9000"
-    ]
-  },
-  "tradegen": {
-    "image": "localhost:5000/tradegenerator",
-    "hostname": "tradegen",
-    "links": [
-      "kafka",
-      "master"
-    ],
-    "environment": {
-      "KAFKA": "kafka",
-      "KAFKA_PORT": 9092,
-      "KAFKA_TOPIC": "trades",
-      "KAFKA_EXTRA_TOPICS": "kmstats,kclusters,kpredict"
-    },
-    "command": "node TradeGenerator.js",
-    "volumes": [
-      "/TradeGenerator:/shared"
-    ]
-  },
-  "lightning": {
-    "image": "localhost:5000/lightning",
-    "hostname": "lightning",
-    "ports": [
-      "3000:3000"
-    ],
-    "volumes": [
-      "/Spark/shared:/shared/data"
-    ]
-  },
-  "tradecon": {
-    "image": "localhost:5000/tradegenerator",
-    "hostname": "tradecon",
-    "links": [
-      "kafka",
-      "lightning"
-    ],
-    "environment": {
-      "KAFKA": "kafka",
-      "KAFKA_PORT": 9092,
-      "KAFKA_TOPICS": "trades,kmstats",
-      "HTTP_PORT": 80
-    },
-    "command": "bash -c \"sleep 10 && node TradeConsumer.js\"",
-    "ports": [
-      "80:80"
-    ],
-    "volumes": [
-      "/TradeGenerator:/shared"
-    ]
-  },
-  "zeppelin": {
-    "image": "localhost:5000/zeppelin",
-    "hostname": "zeppelin",
-    "environment": {
-      "ZEPPELIN_PORT": 8090,
-      "ZEPPELIN_JAVA_OPTS": "-Dspark.driver.port=5432 -Dspark.cores.max=2",
-      "MASTER": "spark://master:7077",
-      "ZEPPELIN_NOTEBOOK_DIR": "/zeppelin/data/notebooks"
-    },
-    "links": [
-      "master",
-      "namenode",
-      "kafka"
-    ],
-    "expose": [
-      5432
-    ],
-    "ports": [
-      "8090:8090",
-      "8091:8091"
-    ],
-    "volumes": [
-      "/Zeppelin/data:/zeppelin/data",
-      "/Spark/shared:/shared/data",
-      "/Spark/jars:/jars"
-    ]
-  }
-};
-
-var appLogic = {
-  "Trade Generation" : {
-    "links":[
-      "Zookeeper"
-    ]
-  },
-  "Zookeeper" : {
-    "links":[
-      "Kafka Message Server",
-      "Spark Streaming"
-    ]
-  },
-  "Kafka Message Server":{
-    "links":["Zookeeper"]
-  },
-  "Spark Streaming":{
-    "links":["Spark Worker 1","Spark Worker 2","HDFS Name node","Zookeeper","ML K-means clustering"]
-  },
-  "ML K-means clustering":{
-    "links":["Spark Streaming"]
-  },
-  "Spark Worker 1":{},
-  "Spark Worker 2":{},
-  "HDFS Name node":{
-    "links":[
-      "HDFS Datanode 1",
-      "HDFS Datanode 2"
-    ]
-  },
-  "HDFS Datanode 1":{},
-  "HDFS Datanode 2":{},
-  "Zeppelin":{
-    "links":["HDFS Name node"]
-  },
-  "Visualisation Server": {
-    "links":["Zookeeper"]
-  },
-  "Visualisation Client":{
-    "links":["Visualisation Server"]
-  }
-} ;
-
-var technologyStack = {
-  "Docker":{
-    "links":[
-      "Hadoop",
-      "Visualisation",
-      "Docker Compose",
-      "DockerUI"
-    ]
-  },
-  "Visualisation":{
-    "links":[
-      "node.js",
-      "Zeppelin"
-    ]
-  },
-  "node.js":{"links":[
-    "socket.io"
-  ]},
-  "socket.io":{"links":[
-      "d3.js"
-  ]},
-  "d3.js":{"links":[
-    "dc.js"
-  ]},
-  "dc.js":{},
-  "Zeppelin":{},
-  "Docker Compose":{},
-  "DockerUI":{},
-  "Hadoop":{"links":[
-    "Spark",
-    "Zookeeper",
-    "HDFS"
-  ]},
-  "Kafka":{},
-  "Zookeeper":{"links":["Kafka"]},
-  "HDFS":{},
-  "Spark":{
-    "links":[
-      "mllib (K-means)"
-    ]
-  },
-  "mllib (K-means)":{}
-}
-
-function drawDAG(chartId, dataset,initialScale) {
-      var dg = new dagreD3.graphlib.Graph()
-                          .setGraph({})
-                          .setDefaultEdgeLabel(function() { return {}; });
-
-      Object.keys(dataset).forEach(function(d){dg.setNode(d,{label:d})});
-
-      Object.keys(dataset).forEach(function(d){
-        var con = dataset[d];
-        if (con.links) {
-          con.links.forEach(function(x) {
-            dg.setEdge(d,x);
-          });
-        }
-      });
-
-      // Create the renderer
-      var render = new dagreD3.render();
-
-      // Set up an SVG group so that we can translate the final graph.
-      var svg = d3.select("#" + chartId).append('svg'),
-          svgGroup = svg.append("g");
-
-      // Set up zoom support
-      var zoom = d3.behavior.zoom().on("zoom", function() {
-          svgGroup.attr("transform", "translate(" + d3.event.translate + ")" +
-                                      "scale(" + d3.event.scale + ")");
-        });
-      //svg.call(zoom);
-
-      // Run the renderer. This is what draws the final graph.
-      render(svgGroup, dg);
-      svg.attr("width",document.getElementById(chartId).clientWidth);
-      // Center the graph
-      zoom
-        .translate([(svg.attr("width") - dg.graph().width * initialScale) / 2, 20])
-        .scale(initialScale)
-        .event(svg);
-      svg.attr("height", dg.graph().height + 40);
-}
-
-      drawDAG("compose-chart",compose,0.8);
-      drawDAG("logic-chart",appLogic,0.9);
-      drawDAG("tech-stack", technologyStack,1);
-
-    </script>
   </body>
 </html>
