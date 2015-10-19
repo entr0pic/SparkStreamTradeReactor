@@ -20,8 +20,13 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 }).get('/description', function(req, res){
   res.sendFile(__dirname + '/compose.html');
+}).get('/background', function(req, res){
+  res.sendFile(__dirname + '/background.html');
 }).get('/js/dagred3.js', function(req, res){
   res.sendFile(__dirname + '/dagred3.js');
+}).get('/assets/*', function(req,res){
+  console.log(req);
+  res.sendFile(__dirname + '/' + req.url.split('/').pop());
 });
 
 var messageCount = 0;
