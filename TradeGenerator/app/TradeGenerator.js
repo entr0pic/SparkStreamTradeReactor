@@ -162,12 +162,12 @@ var generateTradePairs = function(count, startDate) {
       max_exchange: maxExchange,
 
       //party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)) / maxBank,
-        party_weight: GenerateIdFromStr(bank[0].swift.slice(0,4)),
-      counterparty_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)),
-      exchange_weight : GenerateIdFromStr(symbol[0].Exchange),
-      country_weight: GenerateIdFromStr(bank[0].country),
-      symbol_weight : GenerateIdFromStr(symbol[0].Symbol),
-      currency_weight : GenerateIdFromStr(symbol[0].Currency)
+        party_weight: GenerateDoubleIdFromStr(bank[0].swift.slice(0,4)),
+      counterparty_weight: GenerateDoubleIdFromStr(bank[1].swift.slice(0,4)),
+      exchange_weight : GenerateDoubleIdFromStr(symbol[0].Exchange),
+      country_weight: GenerateDoubleIdFromStr(bank[0].country),
+      symbol_weight : GenerateDoubleIdFromStr(symbol[0].Symbol),
+      currency_weight : GenerateDoubleIdFromStr(symbol[0].Currency)
         
     },{
       trade_date: dateTime[0],
@@ -193,12 +193,12 @@ var generateTradePairs = function(count, startDate) {
       max_exchange: maxExchange,
         
 //      party_weight: GenerateIdFromStr(bank[1].swift.slice(0,4)) / maxBank,
-        party_weight: generateDoubleIdFromStr(bank[1].swift.slice(0,4)),
-      counterparty_weight: generateDoubleIdFromStr(bank[0].swift.slice(0,4)),
-      exchange_weight : generateDoubleIdFromStr(symbol[0].Exchange),
-      country_weight: generateDoubleIdFromStr(bank[1].country),
-      symbol_weight : generateDoubleIdFromStr(symbol[0].Symbol),
-      currency_weight : generateDoubleIdFromStr(symbol[0].Currency)
+        party_weight: GenerateDoubleIdFromStr(bank[1].swift.slice(0,4)),
+      counterparty_weight: GenerateDoubleIdFromStr(bank[0].swift.slice(0,4)),
+      exchange_weight : GenerateDoubleIdFromStr(symbol[0].Exchange),
+      country_weight: GenerateDoubleIdFromStr(bank[1].country),
+      symbol_weight : GenerateDoubleIdFromStr(symbol[0].Symbol),
+      currency_weight : GenerateDoubleIdFromStr(symbol[0].Currency)
     }])
   }
   return trades;
