@@ -122,13 +122,10 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 
 def getStringByWeight(a: Double) : String = {
     var ss = a.toString.substring(2)
-    val n = (ss.length/3).toInt
-    for (i <- 0 to (ss.length-n)-1) {
-        ss = "0".concat(ss)
-    }
     var buffer: String = ""
-    for (i <- 0 to ss.length-1 by 3) {
-        buffer += ("""\""" +"u0"+ss(i)+ss(i+1)+ss(i+2)).toString
+    for (i <- ss.length-1 to 0 by -3) {
+        //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
+        buffer = ("\u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
     }
     buffer
 }
@@ -329,11 +326,11 @@ try {
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
-//                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
-//                    for (i <- 0 to featuresNum-1) {
-//                        labelBuf(i) = getStringByWeight(a(i).toDouble)
-//                    }
-//                    labels(cluster) = labelBuf.toString
+                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
+                    for (i <- 0 to featuresNum-1) {
+                        labelBuf(i) = getStringByWeight(a(i).toDouble)
+                    }
+                    labels(cluster) = labelBuf.toString
                 }
                 nums(cluster) += 1
             }
