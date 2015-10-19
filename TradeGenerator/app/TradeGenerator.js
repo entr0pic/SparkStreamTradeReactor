@@ -221,14 +221,15 @@ var producer = new Producer(client);
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
 
-console.log('Creating topics...', [topicName].concat(extraTopicNames));
-producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
-     console.log(err||data);
-});
+
 
 
 producer.on('ready', function () {
     console.log('starting producer');
+    console.log('Creating topics...', [topicName].concat(extraTopicNames));
+    producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
+         console.log(err||data);
+    });
     setInterval(function(){
         var i1 = getRandomInt(tradesPerSecond);
         var stream1 = generateTradePairs(1+i1).map(JSON.stringify);
@@ -237,7 +238,7 @@ producer.on('ready', function () {
             console.log(topicName+": ", err||data);
         });
 
-    },1000)
+    },1000);
 }).on('error',function(error){
-  console.log(error)
+  console.log(error);
 });
