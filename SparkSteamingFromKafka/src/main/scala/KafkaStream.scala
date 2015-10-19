@@ -358,20 +358,20 @@ try {
             }
             strMsg += "]"
 
-//            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
-//
-//            var firstLbl : Boolean = true;
-//            labels.foreach{s =>
-//                if (s != "") {
-//                    if (firstLbl) {
-//                        firstLbl = false
-//                    } else {
-//                        strMsg += ","
-//                    }
-//                    strMsg += "["+s+"]"
-//                }
-//            }
-//            strMsg += "]"
+            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
+
+            var firstLbl : Boolean = true;
+            labels.foreach{s =>
+                if (s != "") {
+                    if (firstLbl) {
+                        firstLbl = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
+                }
+            }
+            strMsg += "]"
 
             strMsg += "}"
 
