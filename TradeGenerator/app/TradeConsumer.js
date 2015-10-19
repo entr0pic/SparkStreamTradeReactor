@@ -25,7 +25,6 @@ app.get('/', function(req, res){
 }).get('/js/dagred3.js', function(req, res){
   res.sendFile(__dirname + '/dagred3.js');
 }).get('/assets/*', function(req,res){
-  console.log(req);
   res.sendFile(__dirname + '/' + req.url.split('/').pop());
 });
 
