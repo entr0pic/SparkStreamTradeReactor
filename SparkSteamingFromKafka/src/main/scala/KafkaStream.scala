@@ -386,9 +386,9 @@ try {
 //            println(s"------------Msg sent-------")
 
             numCollected += count
-            if (numCollected > 10000) {
-                System.exit(0)
-            }
+//            if (numCollected > 10000) {
+//                System.exit(0)
+//            }
         }
 
     }
