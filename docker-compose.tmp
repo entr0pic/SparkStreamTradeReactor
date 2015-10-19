@@ -140,7 +140,6 @@ submitter:
     - namenode
     - kafka
     - tradegen
-    - lightning
     - zeppelin
     - dockerui
   volumes:
@@ -192,17 +191,17 @@ tradegen:
   volumes:
     - {root}TradeGenerator:/shared
 
-lightning:
-  image: localhost:5000/lightning
-  hostname: lightning
-  links:
-    - kafka
-    - master
-    - tradegen
-  ports:
-    - 3000:3000
-  volumes:
-    - {root}Spark/shared:/shared/data
+#lightning:
+#  image: localhost:5000/lightning
+#  hostname: lightning
+#  links:
+#    - kafka
+#    - master
+#    - tradegen
+#  ports:
+#    - 3000:3000
+#  volumes:
+#    - {root}Spark/shared:/shared/data
 
 tradecon:
   image: localhost:5000/tradegenerator
@@ -211,7 +210,6 @@ tradecon:
     - kafka
     - master
     - tradegen
-    - lightning
   environment:
     KAFKA: kafka
     KAFKA_PORT: 9092
