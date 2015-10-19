@@ -331,7 +331,7 @@ try {
                     buffer(cluster) += a.toString
                     var labelBuf : Array[String] = Array.fill(featuresNum)("")
                     for (i <- 0 to featuresNum-1) {
-                        labelBuf(i) = getStringByWeight(cluster(i).toDouble)
+                        labelBuf(i) = getStringByWeight(a(i).toDouble)
                     }
                     labels(cluster) = labelBuf.toString
                 }
