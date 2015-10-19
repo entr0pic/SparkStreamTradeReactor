@@ -212,6 +212,7 @@ logJsonNicely(newTrades);
 
 
 Producer = kafka.Producer;
+console.log("Client settings: ", kafkaLocation+':2181','trade-generator');
 var client = new kafka.Client(kafkaLocation+':2181','trade-generator');
 var producer = new Producer(client);
 //
