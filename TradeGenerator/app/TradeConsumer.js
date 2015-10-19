@@ -57,5 +57,6 @@ var startConsuming = function() {
 
 http.listen(port, function(){
   console.log('listening on *:' + port);
+  startConsuming();
 });
 
