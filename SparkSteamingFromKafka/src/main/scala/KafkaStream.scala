@@ -129,7 +129,8 @@ def getStringByWeight(a: Double) : String = {
         var b = ss(i)
         if (i>0) b = ss(i-1) + b else b = z + b
         if (i>1) b = ss(i-2) + b else b = z + b
-        buffer = """\""" +"u0"+ b + buffer
+        b = """\""" +"u0"+ b
+        buffer = b.toChar + buffer
     }
     buffer
 }
