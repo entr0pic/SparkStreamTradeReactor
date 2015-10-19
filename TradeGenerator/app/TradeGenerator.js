@@ -220,8 +220,7 @@ var producer = new Producer(client);
 //        { topic: 'topic2', messages: ['hello', 'world'] }
 //    ];
 
-console.log('Creating topics...');
-console.log(topicName, extraTopicNames, [topicName].concat(extraTopicNames));
+console.log('Creating topics...', [topicName].concat(extraTopicNames));
 producer.createTopics([topicName].concat(extraTopicNames), true, function (err, data) {
      console.log(err||data);
 });
