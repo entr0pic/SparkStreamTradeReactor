@@ -74,7 +74,7 @@ var GenerateIdFromStr = function (str) {
     }).join("").replace(/^[0]+/gi, "");
 };
 
-val GenerateDoubleIdFromStr = function (str) {
+var GenerateDoubleIdFromStr = function (str) {
     return "0."+GenerateIdFromStr(str)
 }
 
