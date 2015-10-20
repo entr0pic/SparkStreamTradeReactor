@@ -374,7 +374,7 @@ try {
                     } else {
                         strMsg += ","
                     }
-                    strMsg += "["+s+"]"
+                    strMsg += "["+s.toString+"]"
                 }
             }
             strMsg += "]"
