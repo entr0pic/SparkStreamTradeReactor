@@ -349,7 +349,8 @@ try {
                     buffer(cluster) += a.toString
                     var labelBuf : Array[String] = Array.fill(featuresNum)("")
                     for (i <- 0 to featuresNum-1) {
-                        labelBuf(i) = getStringByWeight(a(i).toDouble)
+                        if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+                        else labelBuf(i) = getStringByWeight(a(i).toDouble)
                     }
                     labels(cluster) = ""
                     for (j <- 0 to featuresNum-1)  {
