@@ -336,7 +336,11 @@ try {
 //                    for (i <- 0 to featuresNum-1) {
 //                        labelBuf(i) = getStringByWeight(a(i).toDouble)
 //                    }
-                    labels(cluster) = labelBuf.toString
+                    labels(cluster) = ""
+                    for (j <- 0 to featuresNum-1)  {
+                        if (j > 0) labels(cluster) += ","
+                        labels(custer) += labelBuf(j).toString
+                    }
                 }
                 nums(cluster) += 1
             }
@@ -374,7 +378,7 @@ try {
                     } else {
                         strMsg += ","
                     }
-                    strMsg += "["+s.toString+"]"
+                    strMsg += "["+s+"]"
                 }
             }
             strMsg += "]"
