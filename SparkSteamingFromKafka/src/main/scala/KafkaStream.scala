@@ -138,8 +138,8 @@ def getStringByWeight(a: Double) : String = {
     //        if (i>1) b = ss(i-2).toString + b else b = z + b
     //        b = """\""" +"u0" + b
     //        buffer = b + buffer
-            val s1 = if (i > 1)  ss(i-2).toString else "0"
-                val s2 = if (i > 0 ) ss(i-1).toString else "0"
+            val s1 = if (i > 1)  ss(i-2).toString else ""
+                val s2 = if (i > 0 ) ss(i-1).toString else ""
               buffer = getUnicode(s1, s2, ss(i).toString) + buffer
         }
     }
@@ -147,8 +147,8 @@ def getStringByWeight(a: Double) : String = {
 }
 
 def getUnicode(s1:String, s2:String, s3:String) : String = {
-    val ret = """\""" +"u0" + s1 + s2 + s3
-    ret
+//    val ret = """\""" +"u0" + s1 + s2 + s3
+    (s1+s2+s3).toLong.toChar
 }
 
 /*
