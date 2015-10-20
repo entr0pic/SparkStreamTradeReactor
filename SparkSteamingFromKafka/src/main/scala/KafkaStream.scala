@@ -313,12 +313,14 @@ try {
 
             var firstCluster : Boolean = true;
             var labels : Array[String] = Array.fill(numClusters)("")
-            model2.clusterCenters.foreach{ (t,cluster) =>
+            var k = 0
+            model2.clusterCenters.foreach{ t =>
                 println(t.toString)
                 if (firstCluster) {
                     firstCluster = false
                 } else {
                     strMsg += ","
+                    k+=1
                 }
                 strMsg +=  t.toString
                 var labelBuf : Array[String] = Array.fill(featuresNum)("")
@@ -326,10 +328,10 @@ try {
                     if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
                     else labelBuf(i) = getStringByWeight(t(i).toDouble)
                 }
-                labels(cluster) = ""
+                labels(k) = ""
                 for (j <- 0 to featuresNum-1)  {
-                    if (j > 0) labels(cluster) += ","
-                    labels(cluster) += '"'+labelBuf(j).toString+'"'
+                    if (j > 0) labels(k) += ","
+                    labels(k) += '"'+labelBuf(j).toString+'"'
                 }
             }
             strMsg += "]"
