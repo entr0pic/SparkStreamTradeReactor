@@ -312,6 +312,7 @@ try {
             strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
 
             var firstCluster : Boolean = true;
+            var labels : Array[String] = Array.fill(numClusters)("")
             model2.clusterCenters.foreach{ t =>
                 println(t.toString)
                 if (firstCluster) {
@@ -320,6 +321,16 @@ try {
                     strMsg += ","
                 }
                 strMsg +=  t.toString
+                var labelBuf : Array[String] = Array.fill(featuresNum)("")
+                for (i <- 0 to featuresNum-1) {
+                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+                    else labelBuf(i) = getStringByWeight(t(i).toDouble)
+                }
+                labels(cluster) = ""
+                for (j <- 0 to featuresNum-1)  {
+                    if (j > 0) labels(cluster) += ","
+                    labels(cluster) += '"'+labelBuf(j).toString+'"'
+                }
             }
             strMsg += "]"
 
@@ -333,7 +344,6 @@ try {
 
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
-            var labels : Array[String] = Array.fill(numClusters)("")
             val maxNum : Integer = 20;
             val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
@@ -345,16 +355,6 @@ try {
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
-                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
-                    for (i <- 0 to featuresNum-1) {
-                        if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
-                        else labelBuf(i) = getStringByWeight(a(i).toDouble)
-                    }
-                    labels(cluster) = ""
-                    for (j <- 0 to featuresNum-1)  {
-                        if (j > 0) labels(cluster) += ","
-                        labels(cluster) += '"'+labelBuf(j).toString+'"'
-                    }
                 }
                 nums(cluster) += 1
             }
