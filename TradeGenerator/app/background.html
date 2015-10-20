@@ -87,9 +87,9 @@
               Spark
             </div>
             <div class="card-block">
-              <div>
-              Fill the gaps
-              </div>
+             <div style="height:40px;"><img src="/assets/spark-logo.png" style="width:150px ;float: right;"></div>
+              <p class="lead">Spark Streaming in the wild</p>
+              <p></p>
             </div>
           </div>
           <div class="card">
@@ -97,6 +97,7 @@
               Kafka
             </div>
             <div class="card-block">
+              <div style="height:40px;"><img src="/assets/kafka-logo.png" style="float: right;"></div>
               <p class="lead">Why Kafka?</p>
               <p>Kafka is more than just a message broker, think of it as a message broker crossed with a distributed database and all the replication, scalability, fault tolerance and speed benefits that come with it.</p>
               <p>Kafka maintains a sequential commit log of all messages it recieves, akin to a write ahead log used for database replication. </p>
@@ -129,6 +130,7 @@
             </div>
             <div class="card-block">
               <div>
+                 <div style="height:40px;"><img src="/assets/docker-logo.png" style="float: right;"></div>
                 <p class="lead">Hadoop on Docker?</p>
                 <p>It may not be as crazy as it sounds, in fact one of the main reasons it was used for this project (aside from being fun to play with) was cost. Rather than provisioning VM instances for each box we would have needed in our multi-node hadoop cluster, we could provision a single mid-spec or low-spec box. From that single box we would be able to run our 14 containers. In fact the entire system can run on a single CPU box with 3.75gb of memory.</p>
                 <p>So while this isn't the exact use case that you would be trying to replicate within a business, it shows you the efficiency you can get out of docker vs using standalone VMs. You vastly reduce the overhead of using VM's and it allows you to utilize every last bit of CPU memory on a given hardware stack.</p>
