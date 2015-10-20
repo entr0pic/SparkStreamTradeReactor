@@ -122,19 +122,34 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 
 def getStringByWeight(a: Double) : String = {
     var ss = a.toString.substring(2)
+    if (ss.length == 2) ss = "0" + ss
+    if (ss.length == 1) ss = "00" + ss
+
     var buffer: String = ""
-    for (i <- ss.length-1 to 0 by -3) {
-        //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
-        val z = "0"
-        var b = ss(i).toString
-        if (i>0) b = ss(i-1).toString + b else b = z + b
-        if (i>1) b = ss(i-2).toString + b else b = z + b
-        b = """\""" +"u0"+ b
-        buffer = b + buffer
+    if (ss.length == 3) {
+        buffer = getUnicode(ss(0), ss(1), ss(2))
+    } else {
+        for (i <- ss.length-1 to 0 by -3) {
+            //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
+
+    //        val z = "0"
+    //        var b = ss(i).toString
+    //        if (i>0) b = ss(i-1).toString + b else b = z + b
+    //        if (i>1) b = ss(i-2).toString + b else b = z + b
+    //        b = """\""" +"u0" + b
+    //        buffer = b + buffer
+                val s1 = i > 1 ? ss(i-2).toString : "0"
+                val s2 = i > 0 ? ss(i-1).toString : "0"
+              buffer = getUnicode(s1, s2, , ss(i).toString) + buffer
+        }
     }
     buffer
 }
 
+def getUnicode(s1:String, s2:String, s3:String) : String = {
+    val ret = """\""" +"u0" + s1 + s2 + s3
+    ret
+}
 
 /*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
