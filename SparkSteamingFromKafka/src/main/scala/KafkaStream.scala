@@ -266,13 +266,14 @@ try {
         }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
-          //System.exit(0)
 
-/*
     // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
+                       println(s"------------RDD cound:  $count -------")
+
         if (count > 0) {
+            /*
             var strMsg : String = ""
 
             strMsg += "{"
@@ -392,10 +393,11 @@ try {
 //            if (numCollected > 10000) {
 //                System.exit(0)
 //            }
+            */
         }
 
     }
-*/
+
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
 //    val inputData = textStream.map(Vectors.parse).cache()
