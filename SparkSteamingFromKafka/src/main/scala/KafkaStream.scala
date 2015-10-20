@@ -370,10 +370,12 @@ try {
                 strMsg += nums(i).toString
                 printMsg += (i+1)+":"+nums(i).toString
             }
+
+            strMsg += "]"
+
             println(s"------------Model predict (size of predicted clusters)  -------")
             println(printMsg)
 
-            strMsg += "]"
 
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
