@@ -296,7 +296,6 @@ try {
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
 
-                /*
             strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
 
             var firstCluster : Boolean = true;
@@ -380,7 +379,6 @@ try {
 //            }
 //            strMsg += "]"
 
-            */
 
             strMsg += "}"
 
