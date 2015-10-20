@@ -406,7 +406,7 @@ try {
 
             strMsg += ","+s"${'"'}cluster-nums${'"'}"+":["
 
-            var printMsg = ""
+            printMsg = ""
             for( i <- 0 to numClusters-1) {
                 if (i>0) {
                     strMsg += ","
