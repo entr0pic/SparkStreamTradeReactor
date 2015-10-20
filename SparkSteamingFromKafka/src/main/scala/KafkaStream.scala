@@ -149,6 +149,25 @@ def getUnicode(s1:String, s2:String, s3:String) : String = {
     Integer.parseInt(s1+s2+s3, 10).toChar.toString
 }
 
+def getLabels (a: Array[Double], featsNum:Integer ) : Array[String] = {
+    var labelBuf : Array[String] = Array.fill(featsNum)("")
+    for (i <- 0 to featsNum-1) {
+        if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+        else labelBuf(i) = getStringByWeight(a(i).toDouble)
+    }
+    labelBuf
+}
+
+def getLabelString(a: Array[Double], featsNum:Integer) : String = {
+    label : String = ""
+    val labelBuf : Array[String] = getLables(a, featsNum)
+    for (j <- 0 to featsNum-1)  {
+        if (j > 0) label += ","
+        label += '"'+labelBuf(j).toString+'"'
+    }
+    label
+}
+
 /*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
     val rdd1 : RDD[Vector] = rdd.map{ line =>
@@ -312,7 +331,7 @@ try {
             strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
 
             var firstCluster : Boolean = true;
-            var labels : Array[String] = Array.fill(numClusters)("")
+            var clusterLabels : Array[String] = Array.fill(numClusters)("")
             var k = 0
             model2.clusterCenters.foreach{ t =>
                 println(t.toString)
@@ -323,18 +342,37 @@ try {
                     k+=1
                 }
                 strMsg +=  t.toString
-                var labelBuf : Array[String] = Array.fill(featuresNum)("")
-                for (i <- 0 to featuresNum-1) {
-                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
-                    else labelBuf(i) = getStringByWeight(t(i).toDouble)
-                }
-                labels(k) = ""
-                for (j <- 0 to featuresNum-1)  {
-                    if (j > 0) labels(k) += ","
-                    labels(k) += '"'+labelBuf(j).toString+'"'
-                }
+
+                // fill the labels for centers
+                clasterLabels(k) = getLabelString(t, featuresNum)
+//                var labelBuf : Array[String] = Array.fill(featuresNum)("")
+//                for (i <- 0 to featuresNum-1) {
+//                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+//                    else labelBuf(i) = getStringByWeight(t(i).toDouble)
+//                }
+//                labels(k) = ""
+//                for (j <- 0 to featuresNum-1)  {
+//                    if (j > 0) labels(k) += ","
+//                    labels(k) += '"'+labelBuf(j).toString+'"'
+//                }
             }
             strMsg += "]"
+
+            strMsg += ","+s"${'"'}cluster-centers-labels${'"'}"+":["
+            var printMsg = ""
+            for( i <- 0 to numClusters-1) {
+                if (i>0) {
+                    strMsg += ","
+                    printMsg += "," // debug
+                }
+                strMsg += "[" + clasterLabels(i) + "]"
+                printMsg += (i+1)+":"+"[" + clasterLabels(i) + "]" // debug
+            }
+
+            strMsg += "]"
+
+            println(s"------------Model centers labels  -------")
+            println(printMsg)
 
             var sampleSize = (count/2).toInt
             if (sampleSize > 130) sampleSize = 130;
@@ -346,6 +384,7 @@ try {
 
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
+            var labels : Array[String] = Array.fill(numClusters)("")
             val maxNum : Integer = 20;
             val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
@@ -354,9 +393,13 @@ try {
                 if (buffer(cluster) != "") {
                     buffer(cluster) += ","
                 }
+                if (labels(cluster) != "") {
+                    labels(cluster) += ","
+                }
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
+                    labels(cluster) += "["+ getLabelString(a, featuresNum)+"]"
                 }
                 nums(cluster) += 1
             }
