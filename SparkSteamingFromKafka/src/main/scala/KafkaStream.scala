@@ -266,7 +266,7 @@ try {
         }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
-          System.exit(0)
+          //System.exit(0)
 
 /*
     // train k-means model & predict on random values
