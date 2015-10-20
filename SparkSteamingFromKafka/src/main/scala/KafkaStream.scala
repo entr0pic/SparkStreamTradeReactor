@@ -238,36 +238,36 @@ try {
     // transform messages to double vectors
     var vectors =
         trades.filter(!_.isEmpty)
-        .transform{ rdd =>
-            rdd.map{ line =>
-                {
-                    JSON.parseFull(line)  match {
-                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-                        case Some( mapAsAny ) => mapAsAny match {
-                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-                        }
-                    }
-                }
-            }
-            .filter(_.size>1)
-            .map{ x =>
-                val n = featuresNum
-                var buffer: Array[Double] = Array.fill(n)(0.00)
-                var line = ""
-                for( i <- 0 to n-1) {
-                    buffer(i) = x(i).toString.toDouble
-                    if (i > 0) line += "|"
-                    line += x(i).toString
-                }
-
-                buffer
-            }
-            .map(x => Vectors.dense(x))
-        }.cache()
+//        .transform{ rdd =>
+//            rdd.map{ line =>
+//                {
+//                    JSON.parseFull(line)  match {
+//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        case Some( mapAsAny ) => mapAsAny match {
+//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+//                        }
+//                    }
+//                }
+//            }
+//            .filter(_.size>1)
+//            .map{ x =>
+//                val n = featuresNum
+//                var buffer: Array[Double] = Array.fill(n)(0.00)
+//                var line = ""
+//                for( i <- 0 to n-1) {
+//                    buffer(i) = x(i).toString.toDouble
+//                    if (i > 0) line += "|"
+//                    line += x(i).toString
+//                }
+//
+//                buffer
+//            }
+//            .map(x => Vectors.dense(x))
+//        }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
-
+/*
     // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
@@ -276,85 +276,100 @@ try {
 
             strMsg += "{"
 
-//            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
+            strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
+
+            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
+
+//            println(s"------------Rdd stats (messages # in RDD = $count) -------")
+//            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
+//            println(summary.mean)
+//            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
+//            println(summary.variance)
+//            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
+//            println(summary.numNonzeros)
+
+            strMsg += ","+s"${'"'}rdd-stats${'"'}"+":["
+            strMsg += summary.mean.toString+","+summary.variance.toString
+            strMsg += "]"
+
+            val model2 = KMeans.train(rdd, numClusters, numIterations)
+
+            println(s"------------Model cluster centers (clusters # $numClusters) -------")
+
+            strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
+            var firstCluster : Boolean = true;
+            model2.clusterCenters.foreach{ t =>
+                println(t.toString)
+                if (firstCluster) {
+                    firstCluster = false
+                } else {
+                    strMsg += ","
+                }
+                strMsg +=  t.toString
+            }
+            strMsg += "]"
+
+            var sampleSize = (count/2).toInt
+            if (sampleSize > 130) sampleSize = 130;
+            else {
+                if (sampleSize < 70) sampleSize = (count*0.75).toInt
+            }
+
+            println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
+
+            val buffer: Array[String] = Array.fill(numClusters)("")
+            var nums : Array[Integer] = Array.fill(numClusters)(0)
+            var labels : Array[String] = Array.fill(numClusters)("")
+            val maxNum : Integer = 20;
+            val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
+                val cluster = model2.predict(a)  // adding 1 for readability
+//                println(a)
+//                println("Predicted cluster = "+ (1+cluster).toString)
+                if (buffer(cluster) != "") {
+                    buffer(cluster) += ","
+                }
+
+                if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
+                    buffer(cluster) += a.toString
+//                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
+//                    for (i <- 0 to featuresNum-1) {
+//                        labelBuf(i) = getStringByWeight(a(i).toDouble)
+//                    }
+//                    labels(cluster) = labelBuf.toString
+                }
+                nums(cluster) += 1
+            }
+
+            var printMsg = ""
+            for( i <- 0 to numClusters-1) {
+                if (i>0) printMsg += ","
+                printMsg += (i+1)+":"+nums(i).toString
+            }
+            println(s"------------Model predict (size of predicted clusters)  -------")
+            println(printMsg)
+
+            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
+
+            var firstRec : Boolean = true;
+            buffer.foreach{s =>
+                if (s != "") {
+                    if (firstRec) {
+                        firstRec = false
+                    } else {
+                        strMsg += ","
+                    }
+                    strMsg += "["+s+"]"
+                }
+            }
+            strMsg += "]"
+
+//            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
 //
-//            val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
-//
-////            println(s"------------Rdd stats (messages # in RDD = $count) -------")
-////            println(s"------------Rdd stats == mean value for each column == (messages # in RDD = $count) -------")
-////            println(summary.mean)
-////            println(s"------------Rdd stats == column-wise variance == (messages # in RDD = $count) -------")
-////            println(summary.variance)
-////            println(s"------------Rdd stats == number of nonzeros in each column == (messages # in RDD = $count) -------")
-////            println(summary.numNonzeros)
-//
-//            strMsg += ","+s"${'"'}rdd-stats${'"'}"+":["
-//            strMsg += summary.mean.toString+","+summary.variance.toString
-//            strMsg += "]"
-//
-//            val model2 = KMeans.train(rdd, numClusters, numIterations)
-//
-//            println(s"------------Model cluster centers (clusters # $numClusters) -------")
-//
-//            strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
-//            var firstCluster : Boolean = true;
-//            model2.clusterCenters.foreach{ t =>
-//                println(t.toString)
-//                if (firstCluster) {
-//                    firstCluster = false
-//                } else {
-//                    strMsg += ","
-//                }
-//                strMsg +=  t.toString
-//            }
-//            strMsg += "]"
-//
-//            var sampleSize = (count/2).toInt
-//            if (sampleSize > 130) sampleSize = 130;
-//            else {
-//                if (sampleSize < 70) sampleSize = (count*0.75).toInt
-//            }
-//
-//            println(s"------------Model predict (clusters # $numClusters), sample size : $sampleSize -------")
-//
-//            val buffer: Array[String] = Array.fill(numClusters)("")
-//            var nums : Array[Integer] = Array.fill(numClusters)(0)
-//            var labels : Array[String] = Array.fill(numClusters)("")
-//            val maxNum : Integer = 20;
-//            val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
-//                val cluster = model2.predict(a)  // adding 1 for readability
-////                println(a)
-////                println("Predicted cluster = "+ (1+cluster).toString)
-//                if (buffer(cluster) != "") {
-//                    buffer(cluster) += ","
-//                }
-//
-//                if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
-//                    buffer(cluster) += a.toString
-////                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
-////                    for (i <- 0 to featuresNum-1) {
-////                        labelBuf(i) = getStringByWeight(a(i).toDouble)
-////                    }
-////                    labels(cluster) = labelBuf.toString
-//                }
-//                nums(cluster) += 1
-//            }
-//
-//            var printMsg = ""
-//            for( i <- 0 to numClusters-1) {
-//                if (i>0) printMsg += ","
-//                printMsg += (i+1)+":"+nums(i).toString
-//            }
-//            println(s"------------Model predict (size of predicted clusters)  -------")
-//            println(printMsg)
-//
-//            strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
-//
-//            var firstRec : Boolean = true;
-//            buffer.foreach{s =>
+//            var firstLbl : Boolean = true;
+//            labels.foreach{s =>
 //                if (s != "") {
-//                    if (firstRec) {
-//                        firstRec = false
+//                    if (firstLbl) {
+//                        firstLbl = false
 //                    } else {
 //                        strMsg += ","
 //                    }
@@ -362,21 +377,6 @@ try {
 //                }
 //            }
 //            strMsg += "]"
-//
-////            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
-////
-////            var firstLbl : Boolean = true;
-////            labels.foreach{s =>
-////                if (s != "") {
-////                    if (firstLbl) {
-////                        firstLbl = false
-////                    } else {
-////                        strMsg += ","
-////                    }
-////                    strMsg += "["+s+"]"
-////                }
-////            }
-////            strMsg += "]"
 
             strMsg += "}"
 
@@ -394,7 +394,7 @@ try {
         }
 
     }
-
+*/
 //    vectors.repartition(partitionsEachInterval).saveAsTextFiles(fileName)
 //
 //    val inputData = textStream.map(Vectors.parse).cache()
