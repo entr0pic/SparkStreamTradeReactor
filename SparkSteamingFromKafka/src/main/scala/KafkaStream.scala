@@ -344,11 +344,7 @@ try {
                 strMsg +=  t.toString
 
                 // fill the labels for centers
-                var a : Array[Double] = Array.fill(featuresNum)(0.00)
-                for (i <- 0 to featuresNum-1) {
-                    a(i) = t(i).toDouble
-                }
-                clusterLabels(k) = getLabelString(a, featuresNum)
+                clusterLabels(k) = getLabelString(t.toArray, featuresNum)
 //                var labelBuf : Array[String] = Array.fill(featuresNum)("")
 //                for (i <- 0 to featuresNum-1) {
 //                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
@@ -403,7 +399,7 @@ try {
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
-                    labels(cluster) += "["+ getLabelString(a, featuresNum)+"]"
+                    labels(cluster) += "["+ getLabelString(a.toArray, featuresNum)+"]"
                 }
                 nums(cluster) += 1
             }
