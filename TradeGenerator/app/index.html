@@ -908,8 +908,8 @@ var currencySimplified = function (str) {
                 var value = createStatsData(msg.value);
                 var rdd = createRddData(msg.value);
                 chartManager.addData('rddstats', rdd);
-                  var centers = createClusterData(msg.value);
-                chartManager.addData('clusterstats', centers);
+//                  var centers = createClusterData(msg.value);
+//                chartManager.addData('clusterstats', centers);
                 chartManager.data.kmstats.cf.remove()
                 resetGlobalKmStats();
                 value = initKmStats(value);
