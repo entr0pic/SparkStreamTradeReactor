@@ -333,9 +333,9 @@ try {
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
                     var labelBuf : Array[String] = Array.fill(featuresNum)("")
-//                    for (i <- 0 to featuresNum-1) {
-//                        labelBuf(i) = getStringByWeight(a(i).toDouble)
-//                    }
+                    for (i <- 0 to featuresNum-1) {
+                        labelBuf(i) = getStringByWeight(a(i).toDouble)
+                    }
                     labels(cluster) = ""
                     for (j <- 0 to featuresNum-1)  {
                         if (j > 0) labels(cluster) += ","
