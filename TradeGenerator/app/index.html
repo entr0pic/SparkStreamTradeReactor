@@ -668,8 +668,44 @@
             return parseInt(json.time.replace(" ms",""),10);
         }
 
+var GenerateIdFromStr = function (str) {
+    return [].concat(str.split("")).map(function (ch){
+        var n = ch.charCodeAt(0);
+        return (n<10?"0":"")+(n<100?"0":"")+n.toString();
+    }).join("").replace(/^[0]+/gi, "");
+};
+
+var GenerateDoubleIdFromStr = function (str) {
+    return "0."+GenerateIdFromStr(str)
+}
+
+var currencySimplified = function (str) {
+    switch(str.toUpperCase()) {
+        case "USD": case "AUD": case "GBP": case "YEN": case "EUR": case "CAD":
+            return str.toUpperCase();
+        default:
+            return "OTHER";
+    }
+}
+
       var getStatsData = function (json) {
           var data = [];
+          json["cluster-centers-labels"] = json["cluster-centers"].map(function (cc,i) {
+              var cc_currency_w = cc[3];
+              if (!json["cluster-data"] || !json["cluster-data"][i]) { return ""; }
+              var w = json["cluster-data"][i].map(function (cd,j) {
+                  return cd[3] // currency_w
+              }).filter(function (item,key,arr){ return arr.indexOf(item) === key; })
+              .sort(function (a,b){
+                    var t1 = Math.abs(a - cc_currency_w)
+                    var t2 = Math.abs(b - cc_currency_w);
+                  return (t1 < t2 ? a : b)
+              })[0];
+              var idx = json["cluster-data"][i].filter(function (t) { return t[3] === w })
+                   .map(function(t) { return i })[0];
+              return json["cluster-labels"][i][idx][3];
+          });
+
           json["cluster-centers"].forEach(function (cc, i) {
               var row = getStatsRow(cc, i, json["cluster-centers-labels"][i],  true);
               row.key = i+":1:0"
