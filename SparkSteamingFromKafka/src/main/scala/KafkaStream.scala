@@ -149,15 +149,6 @@ def getUnicode(s1:String, s2:String, s3:String) : String = {
     Integer.parseInt(s1+s2+s3, 10).toChar.toString
 }
 
-def getLabels (a: Array[Double], featsNum:Integer ) : Array[String] = {
-    var labelBuf : Array[String] = Array.fill(featsNum)("")
-    for (i <- 0 to featsNum-1) {
-        if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
-        else labelBuf(i) = getStringByWeight(a(i).toDouble)
-    }
-    labelBuf
-}
-
 def getLabelString(a: Array[Double], featsNum:Integer) : String = {
     var label : String = ""
     var labelBuf : Array[String] = Array.fill(featsNum)("")
