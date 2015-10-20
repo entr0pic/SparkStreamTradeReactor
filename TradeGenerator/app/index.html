@@ -685,9 +685,7 @@
             return parseInt(json.time.replace(" ms",""),10);
         }
 
-      var getStatsData = function (json) {
-          var data = [];
-          json["cluster-centers-labels"] = json["cluster-centers"].map(function (cc,i) {
+        var getCenterCurrency = function (cc, i) {
               var cc_currency_w = cc[3];
               if (!json["cluster-data"] || !json["cluster-data"][i] || !json["cluster-data"][i].length) { return ""; }
               if (!json["cluster-labels"] || !json["cluster-labels"][i]){ return ""; }
@@ -702,6 +700,13 @@
               var idx = json["cluster-data"][i].filter(function (t) { return t[3] === w })
                    .map(function(t,ii) { return ii })[0];
               return json["cluster-labels"][i][idx][3];
+        }
+
+      var getStatsData = function (json) {
+          var data = [];
+          json["cluster-centers-labels"] = json["cluster-centers-labels"].map(function (cl,i) {
+              cl[3] = getCenterCurrency(json["cluster-centers"][i], i);
+              return cl;
           });
 
           json["cluster-centers"].forEach(function (cc, i) {
