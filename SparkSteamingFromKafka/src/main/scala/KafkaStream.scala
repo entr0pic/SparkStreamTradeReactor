@@ -237,33 +237,33 @@ try {
     // transform messages to double vectors
     var vectors =
         trades.filter(!_.isEmpty)
-//        .transform{ rdd =>
-//            rdd.map{ line =>
-//                {
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        }
-//                    }
-//                }
-//            }
-//            .filter(_.size>1)
-//            .map{ x =>
-//                val n = featuresNum
-//                var buffer: Array[Double] = Array.fill(n)(0.00)
-//                var line = ""
-//                for( i <- 0 to n-1) {
-//                    buffer(i) = x(i).toString.toDouble
-//                    if (i > 0) line += "|"
-//                    line += x(i).toString
-//                }
-//
-//                buffer
-//            }
-//            .map(x => Vectors.dense(x))
-//        }.cache()
+        .transform{ rdd =>
+            rdd.map{ line =>
+                {
+                    JSON.parseFull(line)  match {
+                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        case Some( mapAsAny ) => mapAsAny match {
+                            case x: Map[ String, Any ] => { CreateDataArray(x) }
+                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
+                        }
+                    }
+                }
+            }
+            .filter(_.size>1)
+            .map{ x =>
+                val n = featuresNum
+                var buffer: Array[Double] = Array.fill(n)(0.00)
+                var line = ""
+                for( i <- 0 to n-1) {
+                    buffer(i) = x(i).toString.toDouble
+                    if (i > 0) line += "|"
+                    line += x(i).toString
+                }
+
+                buffer
+            }
+            .map(x => Vectors.dense(x))
+        }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
           System.exit(0)
