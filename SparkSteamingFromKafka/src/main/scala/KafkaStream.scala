@@ -331,11 +331,11 @@ try {
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
-                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
-                    for (i <- 0 to featuresNum-1) {
-                        labelBuf(i) = getStringByWeight(a(i).toDouble)
-                    }
-                    labels(cluster) = labelBuf.toString
+//                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
+//                    for (i <- 0 to featuresNum-1) {
+//                        labelBuf(i) = getStringByWeight(a(i).toDouble)
+//                    }
+//                    labels(cluster) = labelBuf.toString
                 }
                 nums(cluster) += 1
             }
@@ -363,25 +363,25 @@ try {
             }
             strMsg += "]"
 
-            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
-
-            var firstLbl : Boolean = true;
-            labels.foreach{s =>
-                if (s != "") {
-                    if (firstLbl) {
-                        firstLbl = false
-                    } else {
-                        strMsg += ","
-                    }
-                    strMsg += "["+s+"]"
-                }
-            }
-            strMsg += "]"
+//            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
+//
+//            var firstLbl : Boolean = true;
+//            labels.foreach{s =>
+//                if (s != "") {
+//                    if (firstLbl) {
+//                        firstLbl = false
+//                    } else {
+//                        strMsg += ","
+//                    }
+//                    strMsg += "["+s+"]"
+//                }
+//            }
+//            strMsg += "]"
 
             strMsg += "}"
 
-            println(s"------------Message to send-------")
-            println(strMsg)
+//            println(s"------------Message to send-------")
+//            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
