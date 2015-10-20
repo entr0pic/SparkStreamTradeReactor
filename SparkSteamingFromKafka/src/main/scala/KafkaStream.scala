@@ -193,13 +193,11 @@ var numCollected = 0L
 
 //------------- start doing something ------------
 
-println("Input messages")
 trades.count().print
 //ttrades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 //trades.print()
 //ttrades.print()
-      System.exit(0)
 
 try {
     /*
@@ -268,6 +266,8 @@ try {
 //        }.cache()
 
     vectors.count().print  // Calls an action to create the cache.
+          System.exit(0)
+
 /*
     // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
