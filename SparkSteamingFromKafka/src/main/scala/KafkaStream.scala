@@ -313,7 +313,7 @@ try {
 
             var firstCluster : Boolean = true;
             var labels : Array[String] = Array.fill(numClusters)("")
-            model2.clusterCenters.foreach{ t =>
+            model2.clusterCenters.foreach{ (t,cluster) =>
                 println(t.toString)
                 if (firstCluster) {
                     firstCluster = false
