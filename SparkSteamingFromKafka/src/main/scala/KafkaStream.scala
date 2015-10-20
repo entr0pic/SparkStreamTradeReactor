@@ -342,7 +342,7 @@ try {
                 clusterLabels(k) = ""
                 for(i <- 0 to featuresNum-1) {
                     if (i>0) clusterLabels(k) += ","
-                    clusterLabels(k) += '"'+'"'
+                    clusterLabels(k) += '"' + "N/A" + '"'
                 }
 
 //                clusterLabels(k) = getLabelString(t.toArray, featuresNum)
