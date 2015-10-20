@@ -103,7 +103,7 @@
         </div>
     </div>
     <div class="row">
-      <div class="col-xl-12 col-sm-12">
+      <div class="col-xl-6 col-sm-12">
           <div class="card">
             <div class="card-header">
               Mean Price Over Time (per RDD)
@@ -114,12 +114,11 @@
           </div>
         </div>
     </div>
-<!--
     <div class="row">
-         <div class="col-xl-4 col-md-6 col-sm-12">
+      <div class="col-xl-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Cluster By Category
+              Cluster Centers By Currency
             </div>
             <div class="card-block">
               <div id="minor-cluster-chart"></div>
@@ -127,7 +126,6 @@
           </div>
         </div>
     </div>
--->
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -621,6 +619,25 @@
           this.charts.timeLine2.xAxis().ticks(5);
           this.charts.timeLine2.yAxis().tickFormat(d3.format('$.3s'));
 
+          this.charts.category2 = dc.rowChart("#minor-cluster-chart",'clusters')
+                                    .height(500)
+//                                    .margins({top: 30, right: 50, bottom: 25, left: 40})
+                                    .dimension(this.data.clusters.dimensions.currency)
+                                    .group(this.data.clusters.groups.currency)
+                                    .ordering(function(d){ return -d.value })
+                                    .cap(16)
+                                    // assign colors to each value in the x scale domain
+                                    //.ordinalColors(d3.scale.category10())
+                                    .label(function (d) {
+                                        return d.key + ': ' + d.value;//key.split(".")[1];
+                                    })
+                                    // title sets the row text
+                                    .title(function (d) {
+                                        return d.key;
+                                    })
+          this.charts.category2
+                                    .elasticX(true)
+                                    .xAxis().ticks(5);
 
 
           var tip = d3.tip()
@@ -668,12 +685,35 @@
             return parseInt(json.time.replace(" ms",""),10);
         }
 
+        var getCenterCurrency = function (json, cc, i) {
+              var cc_currency_w = cc[3];
+              if (!json["cluster-data"] || !json["cluster-data"][i] || !json["cluster-data"][i].length) { return ""; }
+              if (!json["cluster-labels"] || !json["cluster-labels"][i]){ return ""; }
+              var w = json["cluster-data"][i].map(function (cd,j) {
+                  return cd[3] // currency_w
+              })
+              .sort(function (a,b){
+                    var t1 = Math.abs(a - cc_currency_w)
+                    var t2 = Math.abs(b - cc_currency_w);
+                  return (t1 < t2 ? -1 : 1)
+              })[0];
+              var idx = json["cluster-data"][i].filter(function (t) { return t[3] === w })
+                   .map(function(t,ii) { return ii })[0];
+              return json["cluster-labels"][i][idx][3];
+        }
+
       var getStatsData = function (json) {
           var data = [];
+          json["cluster-centers-labels"] = json["cluster-centers-labels"].map(function (cl,i) {
+              return [
+                  "", "", "", getCenterCurrency(json, json["cluster-centers"][i], i), ""
+              ]
+          });
+
           json["cluster-centers"].forEach(function (cc, i) {
               var row = getStatsRow(cc, i, json["cluster-centers-labels"][i],  true);
               row.key = i+":1:0"
-              var total = json["cluster-nums"][i] ? json["cluster-nums"][i] : -1;
+              var total = json["cluster-nums"][i] ? json["cluster-nums"][i] : 0;
               var t = getTimeFromJson(json);
               row.total = total;
               row.time = t;
@@ -696,6 +736,31 @@
               key: getTimeFromJson(json),
               value: stats[0][0] // mean by price
           }
+      }
+
+      var getClusterData = function (json) {
+          var data = [];
+          json["cluster-centers-labels"] = json["cluster-centers-labels"].map(function (cl,i) {
+              return [
+                  "", "", "", getCenterCurrency(json, json["cluster-centers"][i], i), ""
+              ]
+          });
+          json["cluster-centers"].forEach(function (cc, i) {
+              var row = getStatsRow(cc, i, json["cluster-centers-labels"][i],  true);
+              row.key = i;
+              var total = json["cluster-nums"][i] ? json["cluster-nums"][i] : 0;
+              var t = getTimeFromJson(json);
+              row.total = total;
+              row.time = t;
+              data.push(row);
+          });
+          return data;
+      }
+
+      var createClusterData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getClusterData(json);
       }
 
       var createStatsData = function (value) {
@@ -752,7 +817,7 @@
                             totalled.maxR = globalKmStats.maxR[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
-                            totalled.currency = row.currency; //row.currency_w;
+                            totalled.currency = row.currency_w;
                             totalled.exchange = row.exchange_w;
                           return totalled;
                         },
@@ -765,7 +830,7 @@
                             totalled.maxR = globalKmStats.maxR[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
-                            totalled.currency = row.currency; //row.currency_w;
+                            totalled.currency = row.currency_w;
                             totalled.exchange = row.exchange_w;
                           return totalled;
                         }
@@ -791,6 +856,7 @@
             .addDimension('kmstats','price',function(d) {return d.price;})
             .addDimension('kmstats','weight',function(d) {return d.party_w;})
             .addDimension('kmstats','party_w',function(d){return d.key;},clusterCustomise)
+            .addDimension('clusters','currency',function(d) {return d.currency && d.currency.length ? d.currency : "N/A"})
                       .initCharts();
         $("#filter-all").on('keyup', function() {
           var filterString = $(this).val();
@@ -855,12 +921,15 @@
               total:[0,0,0,0,0]
             }
 
+
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
                 var value = createStatsData(msg.value);
                 var rdd = createRddData(msg.value);
                 chartManager.addData('rddstats', rdd);
+                  var centers = createClusterData(msg.value);
+                chartManager.addData('clusters', centers);
                 chartManager.data.kmstats.cf.remove()
                 resetGlobalKmStats();
                 value = initKmStats(value);

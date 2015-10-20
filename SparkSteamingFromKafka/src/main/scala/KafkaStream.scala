@@ -339,7 +339,13 @@ try {
                 strMsg +=  t.toString
 
                 // fill the labels for centers
-                clusterLabels(k) = getLabelString(t.toArray, featuresNum)
+                clusterLabels(k) = ""
+                for(i <- 0 to featuresNum-1) {
+                    if (i>0) clusterLabels(k) += ","
+                    clusterLabels(k) += '"' + '"'
+                }
+
+//                clusterLabels(k) = getLabelString(t.toArray, featuresNum)
 //                var labelBuf : Array[String] = Array.fill(featuresNum)("")
 //                for (i <- 0 to featuresNum-1) {
 //                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
@@ -366,8 +372,8 @@ try {
 
             strMsg += "]"
 
-            println(s"------------Model centers labels  -------")
-            println(printMsg)
+//            println(s"------------Model centers labels  -------")
+//            println(printMsg)
 
             var sampleSize = (count/2).toInt
             if (sampleSize > 130) sampleSize = 130;
@@ -450,8 +456,8 @@ try {
             }
             strMsg += "]"
 
-            println(s"------------ Back ref labels  -------")
-            println(printMsg)
+//            println(s"------------ Back ref labels  -------")
+//            println(printMsg)
 
             strMsg += "}"
 
