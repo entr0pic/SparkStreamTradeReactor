@@ -339,7 +339,7 @@ try {
                     labels(cluster) = ""
                     for (j <- 0 to featuresNum-1)  {
                         if (j > 0) labels(cluster) += ","
-                        labels(cluster) += labelBuf(j).toString
+                        labels(cluster) += '"'+labelBuf(j).toString+'"'
                     }
                 }
                 nums(cluster) += 1
