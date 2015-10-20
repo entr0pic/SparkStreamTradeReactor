@@ -359,13 +359,21 @@ try {
                 nums(cluster) += 1
             }
 
+            strMsg += ","+s"${'"'}cluster-nums${'"'}"+":["
+
             var printMsg = ""
             for( i <- 0 to numClusters-1) {
-                if (i>0) printMsg += ","
+                if (i>0) {
+                    strMsg += ","
+                    printMsg += ","
+                }
+                strMsg += nums(i).toString
                 printMsg += (i+1)+":"+nums(i).toString
             }
             println(s"------------Model predict (size of predicted clusters)  -------")
             println(printMsg)
+
+            strMsg += "]"
 
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
@@ -400,9 +408,8 @@ try {
             }
             strMsg += "]"
 
-            println(s"------------ Back ref labels  -------")
-            println(printMsg)
-
+//            println(s"------------ Back ref labels  -------")
+//            println(printMsg)
 
             strMsg += "}"
 
