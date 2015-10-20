@@ -160,7 +160,11 @@ def getLabels (a: Array[Double], featsNum:Integer ) : Array[String] = {
 
 def getLabelString(a: Array[Double], featsNum:Integer) : String = {
     var label : String = ""
-    var labelBuf = getLables(a, featsNum)
+    var labelBuf : Array[String] = Array.fill(featsNum)("")
+    for (i <- 0 to featsNum-1) {
+        if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+        else labelBuf(i) = getStringByWeight(a(i).toDouble)
+    }
     for (j <- 0 to featsNum-1)  {
         if (j > 0) label += ","
         label += '"'+labelBuf(j).toString+'"'
