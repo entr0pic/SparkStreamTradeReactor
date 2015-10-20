@@ -685,7 +685,7 @@
             return parseInt(json.time.replace(" ms",""),10);
         }
 
-        var getCenterCurrency = function (cc, i) {
+        var getCenterCurrency = function (json, cc, i) {
               var cc_currency_w = cc[3];
               if (!json["cluster-data"] || !json["cluster-data"][i] || !json["cluster-data"][i].length) { return ""; }
               if (!json["cluster-labels"] || !json["cluster-labels"][i]){ return ""; }
@@ -705,7 +705,7 @@
       var getStatsData = function (json) {
           var data = [];
           json["cluster-centers-labels"] = json["cluster-centers-labels"].map(function (cl,i) {
-              cl[3] = getCenterCurrency(json["cluster-centers"][i], i);
+              cl[3] = getCenterCurrency(json, json["cluster-centers"][i], i);
               return cl;
           });
 
