@@ -383,11 +383,14 @@ try {
             }
             strMsg += "]"
 
+            println(s"------------ Back ref labels  -------")
+            println(labels.toString)
+
 
             strMsg += "}"
 
-            println(s"------------Message to send-------")
-            println(strMsg)
+//            println(s"------------Message to send-------")
+//            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
