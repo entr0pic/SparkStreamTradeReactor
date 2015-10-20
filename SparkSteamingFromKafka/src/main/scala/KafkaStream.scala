@@ -95,14 +95,12 @@ object TradeStreamReader {
 //------------------------ functions --------------
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
-    val buffer:Array[Any] = new Array[Any](7)
+    val buffer:Array[Any] = new Array[Any](5)
     buffer(0) = src("price")
     buffer(1) = src("party_weight")
     buffer(2) = src("exchange_weight")
     buffer(3) = src("currency_weight")
-    buffer(4) = src("party")
-    buffer(5) = src("exchange")
-    buffer(6) = src("currency")
+    buffer(4) = src("country_weight")
     buffer
 }
       
@@ -122,17 +120,34 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 
 def getStringByWeight(a: Double) : String = {
     var ss = a.toString.substring(2)
-    val n = (ss.length/3).toInt
-    for (i <- 0 to (ss.length-n)-1) {
-        ss = "0".concat(ss)
-    }
+    if (ss.length == 2) ss = "0" + ss
+    if (ss.length == 1) ss = "00" + ss
+
     var buffer: String = ""
-    for (i <- 0 to ss.length-1 by 3) {
-        buffer += ("""\""" +"u0"+ss(i)+ss(i+1)+ss(i+2)).toString
+    if (ss.length == 3) {
+        buffer = getUnicode(ss(0).toString, ss(1).toString, ss(2).toString)
+    } else {
+        for (i <- ss.length-1 to 0 by -3) {
+            //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
+
+    //        val z = "0"
+    //        var b = ss(i).toString
+    //        if (i>0) b = ss(i-1).toString + b else b = z + b
+    //        if (i>1) b = ss(i-2).toString + b else b = z + b
+    //        b = """\""" +"u0" + b
+    //        buffer = b + buffer
+            val s1 = if (i > 1)  ss(i-2).toString else ""
+                val s2 = if (i > 0 ) ss(i-1).toString else ""
+              buffer = getUnicode(s1, s2, ss(i).toString) + buffer
+        }
     }
     buffer
 }
 
+def getUnicode(s1:String, s2:String, s3:String) : String = {
+//    val ret = """\""" +"u0" + s1 + s2 + s3
+    Integer.parseInt(s1+s2+s3, 10).toChar.toString
+}
 
 /*
 def transformRddForModel(rdd : RDD[String], msgText : String) : RDD[Vector] = {
@@ -191,7 +206,6 @@ var numCollected = 0L
 
 //------------- start doing something ------------
 
-println("Input messages")
 trades.count().print
 //ttrades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
@@ -269,6 +283,7 @@ try {
     // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
+
         if (count > 0) {
             var strMsg : String = ""
 
@@ -295,15 +310,29 @@ try {
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
 
             strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
+
             var firstCluster : Boolean = true;
+            var labels : Array[String] = Array.fill(numClusters)("")
+            var k = 0
             model2.clusterCenters.foreach{ t =>
                 println(t.toString)
                 if (firstCluster) {
                     firstCluster = false
                 } else {
                     strMsg += ","
+                    k+=1
                 }
                 strMsg +=  t.toString
+                var labelBuf : Array[String] = Array.fill(featuresNum)("")
+                for (i <- 0 to featuresNum-1) {
+                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
+                    else labelBuf(i) = getStringByWeight(t(i).toDouble)
+                }
+                labels(k) = ""
+                for (j <- 0 to featuresNum-1)  {
+                    if (j > 0) labels(k) += ","
+                    labels(k) += '"'+labelBuf(j).toString+'"'
+                }
             }
             strMsg += "]"
 
@@ -317,7 +346,6 @@ try {
 
             val buffer: Array[String] = Array.fill(numClusters)("")
             var nums : Array[Integer] = Array.fill(numClusters)(0)
-            var labels : Array[String] = Array.fill(numClusters)("")
             val maxNum : Integer = 20;
             val tdata = rdd.takeSample(true, sampleSize, 1).foreach{ a =>
                 val cluster = model2.predict(a)  // adding 1 for readability
@@ -329,22 +357,27 @@ try {
 
                 if (nums(cluster) <= maxNum){ // limit each cluster to <=20 examples
                     buffer(cluster) += a.toString
-//                    var labelBuf : Array[String] = Array.fill(featuresNum)("")
-//                    for (i <- 0 to featuresNum-1) {
-//                        labelBuf(i) = getStringByWeight(a(i).toDouble)
-//                    }
-//                    labels(cluster) = labelBuf.toString
                 }
                 nums(cluster) += 1
             }
 
+            strMsg += ","+s"${'"'}cluster-nums${'"'}"+":["
+
             var printMsg = ""
             for( i <- 0 to numClusters-1) {
-                if (i>0) printMsg += ","
+                if (i>0) {
+                    strMsg += ","
+                    printMsg += ","
+                }
+                strMsg += nums(i).toString
                 printMsg += (i+1)+":"+nums(i).toString
             }
+
+            strMsg += "]"
+
             println(s"------------Model predict (size of predicted clusters)  -------")
             println(printMsg)
+
 
             strMsg += ","+s"${'"'}cluster-data${'"'}"+":["
 
@@ -361,20 +394,26 @@ try {
             }
             strMsg += "]"
 
-//            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
-//
-//            var firstLbl : Boolean = true;
-//            labels.foreach{s =>
-//                if (s != "") {
-//                    if (firstLbl) {
-//                        firstLbl = false
-//                    } else {
-//                        strMsg += ","
-//                    }
-//                    strMsg += "["+s+"]"
-//                }
-//            }
-//            strMsg += "]"
+            strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
+
+            var firstLbl : Boolean = true;
+            printMsg = ""
+            labels.foreach{s =>
+                if (s != "") {
+                    if (firstLbl) {
+                        firstLbl = false
+                    } else {
+                        strMsg += ","
+                        printMsg += "," // debug
+                    }
+                    strMsg += "["+s+"]"
+                    printMsg += "["+s+"]" //debug
+                }
+            }
+            strMsg += "]"
+
+            println(s"------------ Back ref labels  -------")
+            println(printMsg)
 
             strMsg += "}"
 
@@ -385,7 +424,8 @@ try {
             producer.send(message)
 //            println(s"------------Msg sent-------")
 
-            numCollected += count
+
+//            numCollected += count
 //            if (numCollected > 10000) {
 //                System.exit(0)
 //            }
