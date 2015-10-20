@@ -655,9 +655,9 @@
                 "exchange_w": point[2],
                 "currency_w": point[3],
                 "center": center,
-                "party" : center ? labels[1] : "",
-                "exchange": center ? labels[2] : "",
-                "currency": center ? labels[3] : "",
+                "party" : center && labels ? labels[1] : "",
+                "exchange": center && labels  ? labels[2] : "",
+                "currency": center && labels  ? labels[3] : "",
                 "cluster_cidx": i + (center ? 5 : 0)
             };
       };
