@@ -148,7 +148,6 @@ def getStringByWeight(a: Double) : String = {
 
 def getUnicode(s1:String, s2:String, s3:String) : String = {
     val ret = """\""" +"u0" + s1 + s2 + s3
-//    ret = s("\u0"+s1+s2+s3)
     ret
 }
 
