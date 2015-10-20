@@ -292,12 +292,13 @@ try {
             strMsg += summary.mean.toString+","+summary.variance.toString
             strMsg += "]"
 
-            /*
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
 
+                /*
             strMsg += ","+s"${'"'}cluster-centers${'"'}"+":["
+
             var firstCluster : Boolean = true;
             model2.clusterCenters.foreach{ t =>
                 println(t.toString)
