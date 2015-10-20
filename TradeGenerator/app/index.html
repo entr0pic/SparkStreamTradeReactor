@@ -657,9 +657,9 @@
                 "exchange_w": point[2],
                 "currency_w": point[3],
                 "center": center,
-                "party" : center && labels ? labels[1] : "",
-                "exchange": center && labels  ? labels[2] : "",
-                "currency": center && labels  ? labels[3] : "",
+                "party" : center && labels ? labels[1] : "N/A",
+                "exchange": center && labels  ? labels[2] : "N/A",
+                "currency": center && labels  ? labels[3] : "N/A",
                 "cluster_cidx": i + (center ? 5 : 0)
             };
       };
@@ -752,7 +752,7 @@
                             totalled.maxR = globalKmStats.maxR[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
-                            totalled.currency = row.currency_w;
+                            totalled.currency = row.currency; //row.currency_w;
                             totalled.exchange = row.exchange_w;
                           return totalled;
                         },
@@ -765,7 +765,7 @@
                             totalled.maxR = globalKmStats.maxR[idx];
                             totalled.price = row.price;
                             totalled.weight = row.party_w;
-                            totalled.currency = row.currency_w;
+                            totalled.currency = row.currency; //row.currency_w;
                             totalled.exchange = row.exchange_w;
                           return totalled;
                         }

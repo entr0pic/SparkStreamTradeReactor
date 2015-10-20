@@ -78,6 +78,15 @@ var GenerateDoubleIdFromStr = function (str) {
     return "0."+GenerateIdFromStr(str)
 }
 
+var currencySimplified = function (str) {
+    switch(str.toUpperCase()) {
+        case "USD": case "AUD": case "GBP": case "YEN": case "EUR": case "CAD":
+            return str.toUpperCase();
+        default:
+            return "OTHER";
+    }
+}
+
 var exchanges = mapCSVtoJSON(fs.readFileSync('exchanges.csv').toString());
 var ccps = mapCSVtoJSON(fs.readFileSync('ccps.csv').toString());
 var banks = mapCSVtoJSON(fs.readFileSync('banks.csv').toString()).filter(function(d){return d.swift && !~d.swift.indexOf('"')});
@@ -167,7 +176,7 @@ var generateTradePairs = function(count, startDate) {
       exchange_weight : GenerateDoubleIdFromStr(symbol[0].Exchange),
       country_weight: GenerateDoubleIdFromStr(bank[0].country),
       symbol_weight : GenerateDoubleIdFromStr(symbol[0].Symbol),
-      currency_weight : GenerateDoubleIdFromStr(symbol[0].Currency)
+      currency_weight : GenerateDoubleIdFromStr(currencySimplified(symbol[0].Currency.toUpperCase()))
         
     },{
       trade_date: dateTime[0],
@@ -198,7 +207,7 @@ var generateTradePairs = function(count, startDate) {
       exchange_weight : GenerateDoubleIdFromStr(symbol[0].Exchange),
       country_weight: GenerateDoubleIdFromStr(bank[1].country),
       symbol_weight : GenerateDoubleIdFromStr(symbol[0].Symbol),
-      currency_weight : GenerateDoubleIdFromStr(symbol[0].Currency)
+      currency_weight : GenerateDoubleIdFromStr(currencySimplified(symbol[0].Currency.toUpperCase()))
     }])
   }
   return trades;
