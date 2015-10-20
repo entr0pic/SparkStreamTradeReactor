@@ -71,7 +71,6 @@ object TradeStreamReader {
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
     //val sqlContext = new SQLContext(sc)
-      System.exit(0)
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = topics.split(",").toSet
@@ -200,6 +199,7 @@ trades.count().print
 //messages.flatMap{case (_,line) => line}.foreach(a => println(a))
 //trades.print()
 //ttrades.print()
+      System.exit(0)
 
 try {
     /*
