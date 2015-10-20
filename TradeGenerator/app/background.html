@@ -36,6 +36,14 @@
         stroke: #333;
         stroke-width: 1.5px;
       }
+
+      .card.off {
+          max-height: 230px;
+      }
+
+      .card.off .card-block {
+          max-height: 175px;
+      }
     </style>
   </head>
   <body>
@@ -70,9 +78,10 @@
             </div>
             <div class="card-block">
               <div>
-                <p>This example system demonstrates the implementation of stream based dataflow using something similar to the Kappa architecture, the only thing stopping it from being pure Kappa is that SparkStreaming can only process streams discretely, i.e. it uses 'micro-batches'. Other than that every bit of data is delivered through a stream which is either persisted to HDFS or visualised by a client.</p>
-                <p>The is a scalable 'Trade Generator' node which uses real seed values to generate randomised trades across a variety of products, countries, exchanges and currencies, the trades are immediately fed into a Kafka producer. Spark Streaming then consumes the feed and generates another derived stream which outputs kmeans clusting results. Spark Stream also persists these messages from these streams to HDFS.</p>
-                <p>Theres is then another node.js based Kafka consumer subscribing to both the raw stream and the derived stream and translates both these streams into web-sockets using socket.io, by which a front end client subscribes to and consumers the messages via the socket. Each message consumed by the frontend client results in the re-rendering of all applicable visualisation to convey the last known state.</p>
+               <p class="lead">Streaming trades to Spark Streaming and visualising the streamed output with a reactive front-end</p>
+                <p>This example system demonstrates the implementation of stream based dataflow using what some have referred to as the "Kappa architecture", the only thing stopping it from being purely streaming implementation is that SparkStreaming can only process streams discretely, i.e. it uses 'micro-batches'. Other than that every bit of data is delivered through a stream that is either persisted to HDFS or visualised by a client.</p>
+                <p>There is a scalable 'Trade Generator' node which uses real seed values to generate randomised trades across a variety of products, countries, exchanges and currencies, the trades are immediately fed into a Kafka producer. Spark Streaming then consumes the feed and generates another derived stream that outputs K-Means clustering results. Spark Streaming also persists these messages from these streams to HDFS.</p>
+                <p>There is then another node.js based Kafka consumer subscribing to both the raw stream and the derived stream and translates both these streams into web-sockets using socket.io, by which a front end client subscribes to and consumers the messages via the socket. Each message consumed by the frontend client results in the re-rendering of all applicable visualisation to convey the last known state.</p>
                 <p class="lead">Example of data flow through the system</p>
                 <img src="/assets/data-flow.png" alt="Data flow" width="100%;">
               </div>
@@ -84,12 +93,13 @@
         <div class="col-xl-6 col-sm-12">
          <div class="card">
             <div class="card-header">
-              Spark
+              Spark Streaming
             </div>
             <div class="card-block">
              <div style="height:40px;"><img src="/assets/spark-logo.png" style="width:150px ;float: right;"></div>
               <p class="lead">Spark Streaming in the wild</p>
-              <p></p>
+              <p>Get all the benefits of Spark, but while you stream! Spark Streaming is a versitile streaming data reader that allows you to consumer a variety of streaming sources. We plugged it into Kafka to both act as a stream consumer for our raw data stream as well as being a producer for the transformed stream.</p>
+              <p>Spark Streaming also has the benefit of being able to leverage Sparks MLlib (Maching Learning Library), as well as GraphX. We were able to leverage the off-the-shelf k-means clustering algorithm and apply it to our streaming data set.</p>
             </div>
           </div>
           <div class="card">
@@ -100,9 +110,9 @@
               <div style="height:40px;"><img src="/assets/kafka-logo.png" style="float: right;"></div>
               <p class="lead">Why Kafka?</p>
               <p>Kafka is more than just a message broker, think of it as a message broker crossed with a distributed database and all the replication, scalability, fault tolerance and speed benefits that come with it.</p>
-              <p>Kafka maintains a sequential commit log of all messages it recieves, akin to a write ahead log used for database replication. </p>
+              <p>Kafka maintains a sequential commit log of all messages it receives, akin to a write ahead log used for database replication. </p>
               <img src="/assets/kafka_log.png" alt="Kafka Log">
-              <p>This means consumers can be stateful and replay messages in order from the last message they recieved in the commit log.</p>
+              <p>This means consumers can be stateful and replay messages in order from the last message they received in the commit log.</p>
               <p>On top of this Kafka was designed to handle incredibly high-throughput, it can <strong>"support high volume event streams such as real-time log aggregation"</strong>, it can <strong>"deal gracefully with large data backlogs to be able to support periodic data loads from offline systems"</strong> as well as handle <strong>"low-latency delivery to handle more traditional messaging use-cases"</strong>.</p>
               <p>This makes it the ideal ESB, allowing you to more effectively manage data pipelines across an organisation with tens to hundreds of systems.</p>
             </div>
@@ -114,8 +124,9 @@
             <div class="card-block">
               <div>
                 <p class="lead">Streams Everywhere!</p>
-                <p>Reactive programming according to wikipedia is <strong>"is a programming paradigm oriented around data flows and the propagation of change"</strong>. And while theres a whole heap of definitions, the easiest way to think of it is treating <strong>everything</strong> as a stream of data. The means no more REST, the only way of getting data is subscribing to a stream and likewise all new data is published to a stream.</p>
-                <p>This example of a trade monitoring system uses the reactive approach where all data is in a continuous stateful stream and that state is propagated to the UI as and when it changes. Technologies like Kafka on the backend, Spark, Storm and Samza as stream processing tools and things like socket.io which nicely wraps web sockets for the frontend, make developing reactive applications and systems simpler and easier</p>
+                <p>Reactive programming according to wikipedia is <strong>"is a programming paradigm oriented around data flows and the propagation of change"</strong>. And while there's a whole heap of definitions, the easiest way to think of it is treating <strong>everything</strong> as a stream of data. The means no more REST, the only way of getting data is subscribing to a stream and likewise all new data is published to a stream.</p>
+                 <img src="/assets/reactive-traits.svg" style="width:100%">
+                <p>This example of a trade monitoring system uses the reactive approach where all data is in a continuous stateful stream and that state is propagated to the UI as and when it changes. Technologies like Kafka on the backend, Spark, Storm and Samza as stream processing tools and things like socket.io which nicely wraps web sockets for the frontend, make developing reactive applications and systems simpler and easier.</p>
                 <p>Check out the </p><a href="http://www.reactivemanifesto.org/">Reactive Manifesto</a>
               </div>
             </div>
@@ -132,17 +143,22 @@
               <div>
                  <div style="height:40px;"><img src="/assets/docker-logo.png" style="float: right;"></div>
                 <p class="lead">Hadoop on Docker?</p>
-                <p>It may not be as crazy as it sounds, in fact one of the main reasons it was used for this project (aside from being fun to play with) was cost. Rather than provisioning VM instances for each box we would have needed in our multi-node hadoop cluster, we could provision a single mid-spec or low-spec box. From that single box we would be able to run our 14 containers. In fact the entire system can run on a single CPU box with 3.75gb of memory.</p>
-                <p>So while this isn't the exact use case that you would be trying to replicate within a business, it shows you the efficiency you can get out of docker vs using standalone VMs. You vastly reduce the overhead of using VM's and it allows you to utilize every last bit of CPU memory on a given hardware stack.</p>
-                <p>In fact, a <a href="http://domino.research.ibm.com/library/cyberdig.nsf/papers/0929052195DD819C85257D2300681E7B/$File/rc25482.pdf">2014 study done by IBM</a> shows that <strong>"The general result is that Docker is nearly identical to Native performance and faster than KVM in every category."  </strong>, the one exception to this is network latency if you use dockers virtual NAT rather than giving the container access to the host NAT (which again performs virtually identically to the native host)</p>
+                <p>It may not be as crazy as it sounds, in fact one of the main reasons it was used for this project (aside from being fun to play with) was cost. Rather than provisioning VM instances for each box we would have needed in our multi-node hadoop cluster, we could provision a single mid to low spec box.</p>
+
+                <p>If you were to instead run docker on a large physical cluster, you would have a pool of compute resource available which is both highly elastic and flexible in terms of resource allocation. This commoditizes compute power, allowing you to scale out the number of nodes you have with little to no resource overhead per node while maintaining a high level of resiliency.</p>
+                <p>This not only makes Docker ideal for rolling out your own PaaS, but it also makes running one or more hadoop clusters easier. You can decouple the cluster configuration from your hardware without the overheads introduced by VMs. It also makes it very quick to spin up entire clusters in complete isolation to allow for environment seperation or multitenancy. In fact that's why the guys at <a href="https://www.altiscale.com/">Altiscale</a> have started running Hadoop on Docker for their HaaS (Hadoop as a Service) offering.</p>
+
+                <p class="lead">Still worried about the overhead of running docker?</p>
+                <p>A <a href="http://domino.research.ibm.com/library/cyberdig.nsf/papers/0929052195DD819C85257D2300681E7B/$File/rc25482.pdf">2014 study done by IBM</a> shows that <strong>"The general result is that Docker is nearly identical to Native performance and faster than KVM in every category."  </strong>, the one exception to this is network latency if you use dockers virtual NAT rather than giving the container access to the host NAT (which again performs virtually identically to the native host)</p>
                 <img src="/assets/docker-throughput.png" alt="Docker Throuput" width="50%"><img src="/assets/docker-iops.png" alt="Docker IOPS" width="50%">
+
                 <p class="lead">So how does it compare then?</p>
                 <table class="table resplonsive">
                   <thead>
                     <tr>
                        <th>Cluster Type</th>
                       <th>Pure Speed</th>
-                      <th>Multi-tenancy</th>
+                      <th>Multi-tenancy / Environment Management</th>
                       <th>Cost Efficiency</th>
                     </tr>
                   </thead>
@@ -151,25 +167,25 @@
                       <td>Bare-Metal</td>
                       <td><strong>Best</strong></td>
                       <td><strong>Worst</strong> - Hard to provision and maintain isolated environments cheaply</td>
-                      <td><strong>Most expensive</strong></td>
+                      <td><strong>Worst</strong></td>
                     </tr>
                     <tr>
                       <td>Kernel-based Virtual Machine</td>
                       <td><strong>Slightly-Worse</strong></td>
                       <td><strong>Better</strong> - Managing and provisioning isolated environments with new nodes is easier, but introduces overhead for every VM provisioned</td>
-                      <td><strong>Middle ground</strong></td>
+                      <td><strong>Medium</strong></td>
                     </tr>
                     <tr>
                       <td>Docker</td>
                       <td><strong>Near-Best</strong></td>
                       <td><strong>Best</strong> - Quickest to provision and scale nodes (containers), easy to provision isolated network environments between clusters of contaiers and quick to spin up and spin down containers</td>
-                      <td><strong>Cheapest</strong></td>
+                      <td><strong>Best</strong></td>
                     </tr>
                   </tbody>
                 </table>
                 <br />
-                <p>Docker allows you to manage, monitor and provision more of the physically available compute compacity than you would normally be able to.</p>
-                <p>Running docker on distributed set of physical hardware using a resource negotiator like YARN or MESOS can allow you to get more out of your hadoop implementation.</p>
+                <p class="lead">Docker allows you to manage, monitor and provision more of the physically available compute compacity than you would normally be able to.</p>
+
               </div>
             </div>
           </div>
