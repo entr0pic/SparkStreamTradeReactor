@@ -276,7 +276,6 @@ try {
 
             strMsg += "{"
 
-            /*
             strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
@@ -293,6 +292,7 @@ try {
             strMsg += summary.mean.toString+","+summary.variance.toString
             strMsg += "]"
 
+            /*
             val model2 = KMeans.train(rdd, numClusters, numIterations)
 
             println(s"------------Model cluster centers (clusters # $numClusters) -------")
