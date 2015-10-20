@@ -83,7 +83,7 @@
                 <p>There is a scalable 'Trade Generator' node which uses real seed values to generate randomised trades across a variety of products, countries, exchanges and currencies, the trades are immediately fed into a Kafka producer. Spark Streaming then consumes the feed and generates another derived stream that outputs K-Means clustering results. Spark Streaming also persists these messages from these streams to HDFS.</p>
                 <p>There is then another node.js based Kafka consumer subscribing to both the raw stream and the derived stream and translates both these streams into web-sockets using socket.io, by which a front end client subscribes to and consumers the messages via the socket. Each message consumed by the frontend client results in the re-rendering of all applicable visualisation to convey the last known state.</p>
                 <p class="lead">Example of data flow through the system</p>
-                <img src="/assets/data-flow.png" alt="Data flow" width="100%;">
+                <center><img src="/assets/data-flow.png" alt="Data flow" style="max-width:100%; max-height: 500px;" ></center>
               </div>
             </div>
           </div>
@@ -98,8 +98,18 @@
             <div class="card-block">
              <div style="height:40px;"><img src="/assets/spark-logo.png" style="width:150px ;float: right;"></div>
               <p class="lead">Spark Streaming in the wild</p>
-              <p>Get all the benefits of Spark, but while you stream! Spark Streaming is a versitile streaming data reader that allows you to consumer a variety of streaming sources. We plugged it into Kafka to both act as a stream consumer for our raw data stream as well as being a producer for the transformed stream.</p>
-              <p>Spark Streaming also has the benefit of being able to leverage Sparks MLlib (Maching Learning Library), as well as GraphX. We were able to leverage the off-the-shelf k-means clustering algorithm and apply it to our streaming data set.</p>
+              <p>Spark’s single execution engine and unified programming model for batch and streaming lead to some unique benefits over other traditional streaming systems. In particular, four major aspects are:</p>
+<table class="table responsive">
+<tbody>
+<tr><td>Fast recovery from failures and stragglers</td></tr>
+<tr><td>Better load balancing and resource usage</td></tr>
+<tr><td>Combining of streaming data with static datasets and interactive queries</td></tr>
+<tr><td>Native integration with advanced processing libraries (SQL, machine learning, graph processing)</td></tr>
+</tbody>
+</table>
+<img src="/assets/spark-example.png" style="width:100%">
+<p>The key programming abstraction in Spark Streaming is a DStream, or distributed stream. Each batch of streaming data is represented by an RDD, which is Spark’s concept for a distributed dataset. Therefore a DStream is just a series of RDDs. This common representation allows batch and streaming workloads to interoperate seamlessly. Users can apply arbitrary Spark functions on each batch of streaming data: for example, it’s easy to join a DStream with a precomputed static dataset (as an RDD).</p>
+<p>For example, a KMeans clustering model can be trained with some static data and then being used to classify events in a Kafka data stream. The latest additions to the Spark streaming library allow the streaming machine learning algorithms in MLLib to continuously train from a labelled data stream. </p>
             </div>
           </div>
           <div class="card">
@@ -117,20 +127,7 @@
               <p>This makes it the ideal ESB, allowing you to more effectively manage data pipelines across an organisation with tens to hundreds of systems.</p>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header">
-              Reactive Programming
-            </div>
-            <div class="card-block">
-              <div>
-                <p class="lead">Streams Everywhere!</p>
-                <p>Reactive programming according to wikipedia is <strong>"is a programming paradigm oriented around data flows and the propagation of change"</strong>. And while there's a whole heap of definitions, the easiest way to think of it is treating <strong>everything</strong> as a stream of data. The means no more REST, the only way of getting data is subscribing to a stream and likewise all new data is published to a stream.</p>
-                 <img src="/assets/reactive-traits.svg" style="width:100%">
-                <p>This example of a trade monitoring system uses the reactive approach where all data is in a continuous stateful stream and that state is propagated to the UI as and when it changes. Technologies like Kafka on the backend, Spark, Storm and Samza as stream processing tools and things like socket.io which nicely wraps web sockets for the frontend, make developing reactive applications and systems simpler and easier.</p>
-                <p>Check out the </p><a href="http://www.reactivemanifesto.org/">Reactive Manifesto</a>
-              </div>
-            </div>
-          </div>
+
 
         </div>
 
@@ -189,8 +186,26 @@
               </div>
             </div>
           </div>
-
           <div class="card">
+            <div class="card-header">
+              Reactive Programming
+            </div>
+            <div class="card-block">
+              <div>
+                <p class="lead">Streams Everywhere!</p>
+                <p>Reactive programming according to wikipedia is <strong>"is a programming paradigm oriented around data flows and the propagation of change"</strong>. And while there's a whole heap of definitions, the easiest way to think of it is treating <strong>everything</strong> as a stream of data. The means no more REST, the only way of getting data is subscribing to a stream and likewise all new data is published to a stream.</p>
+                 <img src="/assets/reactive-traits.svg" style="max-width:100%; max-height:180px;">
+                <p>This example of a trade monitoring system uses the reactive approach where all data is in a continuous stateful stream and that state is propagated to the UI as and when it changes. Technologies like Kafka on the backend, Spark, Storm and Samza as stream processing tools and things like socket.io which nicely wraps web sockets for the frontend, make developing reactive applications and systems simpler and easier.</p>
+                <p>Check out the </p><a href="http://www.reactivemanifesto.org/">Reactive Manifesto</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+      <div class="col-md-12">
+        <div class="card">
             <div class="card-header">
               Some handy references
             </div>
@@ -203,13 +218,9 @@
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
-
-
-
-
+    </div>
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/js/bootstrap.min.js"></script>
 
