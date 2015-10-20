@@ -344,7 +344,7 @@ try {
                 strMsg +=  t.toString
 
                 // fill the labels for centers
-                clasterLabels(k) = getLabelString(t, featuresNum)
+                clusterLabels(k) = getLabelString(t, featuresNum)
 //                var labelBuf : Array[String] = Array.fill(featuresNum)("")
 //                for (i <- 0 to featuresNum-1) {
 //                    if (i == 0) labelBuf(i) = "" // price has no weight, thus, no back ref label
@@ -365,8 +365,8 @@ try {
                     strMsg += ","
                     printMsg += "," // debug
                 }
-                strMsg += "[" + clasterLabels(i) + "]"
-                printMsg += (i+1)+":"+"[" + clasterLabels(i) + "]" // debug
+                strMsg += "[" + clusterLabels(i) + "]"
+                printMsg += (i+1)+":"+"[" + clusterLabels(i) + "]" // debug
             }
 
             strMsg += "]"
