@@ -692,18 +692,18 @@ var currencySimplified = function (str) {
           var data = [];
           json["cluster-centers-labels"] = json["cluster-centers"].map(function (cc,i) {
               var cc_currency_w = cc[3];
-              if (!json["cluster-data"] || !json["cluster-data"][i]) { return ""; }
+              if (!json["cluster-data"] || !json["cluster-data"][i] || !json["cluster-data"][i].length) { return ""; }
               if (!json["cluster-labels"] || !json["cluster-labels"][i]){ return ""; }
               var w = json["cluster-data"][i].map(function (cd,j) {
                   return cd[3] // currency_w
-              }).filter(function (item,key,arr){ return arr.indexOf(item) === key; })
+              })
               .sort(function (a,b){
                     var t1 = Math.abs(a - cc_currency_w)
                     var t2 = Math.abs(b - cc_currency_w);
                   return (t1 < t2 ? -1 : 1)
               })[0];
               var idx = json["cluster-data"][i].filter(function (t) { return t[3] === w })
-                   .map(function(t) { return i })[0];
+                   .map(function(t,ii) { return ii })[0];
               return json["cluster-labels"][i][idx][3];
           });
 
