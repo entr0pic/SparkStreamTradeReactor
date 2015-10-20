@@ -119,7 +119,7 @@
          <div class="col-xl-4 col-md-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Cluster By Category
+              Cluster By Currency
             </div>
             <div class="card-block">
               <div id="minor-cluster-chart"></div>
@@ -699,7 +699,7 @@ var currencySimplified = function (str) {
               .sort(function (a,b){
                     var t1 = Math.abs(a - cc_currency_w)
                     var t2 = Math.abs(b - cc_currency_w);
-                  return (t1 < t2 ? a : b)
+                  return (t1 < t2 ? -1 : 1)
               })[0];
               var idx = json["cluster-data"][i].filter(function (t) { return t[3] === w })
                    .map(function(t) { return i })[0];
@@ -732,6 +732,16 @@ var currencySimplified = function (str) {
               key: getTimeFromJson(json),
               value: stats[0][0] // mean by price
           }
+      }
+
+      var getClusterData = function (json) {
+          var row = json["cluster-centers-labels"];
+          return row;
+      }
+      var createClusterData = function (value) {
+          var value = sanitiseStatsValue(value);
+          var json = JSON.parse(value);
+          return getClusterData(json);
       }
 
       var createStatsData = function (value) {
@@ -891,12 +901,15 @@ var currencySimplified = function (str) {
               total:[0,0,0,0,0]
             }
 
+
           socket.on('kmstats', function(msg){
             if (msg) {
               try {
                 var value = createStatsData(msg.value);
                 var rdd = createRddData(msg.value);
                 chartManager.addData('rddstats', rdd);
+                  var centers = createClusterData(msg.value);
+                chartManager.addData('clusterstats', centers);
                 chartManager.data.kmstats.cf.remove()
                 resetGlobalKmStats();
                 value = initKmStats(value);
