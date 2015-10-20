@@ -127,7 +127,7 @@ def getStringByWeight(a: Double) : String = {
 
     var buffer: String = ""
     if (ss.length == 3) {
-        buffer = getUnicode(ss(0), ss(1), ss(2))
+        buffer = getUnicode(ss(0).toString, ss(1).toString, ss(2).toString)
     } else {
         for (i <- ss.length-1 to 0 by -3) {
             //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
