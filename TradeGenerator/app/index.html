@@ -709,7 +709,7 @@ var currencySimplified = function (str) {
           json["cluster-centers"].forEach(function (cc, i) {
               var row = getStatsRow(cc, i, json["cluster-centers-labels"][i],  true);
               row.key = i+":1:0"
-              var total = json["cluster-nums"][i] ? json["cluster-nums"][i] : -1;
+              var total = json["cluster-nums"][i] ? json["cluster-nums"][i] : 0;
               var t = getTimeFromJson(json);
               row.total = total;
               row.time = t;
