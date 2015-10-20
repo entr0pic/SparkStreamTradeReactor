@@ -339,12 +339,11 @@ try {
                 strMsg +=  t.toString
 
                 // fill the labels for centers
-                clusterLabels(k) = "["
+                clusterLabels(k) = ""
                 for(i <- 0 to featuresNum-1) {
                     if (i>0) clusterLabels(k) += ","
                     clusterLabels(k) += '"'+'"'
                 }
-                clusterLabels(k) = "]"
 
 //                clusterLabels(k) = getLabelString(t.toArray, featuresNum)
 //                var labelBuf : Array[String] = Array.fill(featuresNum)("")
