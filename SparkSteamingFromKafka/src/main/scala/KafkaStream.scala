@@ -71,6 +71,7 @@ object TradeStreamReader {
     val sparkConf = new SparkConf().setAppName("TradeStreamReader")
     val ssc = new StreamingContext(sparkConf, Seconds(5))
     //val sqlContext = new SQLContext(sc)
+      System.exit(0)
 
     // Create direct kafka stream with brokers and topics
     val topicsSet = topics.split(",").toSet
