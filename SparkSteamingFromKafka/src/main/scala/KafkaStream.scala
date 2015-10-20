@@ -160,7 +160,7 @@ def getLabels (a: Array[Double], featsNum:Integer ) : Array[String] = {
 
 def getLabelString(a: Array[Double], featsNum:Integer) : String = {
     var label : String = ""
-    val labelBuf : Array[String] = getLables(a, featsNum)
+    var labelBuf = getLables(a, featsNum)
     for (j <- 0 to featsNum-1)  {
         if (j > 0) label += ","
         label += '"'+labelBuf(j).toString+'"'
