@@ -270,14 +270,13 @@ try {
     // train k-means model & predict on random values
     vectors.foreachRDD{ (rdd,time) =>
         val count = rdd.count()
-                       println(s"------------RDD cound:  $count -------")
 
         if (count > 0) {
-            /*
             var strMsg : String = ""
 
             strMsg += "{"
 
+            /*
             strMsg += '"'+"time"+ '"'+":"+'"'+time.toString+'"'
 
             val summary: MultivariateStatisticalSummary = Statistics.colStats(rdd)
@@ -380,20 +379,22 @@ try {
 //            }
 //            strMsg += "]"
 
+            */
+
             strMsg += "}"
 
-//            println(s"------------Message to send-------")
-//            println(strMsg)
+            println(s"------------Message to send-------")
+            println(strMsg)
 
             val message = new ProducerRecord[String, String]("kmstats", null, strMsg);
             producer.send(message)
 //            println(s"------------Msg sent-------")
 
+
 //            numCollected += count
 //            if (numCollected > 10000) {
 //                System.exit(0)
 //            }
-            */
         }
 
     }
