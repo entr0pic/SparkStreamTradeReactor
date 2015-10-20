@@ -371,20 +371,23 @@ try {
             strMsg += ","+s"${'"'}cluster-labels${'"'}"+":["
 
             var firstLbl : Boolean = true;
+            printMsg = ""
             labels.foreach{s =>
                 if (s != "") {
                     if (firstLbl) {
                         firstLbl = false
                     } else {
                         strMsg += ","
+                        printMsg += "," // debug
                     }
                     strMsg += "["+s+"]"
+                    printMsg += "["+s+"]" //debug
                 }
             }
             strMsg += "]"
 
             println(s"------------ Back ref labels  -------")
-            println(labels.toString)
+            println(printMsg)
 
 
             strMsg += "}"
