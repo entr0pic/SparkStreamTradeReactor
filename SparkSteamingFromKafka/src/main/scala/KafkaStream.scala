@@ -412,8 +412,8 @@ try {
             }
             strMsg += "]"
 
-//            println(s"------------ Back ref labels  -------")
-//            println(printMsg)
+            println(s"------------ Back ref labels  -------")
+            println(printMsg)
 
             strMsg += "}"
 
