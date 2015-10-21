@@ -106,7 +106,7 @@
       <div class="col-xl-6 col-sm-12">
           <div class="card">
             <div class="card-header">
-              Mean Price Over Time (per RDD)
+              Clearing houses variance Over Time (per RDD)
             </div>
             <div class="card-block">
               <div id="second-minor-cluster-chart"></div>
@@ -731,7 +731,7 @@
           var stats = json["rdd-stats"];
           return {
               key: getTimeFromJson(json),
-              value: stats[0][0] // mean by price
+              value: stats[1][1] // variance by party
           }
       }
 
