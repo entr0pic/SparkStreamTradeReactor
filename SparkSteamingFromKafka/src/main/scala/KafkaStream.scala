@@ -489,19 +489,6 @@ try {
 }
 
 trades
-//      .transform{ rdd =>
-//            rdd.map{ line =>
-//                {
-//                    JSON.parseFull(line)  match {
-//                        case None => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        case Some( mapAsAny ) => mapAsAny match {
-//                            case x: Map[ String, Any ] => { CreateDataArray(x) }
-//                            case _ => CreateDoubleArray(Array.fill(1)(0.00),1)
-//                        }
-//                    }
-//                }
-//            }
-//        }
   .foreachRDD{ (rdd,time) =>
     if (rdd.toLocalIterator.nonEmpty) {
         val sqlContext = new SQLContext(rdd.sparkContext)
@@ -509,7 +496,6 @@ trades
 
         // Convert your data to a DataFrame, depends on the structure of your data
         val df = sqlContext.jsonRDD(rdd).toDF
-        //df.registerTempTable("trades")
         df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
     }
 };
