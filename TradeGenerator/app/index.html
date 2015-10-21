@@ -140,7 +140,7 @@
       var ChartViz = function() {
         this.updateDelay = 2000;
         this.charts = {};
-        this.lastUpdate = new Date();
+        this.lastUpdate = {};
         this.data = { };
         this.colours = {
           greens: ['rgb(247,252,245)','rgb(229,245,224)','rgb(199,233,192)','rgb(161,217,155)','rgb(116,196,118)','rgb(65,171,93)','rgb(35,139,69)','rgb(0,109,44)','rgb(0,68,27)'],
@@ -196,9 +196,9 @@
             if (!this.data[dataName].rendered) {
               dc.renderAll(dataName);
               this.data[dataName].rendered = true;
-            } else if (new Date() - this.lastUpdate > this.updateDelay) {
+            } else if (!this.lastUpdate[dataName] || new Date() - this.lastUpdate[dataName] > this.updateDelay) {
               dc.redrawAll(dataName);
-              this.lastUpdate = new Date();
+              this.lastUpdate[dataName] = new Date();
             }
           }
           return this;
