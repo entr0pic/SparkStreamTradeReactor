@@ -754,21 +754,34 @@
           return data;
       }
 
+      var sanitiseCurrency = function (json) {
+        json["cluster-labels"] = json["cluster-labels"].map(function (cl,i) {
+              return cl.map(function (cla,j) {
+                 cla[3] = (cla[3] === "j" ? "GBP" : cla[3]);
+                  return cla;
+              });
+          })
+        return json;
+      }
+
       var createClusterData = function (value) {
           var value = sanitiseStatsValue(value);
           var json = JSON.parse(value);
+          json = sanitiseCurrency(json);
           return getClusterData(json);
       }
 
       var createStatsData = function (value) {
           var value = sanitiseStatsValue(value);
           var json = JSON.parse(value);
+          json = sanitiseCurrency(json);
           return getStatsData(json);
       }
 
       var createRddData = function (value) {
           var value = sanitiseStatsValue(value);
           var json = JSON.parse(value);
+          json = sanitiseCurrency(json);
           return getRddData(json);
       }
 
