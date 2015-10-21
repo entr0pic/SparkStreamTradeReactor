@@ -96,11 +96,11 @@ object TradeStreamReader {
 
 def CreateDataArray(src: Map[String,Any]) : Array[Any] = {
     val buffer:Array[Any] = new Array[Any](5)
-    buffer(0) = src("price")
+    buffer(0) = src("exchange_weight")
     buffer(1) = src("party_weight")
-    buffer(2) = src("exchange_weight")
+    buffer(2) = src("country_weight")
     buffer(3) = src("currency_weight")
-    buffer(4) = src("country_weight")
+    buffer(4) = src("price")
     buffer
 }
       
@@ -468,7 +468,6 @@ try {
             producer.send(message)
 //            println(s"------------Msg sent-------")
 
-
 //            numCollected += count
 //            if (numCollected > 10000) {
 //                System.exit(0)
@@ -488,6 +487,18 @@ try {
 } catch {
     case e: Throwable => { println(msgText + " error: "); e.printStackTrace(); print(e.toString()); }
 }
+
+trades.foreachRDD{ (rdd,time) =>
+    if (rdd.toLocalIterator.nonEmpty) {
+        val sqlContext = new SQLContext(rdd.sparkContext)
+        import sqlContext.implicits._
+
+        // Convert your data to a DataFrame, depends on the structure of your data
+        val df = sqlContext.jsonRDD(rdd).toDF
+        df.registerTempTable("vectros")
+        df.save("org.apache.spark.sql.parquet", SaveMode.Append, Map("path" -> path))
+    }
+};
 
 //msgText = "saving to parquet"
 //println(msgText)
