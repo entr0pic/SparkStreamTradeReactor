@@ -757,7 +757,11 @@
       var sanitiseCurrency = function (json) {
         json["cluster-labels"] = json["cluster-labels"].map(function (cl,i) {
               return cl.map(function (cla,j) {
-                 cla[3] = (cla[3] === "j" ? "GBP" : cla[3]);
+                  if (cla[3] === "j") {
+                      cla[3] = "GBP";
+                  } else if (cla[3] === "") {
+                      cla[3] = "OTHER";
+                  }
                   return cla;
               });
           })

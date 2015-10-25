@@ -119,26 +119,30 @@ def CreateDoubleArray(a: Array[Any], n: Int) = {
 }
 
 def getStringByWeight(a: Double) : String = {
-    var ss = a.toString.substring(2)
-    if (ss.length == 2) ss = "0" + ss
-    if (ss.length == 1) ss = "00" + ss
+    var ss = if a == 0.00000000001 then "" else a.toString.substring(2);
+    if (ss != "") {
+        if (ss.length == 2) ss = "0" + ss
+        if (ss.length == 1) ss = "00" + ss
+    }
 
     var buffer: String = ""
-    if (ss.length == 3) {
-        buffer = getUnicode(ss(0).toString, ss(1).toString, ss(2).toString)
-    } else {
-        for (i <- ss.length-1 to 0 by -3) {
-            //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
+    if (ss != "") {
+        if (ss.length == 3) {
+            buffer = getUnicode(ss(0).toString, ss(1).toString, ss(2).toString)
+        } else {
+            for (i <- ss.length-1 to 0 by -3) {
+                //buffer = ("""\""" +"u0"+(i>1?ss(i-2):"0")+(i>0?ss(i-1):"0")+ss(i)).toString + buffer
 
-    //        val z = "0"
-    //        var b = ss(i).toString
-    //        if (i>0) b = ss(i-1).toString + b else b = z + b
-    //        if (i>1) b = ss(i-2).toString + b else b = z + b
-    //        b = """\""" +"u0" + b
-    //        buffer = b + buffer
-            val s1 = if (i > 1)  ss(i-2).toString else ""
-                val s2 = if (i > 0 ) ss(i-1).toString else ""
-              buffer = getUnicode(s1, s2, ss(i).toString) + buffer
+        //        val z = "0"
+        //        var b = ss(i).toString
+        //        if (i>0) b = ss(i-1).toString + b else b = z + b
+        //        if (i>1) b = ss(i-2).toString + b else b = z + b
+        //        b = """\""" +"u0" + b
+        //        buffer = b + buffer
+                val s1 = if (i > 1)  ss(i-2).toString else ""
+                    val s2 = if (i > 0 ) ss(i-1).toString else ""
+                  buffer = getUnicode(s1, s2, ss(i).toString) + buffer
+            }
         }
     }
     buffer

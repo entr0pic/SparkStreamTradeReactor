@@ -68,6 +68,7 @@ var logJsonNicely = function (jsonArray) {
 };
 
 var GenerateIdFromStr = function (str) {
+    if (str.toUpperCase() === "OTHER") { return ""; }
     return [].concat(str.split("")).map(function (ch){
         var n = ch.charCodeAt(0);
         return (n<10?"0":"")+(n<100?"0":"")+n.toString();
@@ -75,6 +76,8 @@ var GenerateIdFromStr = function (str) {
 };
 
 var GenerateDoubleIdFromStr = function (str) {
+    var minWeigth = "0.00000000001";
+    if (str === "") { return minWeigth; }
     return "0."+GenerateIdFromStr(str)
 }
 
